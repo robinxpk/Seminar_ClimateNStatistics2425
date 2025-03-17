@@ -11,8 +11,8 @@ BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then echo $TRAVIS_BRANCH; else
 # Exit without set GITHUB_PAT
 [ -z "${GITHUB_PAT}"] && exit 0
 
-git config --global user.email "d-schalk@t-online.de"
-git config --global user.name "Daniel Schalk"
+git config --global user.email "h.funk@lmu.de"
+git config --global user.name "Henri Funk"
 
 # Compile html version of book for gh-pages
 make -B pdf
