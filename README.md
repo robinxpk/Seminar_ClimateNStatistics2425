@@ -1,6 +1,6 @@
 # Seminar Climate and Statistics
 
-Checkout the actual version of the [book](https://henrifnk.github.io/Seminar_ClimateNStatistics/).
+Checkout the actual version of the [book](https://henrifnk.github.io/Seminar_ClimateNStatistics2425/).
 
 As the world faces the reality of climate change, natural hazards and extreme weather events have become a major concern, with devastating consequences for nature and humans. The quantification and definition of climate change, extreme events and its implications for nature, life and health on our planet is one of the major concerns in climate science. 
 
@@ -48,7 +48,7 @@ With RStudio: https://support.rstudio.com/hc/en-us/articles/200532077-Version-Co
 
 With command-line:
 ```
-git clone git@github.com:https://github.com/henrifnk/Seminar_ClimateNStatistics.git
+git clone git@github.com:https://github.com/henrifnk/Seminar_ClimateNStatistics2425.git
 ```
 
 Step 2: Install dependencies
