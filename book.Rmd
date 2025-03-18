@@ -1,5 +1,5 @@
 ---
-title: "Climate And Statistics"
+title: "Climate And Statistics II"
 author: "Henri Funk, Alexander Sasse, Helmut Küchenhoff, Ralf Ludwig"
 date: "`r Sys.Date()`"
 bibliography: [book.bib, packages.bib]

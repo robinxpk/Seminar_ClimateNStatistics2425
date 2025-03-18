@@ -1,4 +1,4 @@
-# Seminar Climate and Statistics
+# Seminar Climate and Statistics II
 
 Checkout the actual version of the [book](https://henrifnk.github.io/Seminar_ClimateNStatistics2425/).
 
@@ -8,7 +8,7 @@ This book explains current statistical methods in climate science and their appl
 The methods include compound events, low flow events and return periods, natural variability, teleconnections and causal discovery.
 All of those methods are used to quantify and anticipate the changing climate.
 
-This book is the outcome of the seminar "Climate and Statistics" which took place in summer 2024 at the Department of Statistics, LMU Munich.
+This book is the outcome of the seminar "Climate and Statistics" which took place in winter 24/25 at the Department of Statistics, LMU Munich.
 
 ## Style guide
 
