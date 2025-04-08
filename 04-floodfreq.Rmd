@@ -1,11 +1,596 @@
-# Introduction
-
-*Author: *
-
-*Supervisor: *
-
-## Intro About the Seminar Topic
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 
-## Outline of the Booklet
+# Flood Frequency Analysis
 
+
+*Author: Hannes Grün, Robin Schüttpelz*
+
+*Supervisor: Henri Funk*
+
+*Suggested degree: Master*
+
+## Abstract {.unnumbered}
+
+
+## Introduction {#intro}
+	<!-- Motivation -->
+<!-- Zielsetung und Forschungsfrage formulieren und deren Relevanz motivieren -->
+	<!-- Short description of content and objective of the project -->
+	<!-- Short explanation of statistical methods used -->
+	<!-- 	( maybe something like: Pearon's correlation coefficient measueres linear correlation between continuous vars and will be used to examine xy) -->
+	<!-- > Brief presentation of key findings -->
+	<!-- > Overview of each section -->
+<!-- - den zum Erreichen des Ziel gewählten Weg beschreiben; dh. einen Überblick über den roten Faden der Arbeit geben -->
+<!-- - Ergebnisse Zusammenfassen -->
+<!-- - Arbeit strukturieren (Wie im Paper) -->
+
+<!-- -> Klären des WAS WARUM WIE WOZU -->
+<!-- Konkretisieren der Fragestellung(WAS) -->
+<!-- Die praktische und wissenschaftliche Relevant (WARUM) -->
+<!-- Die Vorgehensweise (WIE) -->
+<!-- Das Ziel der Arbeit(WOZU) -->
+
+## Data {#data}
+<!-- 1) Background, type of data collection and description of variables of interest -->
+GKD data, what variables we are interested in and how to obtain that from discharge values
+Mention data sample sizes
+<!-- 		- VERY brief descriptive analysis of data -->
+Correlation structure  --> Issues of the paper
+  (Mention that these correlations are kendall's tau. Methods part discusses this is more detail)
+Correlation structure by river and slope
+<!-- 	> Description of the project's objectives (content and statistical goals) -->
+
+## Methods {#methods}
+<!-- - Jeder Abschnitt ein Schritt zum Ziel -->
+<!-- - Untergliederung im Hauptteil sollte dem Leser helfen, die Inhalte gedanklich zu strukturieren und in den Gesamtzu -->
+<!-- sammenhang einordnen zu können -->
+<!-- - Titel eines Abschnitts sollte expressiv und präzise sein -->
+<!-- - (Hauptteil sollte eigenständig lebar sein); DER KERN DES TEXTES SOLLTE VERSTÄNDLICH SEIN OHNE DEN ANHANG ZU  -->
+<!-- KONSULTIEREN - wenn dies nicht der Fall ist, dann gehören die Teile des Anhangs in den Hauptteil -->
+
+
+
+Leserführung: 
+This section introduces basic copula theory and builds archimedean, nested archimedean and vine copulas on top of it. Additionally, concepts for copula fitting and selection are briefly explained. 
+Thereby, this chapter introduces the theory on which this paper is based on. 
+
+As seen in data, we deal with three distinct correlation structures. We introduce models of increasing complexity with only vine copula being able to capture the data underlying structure (oder so)
+<!-- 	> Description / explanation of statistical methods that are used   -->
+Basic copula theory 
+ - Applies to all copulas. Then, introduce the special case of archimedean copulas 
+
+For the following: Mention underlying assumptions / limitations and explain why this is the issue
+  - archimedean copulas
+  - nested archimedean copulas
+  - vines
+  
+Brief discussion of used theoretical methods
+  - MLE (how it is used)
+  - AIC 
+  - Kendall's tau
+  
+<!-- 	> Indicate clearly the software (packages) AND what they do!  -->
+	
+The first section gives a mathematical definition of copulas followed by
+Sklar's Theorem which is crucial in copula theory and also helps to
+understand the first sentences of my copula theory. lol.
+
+### Copulas {#cops}
+
+@zhang2019 (p. 62) describe a copula as a cumulative distribution
+function with standard uniform margins. The dimension $d$ of a copula
+denotes the number of random variables it relates and, hence, a copula is at least bivariate ($d \geq 2$).\
+To give a mathematical definition, consider the vector
+$u = (u_1, ..., u_d) \in \mathbb{R}^d$ where $u_j \in [0, 1]$ for
+$j = 1, .., d$. Then, a $d$ dimensional copula is defined by
+@durante2016 (p. 14) as function $C:[0,1]^d\to [0,1]$ if, and only if,
+the following conditions hold:
+
+i)  $C(u_1, ..., u_d) = 0$ if $u_j = 0$ for at least one
+    $j \in \{1,…,d\}$.
+
+ii) $C(1, 1, ..., 1, u_j, 1, ..., 1) = u_j$
+
+iii) $C$ is $d$-increasing
+
+<!-- The first two conditions make up the boundary conditions of a $d$ -->
+<!-- copula. This notion is due to the fact the conditions use the least and -->
+<!-- the greatest element in the domain of the copula, respectively (see -->
+<!-- @nelsen2006, p. 9). -->
+
+According to @nelsen2016 (p. 9), condition i. shows that copulas 
+are grounded. In this context, grounded means that
+plugging in $0$ for just one of the variables yields a copula value of $0$, independent of the 
+other variables' value.
+The author also mentions that using condition ii., the margins of the function $C$ wrt. a certain variables are obtained by 
+plugging in $1$ for all other variables. 
+Finally, the condition of $C$ to be $d$-increasing is cumbersome to map out in
+higher dimensions, which is why the following is restricted to the $d = 2$ case.
+According to @nelsen2006 (p. 8), the copula function $C$ is
+$2$-increasing if for all $u_1, u_2, v_1, v_2 \in [0,1]$ with
+$u_1 \leq u_2$ and $v_1 \leq v_2$: 
+$$
+C(u_2, v_2) - C(u_2, v_1) - C(u_1, v_2) + C(u_1, v_1) \geq 0
+(#eq:twoincreasing)
+$$ Simply put, 2-increasing means that the volume under the copula density
+function over the rectangle $[u_1, u_2] \times [v_1, v_2]$ is
+non-negative. This interpretation follows from the copula definition as CDF and also holds for higher dimensions.
+Based on condition i. and iii., @nelson2006 (p. 9) also concludes that to 
+the copula function $C$ is nondecreasing in
+each argument. \
+The next section introduces the central theorem in copula theory and also derives the now mentioned copula density. 
+
+### Sklar's Theorem {#sklarstheorem}
+
+<!-- <!-- that represent the dependence structure between random variables independent of the marginal distribution functions, allowing the multivariate distribution to be expressed in separated terms. -->
+
+Sklar's Theorem is central to the theory of copulas as it proves
+that any multivariate model can be constructed using copulas
+(@nelsen2006 (p. 17), @durante2016, p. 42). Thereby, this theorem allows
+to separate the representation of the dependence structure and marginal
+distribution functions. The theorem is given by @nelsen2006 (p. 18):\
+Let $F_{1,..,d}$ be a $d$-dimensional joint distribution function with
+univariate margins $F_1, ..., F_d$. Then, there exists a $d$-dimensional
+copula $C$ such that $$
+F_{1, ..., d}(x_1, ..., x_d) = C(F_1(x_1), ..., F_d(x_d)) = C(u_1, ..., u_d)
+(\#eq:sklar)
+$$ where $u_i = F_i(x_i)$. Also, $C$ is unique if $F_1, ..., F_d$ are continuous. 
+<!-- \ \forall\ (x_1, ..., x_d)\in \mathbb{R}^d -->
+
+<!-- (continuous, but not "absolutely continuous") -->
+<!-- continuous: no jumps in function -->
+<!-- absolutely continous: no kinks in function bzw. function is differentiable everywhere -->
+
+Equation \@ref(eq:sklar) allows two important conclusion: One,
+any multivariate CDF may be expressed as a composition of a copula
+function $C$ and the univariate margins $F_1, ..., F_d$. Thereby,
+@zhang2019 (p. 66) conclude that $C$ connects the multivariate CDF to
+its margins which allows to separately consider marginal and 
+joint behavior of variables. That is, the problem of determining any
+multivariate CDF is reduced to determining the copula. And two, the
+marginal distributions do not need to be of the same family because
+Sklar's theorem holds regardless.
+
+The aforementioned copula density function is given by (see
+@zhang2019, p. 66): $$
+c(u_1, ..., u_d) = \frac{\partial C(u_1, ..., u_d)}{\partial u_1 ... \partial u_d} = \frac{f(x_1, ..., x_d)}{\Pi_{i = 1}^df_i(x_i)}
+(\#eq:copulapdf)
+$$ where $f(x_1, ..., x_d)$ denotes the joint density of $X_1, ..., X_d$
+and $f_i(x_i)$ the marginal density of $X_i$ for 
+$i = 1, ..., d$. Based on this equation, the joint density in terms of the copula density is given by 
+$$
+f(x_1, ..., x_d) = c(u_1, ..., u_d)\Pi_{i = 1}^df_i(x_i)
+(\#eq:marginalpdf)
+$$
+
+Before further discussing the use cases of the copula density, the following introduces the copulas we apply 
+during our analysis and discuss their implicit assumptions.
+
+### Symmetric Archimedean copulas and generator functions {#archcops}
+As Nelsen (p. 109) states, symmetric Archimedean copulas (SACs) are
+widely applied due to their large variety and easy construction. However, SACs only allow the same 
+dependence structure among all possible pairs of variables as @zhang2019
+(p.124) point out. Therefore, they are not suitable, as section REFERENCE(Correlation in Data) observed $3$ distinct structures in the data we work with. 
+But SACs remain an important building block for more commplex approaches. Thus, 
+this section introduces SACs and the concept of a generator function while 
+following sections 
+focus on fully nested Archimedean copulas (FNACs) and Vine copulas which build on SACs
+and alleviate their restrictions by increasing complexity.
+
+SACs are uniquely defined by their generator
+function. Thus, we first give the general idea of a generator, then the
+representation of a copula in terms of the generator and finally the
+copula families we use for our analysis.\
+@nelsen2006 (p. 110, 111) defines a generator to be a
+continuous and strictly decreasing function
+$\phi: [0, 1] \to [0, \infty)$ such that $\phi(1) = 0$. 
+If $\phi(0) \to \infty$, the generator is considered to be strict.
+The inverse $\phi^{-1}:[0, \infty) \to [0, 1]$  of such generators is 
+<!-- non-increasing on -->
+<!-- $[0, \infty)$ and  -->
+strictly decreasing on $[0, \phi(0)]$. 
+We only apply strict generators as seen towards the end of this section.\
+<!-- and given by -->
+<!-- @nelsen2006 (p. 110): $$ -->
+<!-- \phi^{[-1]}(t) = \begin{cases} -->
+<!--     \phi^{-1}(t) & \text{ if } 0 \leq t \leq \phi(0)\\ -->
+<!--     0 & \text{ if } \phi(0) \leq t \lt \infty -->
+<!-- \end{cases} -->
+<!-- $$  -->
+<!-- The pseudo-inverse thereby allows more flexibility in the choice of -->
+<!-- generator functions which becomes clear when considering strict -->
+<!-- generators.  -->
+<!-- A strict generator fulfills not only the above conditions, -->
+<!-- but also $\phi(0) \to \infty$ (see @nelsen2006, p. 112). Then, the -->
+<!-- pseudo-inverse simplifies to $\phi^{[-1]}(t) =\phi^{-1}(t)$. However, by -->
+<!-- using the pseudo-inverse, non-strict generators are available to build a -->
+<!-- copula. -->
+For a generator to yield a valid $d$-dimensional copula,
+@grimaldi2004 and @zhang2019 (p. 124) mention that the inverse
+requires to be completely monotone which is given if it has
+derivatives of all orders with alternating sign $$
+(-1)^k \frac{d^k \phi^{-1}(t|\theta)}{dt^k} \geq 0.
+(\#eq:changingsign)
+$$
+
+
+
+
+
+<!-- While all strict generators fulfill these conditions,  -->
+<!-- any specific generator is -->
+<!-- determined by its functional form and its parameters. As we will see, -->
+<!-- while the functional form is subject to assumption, parameter values -->
+<!-- vary and influence the strength of dependence between variables. For our -->
+<!-- analysis, we focus on generators defined by a single parameter $\theta$. -->
+
+Now, we are in the position to formulate the general representation of a
+$d$-dimensional SAC in terms of its generator. 
+The relation is given by
+@zhang2019 (p. 123) as$$
+C(u_1, ..., u_d|\theta) = \phi^{-1}\left( \sum^d_{j = 1} \phi(u_j|\theta)\ \middle| \theta\right).
+(#eq:generatorSAC)
+$$  Equation \@ref(eq:generatorSAC) shows that SACs are uniquely defined by their
+generator and a parameter vector $theta$ which we introduce next.\
+As mentioned by @nelsen2006 (p. 110, 111, 114), the 
+assumed functional form of the generator translates to a specific copula
+family. Thus, assuming a copula families means enforcing a specific generator function. 
+The $\theta$ vector, on the other hand, 
+has direct influence on the dependence strength within the assumed copula family 
+as seen in @zhang2019 (p. 86). 
+This parameter vector takes on an important role in fitting a copula to observed data. 
+That is, assuming a certain copula family, this parameter vector remains to be estimated from the data. 
+The exact approach is further discussed in section \@ref(est).
+For now, note that we focus on the $3$ generator functions with a one-dimensional $\theta$ vector. 
+These are specified in table \@ref(tab:generators).\
+Finally, equation \@ref(eq:generatorSAC) shows that the arguments
+to the SAC are exchangeable (see @nelsen2006 (p. 38)). 
+Exchangeability is a form of symmetry and implies that the copula treats
+all its arguments the same. 
+Thereby, this representation displays the aforementioned restriction of SACs being able to only depict one unique dependence structure. 
+
+| Copula Family | Parameter \( \theta\)           | Generator Function \( \phi(t) \) |
+|:-------------------|:-----------------|:-------------------|
+| Clayton       | \( \theta \in [-1, \infty)\setminus\{0\} \)       | \( \phi(t|\theta) = \frac{1}{\theta}(t^{-\theta} - 1) \) |
+| Gumbel-Hougaard        | \( \theta \in [1, \infty) \)    | \( \phi(t|\theta) = (-\ln t)^\theta \) |
+| Frank         | \( \theta \in (-\infty, \infty)\setminus\{0\} \)    | \( \phi(t|\theta) = -\ln \left( \frac{e^{-\theta t} - 1}{e^{-\theta} - 1} \right) \) |
+
+Table: (\#tab:generators) Generator functions of selected Archimedean copulas according to @zhang2019 (p. 130)
+
+
+
+<!-- Thus, the order of the input variables does -->
+<!-- not affect the value of the copula. One conclusion from this -->
+<!-- exchangeability is that SACs only allow the same degree of dependence, -->
+<!-- as already mentioned.  -->
+
+
+
+<!-- TODO: Based on the copula representation in terms of generator, -->
+<!-- @grimaldi2004 p1157 mentions that marginals of a $d$ copula are a $d-1$ -->
+<!-- variate copula because $\phi(1) = 0$ which simply reduces the sum by one -->
+<!-- term. This goes to show that setting one variable to 1 gives the $d-1$ -->
+<!-- variate margin. -->
+
+<!-- In our paper, we focus on one-parameter generator functions as we will -->
+<!-- introduce non-exchangeable (asymmetric) dependence across variable -->
+<!-- groups by applying NACs (oder so to argue that I only use one-parametric -->
+<!-- family); erstmal sag ich nichts dazu. Vielleicht nur "in our paper, we -->
+<!-- focus on 1 parameter fams") -->
+
+
+
+### Fully Nested Archimedean copulas {#nacs}
+As mentioned in the previous section, the following introduces a more complex approach 
+than simple SACs. However, seen in this section, fully nested Archimedean copulas (FNACs) only allow 
+for $d-1$ distinct dependence structures and, thereby, also fail to capture the data underlying structure. 
+However, to discuss shortcomings in @grimaldi2004 who made extensive use of FNACs, they must be introduced.
+
+FNACs are built by nesting bivariate SACs 
+$$
+C(u_1, ..., u_d|\theta) = C_1\left( C_2(...C_{d-2}(C_{d-1}(u_1, u_2|\theta_{d-1}), u_3|\theta_{d-2})...|\theta_2), u_{d} \middle| \theta_1\right).
+(#eq:defFNAC) 
+$$
+Where $\theta_1, ..., \theta_{d-1}$ are the parameters corresponding to copula function $C_1, ..., C_{d-1}$ and 
+$\theta = (\theta_1, ..., \theta_{d-1})$ is a vector containing all these parameters. 
+Note that there are only $d-1$ distinct parameters $\theta_i$ for $i = 1, ..., d-1$. Thereby, FNACs are only able to model $d-1$ distinct dependence structures. 
+Hence, partial exchangeability remains
+because within the bivariate nested copulas, the two arguments are
+interchangeable (see @embrecht2003 p. 375). So to a degree, symmetry
+prevails.\
+Additionally to this restriction, @hofer2016 (p. 2 "On struc..") mention that FNACs 
+require the sufficient nesting condition to be fulfilled for equation \@ref(eq:defFNAC) to yield a valid copula.
+For FNACs, we limit our considerations to what 
+@grimaldi2004 used in their analysis. 
+Thereby, the sufficient nesting condition is fulfilled if all nested copulas are from the same family and 
+more nested variables have a stronger degree of dependence, i.e. $\theta_1 \leq ... \leq \theta_{d-1}$.
+(see @grimaldi2004, p. 1157). 
+
+<!-- As mentioned by @embrecht2003 (p. 375), the number of distinct -->
+<!-- generators or bivariate copulas, respectively, is only $d-1$ while the -->
+<!-- number of all possible pairs for $d$ variables is $\frac{d(d-1)}{2}$. -->
+<!-- That is, FNACs only model $d-1$ distinct dependence structures.  -->
+<!-- This -->
+<!-- implies that FNACs do not consider the dependence structure for every -->
+<!-- possible pair of the $d$ variables, but between a variable and a joint -->
+<!-- distribution (SOURCE FOR THIS? I know I read this somewhere, but it is -->
+<!-- also visible from the formula...). In fact, only for $u_1$ and $u_2$ the -->
+<!-- direct dependence structure is considered.\ -->
+<!-- Thereby, exchangeability is lost, but partial exchangeability remains -->
+<!-- because within the bivariate nested copulas, the two arguments are -->
+<!-- interchangeable (see @embrecht2003 p. 375). So to a degree, symmetry -->
+<!-- prefails.\ -->
+<!-- Finally, equation ref:gFNAC simplifies to ref:generatorsSAC for -->
+<!-- $\phi_1 = ... = \phi_{d-1}$ and $\theta_1 = ... = \theta_{d-1}$, as -->
+<!-- mentioned by @zhang2019 (p. 175). Thus, SACs are a special case of -->
+<!-- FNACs. -->
+
+<!-- Since we focus on trivariate copulas, we also formulate the FNAC -->
+<!-- representation for $d = 3$ in terms of $C$: $$ -->
+<!-- C(u_1, u_2, u_3) = C_1(u_3, C_2(u_1, u_2)) -->
+<!-- $$ -->
+
+<!-- -   @grimaldi2004 notes that we have identical margins for $u_3$ and -->
+<!--     $u_1$ bzw. $u_2$ with $\phi_1^{[-1]}(\phi_1(u_3) + \phi(u_j))$. As -->
+<!--     mentioned above, this is due to the partial exchangeability. -->
+
+Note that equation \@ref(eq:defFNAC) may also be represented in terms of the generator function. Thereby, additional requirements 
+regarding the composition of generator functions emerge, as mentioned by @zhang2019 (p. 174). 
+However, discussing these requirements is beyond the purpose of this paper. The interested reader is refered to @zhang2019 (p. 174).
+
+<!-- @zhang2019 (p. 174) give -->
+<!-- the $d$-dimensional representation in terms of the generator  -->
+<!-- $$ -->
+<!-- \phi^{[-1]}_1 \left(  \phi_1 \circ \phi_2^{[-1]} \left( \phi_2 \circ ... \circ \phi^{[-1]}_{d-1}\left(\phi_{d-1}(u_1) + \phi_{d-1}(u_2)\right) + \phi_2(u_{d-1})  \right) + \phi_1(u_d) \right)\\ -->
+<!-- (#eq:defgFNAC)  -->
+<!-- $$ -->
+<!-- where $\circ$ represents the composition of functions. -->
+<!-- @zhang2019 (p. 174) mentions that due to the nesting of generators, $2$ -->
+<!-- additional condition arise. First, $\phi_1^{-1}, ..., \phi^{-1}_{d-1}$ -->
+<!-- are required to be completely monotonic and, second, the composition of -->
+<!-- functions $\omega_j = \phi_j \circ \phi_{j+1}$ belongs to the function -->
+<!-- class $\mathit{L}^*_\infty$ defined as $$ -->
+<!-- \mathit{L}^*_\infty = \left\{ \omega:[0, \infty)\to [0, \infty)\ |\ \omega(0) = 0,\ \omega(\infty) = \infty,\ (-1)^{k-1}\frac{d^k\omega(t)}{dt^k} \geq 0; k = 1,...,\infty   \right\} -->
+<!-- $$  -->
+
+
+<!-- Equation ref:eq:gFNAC shows that FNACs allow different generator -->
+<!-- functions $\phi_1,  ..., \phi_{d-1}$ where each has its own parameter -->
+<!-- $\theta_1, ..., \theta_{d-1}$. In other words, every nested copula $j$ -->
+<!-- is able to have its own varying dependence structure via $\phi_j$ and -->
+<!-- varying strength of dependence via $\theta_j$ which equation -->
+<!-- ref:eq:cFNAC displays.\ -->
+
+### Vine Copulas
+Vine copulas are the most flexible models we introduce. They are able to depict all 
+$\frac{d(d-1)}{2}$ unique dependence structures and, hence, are well suited for the data structure we observed.
+
+Vine copulas use the pair-copula construction (PCC) explained by @Czado2019 (p. 77 - 80) to characterize 
+multivariate dependence structures. 
+That is, PCC decomposes multivariate densities into products of conditional bivariate densities (see @Czado p. 88).  
+There exist multiple vine copula classes, depending on the structure the PCC implies, but as we are concerned with the trivariate case, 
+these constructions are equivalent. Without loss of generality, we use @Czado2019 (p. 78, 90) and devine the trivariate density as 
+$$
+c_{123}(u_1, u_2, u_3) = c_{12}(u_1, u_2) \cdot  c_{23}(u_2, u_3)  \cdot c_{13|2}(u_1|u_2, u_3|u_2))
+(\#eq:simpvinecopdf)
+$$
+where $u_i|u_j = F_{i|j}(u_i|u_j)$ denotes the conditional probability.
+Note that this copula density is based on the simplifying assumption for vines (@Czado2019 p.90, @Nagler2017) which means 
+that the conditional bivariate density $c_{13|2}$ is not conditioned on $x_2$. 
+Thereby, the simplified assumption implies that the conditional copula is independent of the exact $x_2$ value conditioned on and 
+only depends on the conditional probabilities. 
+
+In contrast to FNACs from section \@ref(nacs) where we followed @grimaldi2004, we do not require the bivariate copulas to 
+enforce the same copula family. Thereby, not only the strength of dependence between all $3$ variables may differ, also 
+the dependence structure is allowed to change from pair to pair. 
+
+### Estimation and Selection Process {#est}
+In practice, we need not only to estimate the parameter vector $\theta$, but also select the best fitting copula.
+Thus, the following briefly introduces the pseudo maximum likelihood (ML) approach.
+Also, we give a reminder on the Akaike Information Criterion (AIC) as it is our information criterion of choice to select a copula model.
+
+To avoid assumptions on the marginal distributions, 
+we estimate the parameter vector $\theta$ using the pseudo-likelihood proposed by @Genest1995 
+$$
+\hat{\theta} = argmax_\theta\ l(\theta) = argmax_\theta\ \sum_{k = 1}^{n}log[c_\theta(u_{1k}, u_{2k}, u_{3k})]
+(\#eq:pseudologlik)
+$$
+where $u_{ik}$ denotes the marginal empirical distribution function scaled by $\frac{n}{n+1}$.\
+Depending on the copula model, the definition of the copula density changes. The exact implementation in the used packages
+is discussed in section \@ref(software)
+
+@Fahrmeir2013 (p. 164) give the AIC formula by 
+$$
+AIC = -2 l(\hat{\theta}) + 2 (|M| + 1)
+(\#eq:AIC)
+$$
+where $l(\hat{\theta})$ represents the log-likelihood of the copula model fit and $|M|$ the number of parameters included in the model. 
+We select that copula model with the smallest AIC. 
+
+<!-- ### Empirical Copula {#EmpC} -->
+
+<!-- ADD SOURCES FOR MY STATEMENTS -->
+
+<!-- The probability integral transform (pit) is a transformation that allows -->
+<!-- to map any random variable $X$ into standard uniform space $U(0, 1)$. -->
+
+<!-- It is a general theorem not specific to copulas as mentioned in -->
+<!-- @durante2016 (p. 6), but it helps to understand Sklar's theorem. -->
+
+<!-- The theorem is given by @hofert (p. 3): Let $F$ be a continuous CDF and -->
+<!-- let random variable $X$ have CDF $F$, that is $X \sim F$. Then $F(X)$ is -->
+<!-- a standard uniform random variable, that is, $F(X) \sim U(0, 1)$. -->
+
+<!-- TODO: Empirical PIT Empirical PIT is based on the empirical distribution -->
+<!-- function\ -->
+<!-- introduce pseudo-obs -->
+
+<!-- Thus, pit provides the mechanism to transform the marginals into standard uniform variables, which is required by Sklar's Theorem.  -->
+
+<!-- Pit is more of a prerequisit  -->
+
+<!-- The copula utilizes these transformed variables to describe the dependence structure independent of the original marginals.  -->
+
+### Identifying univariate margins {#gev}
+While the the estimation process described in section \@ref(est) utilizes the 
+empirical distribution function, this function performs badly for re-transforming simulated copula data.
+That is, during estimation the empirical distribution functions ensures we 
+do not affect the copula model fit by misspecifying the marginal distributions. 
+However, after fitting the copula, whenever the inverse of the empirical distribution is applied, it bins the continuous data
+because it is a step-wise function. This, of course, limits the power of our copula analysis. 
+Thus, we decided to fit a Generalized Extreme Values (GEV) distribution to the marginal distribution only for re-transformation of 
+copula data which prevents misspecifications to affect the estimated dependence structure.
+
+
+
+
+### Kendall's $\tau$ {#kendallstau}
+
+NOTE: If I do not like this section too much, check nelsen p. 157 for
+another definition of concordance / discordance
+
+According to @kendall1990 p.6, $\tau$ is a measure of association
+between two random variables that distinguishes between concordance and
+discordance. Concordance means that the two variables move in the same
+direction while discordance means moving in opposite directions. This
+becomes more clear by considering the probabilistic representation of
+the theoretical value of Kendall's $\tau$ given by @zhang2019 (p. 85,
+86) or @nelsen2006 (p. 158).\
+Consider two continuous bivariate random vectors $X = (X_1, X_2)^T$ and
+$X^* = (X^*_1, X^*_2)^T$ that are independent, but follow the same
+distribution. From $X$ to $X^*$, the random variables $X_1$ and $X_1^*$
+move in the same direction as $X_2$ and $X_2^*$ if
+$(X_1 - X_1^*)(X_2 - X_2^*) > 0$. Because for the product to be larger
+than $0$, the sign of both terms must be the same. Analogously,
+discordance is given if $(X_1 - X_1^*)(X_2 - X_2^*) < 0$. Using $$
+\mathbb{P}_{C} = \mathbb{P}\left(\left[(X_1 - X_1^*)(X_2 - X_2^*)\right] > 0 \right) \\
+\mathbb{P}_D = \mathbb{P} \left( \left[ (X_1 - X_1^*)(X_2 - X_2^*)\right] < 0  \right)
+$$
+
+Kendalls's $\tau$ is given by:
+
+$$
+\tau(X_1, X_2) = \mathbb{P}_C - \mathbb{P}_D
+$$Thus, Kendall's tau is difference in probailities of concordance and
+discordance.
+
+(#eq:pKendall)
+
+Based on @ref(eq:pKendall), @zhang2019 (p. 86) and @nelsen2006 (p. 159,
+161) show that Kendall's $\tau$ may be expressed in term of a bivariate
+copula function.
+<!-- This is the population value bzw. theoretical value of -->
+<!-- Kendall's $\tau$ (see @nelsen p.162) -->
+
+$$
+\begin{align}
+\tau(X_1, X_2) &=  4 \int_{[0, 1]^2} C(u, v)\ dC(u, v) - 1  \\
+\tau(t)&= 4 \int_0^1 \frac{\phi(t)}{\phi'(t)}dt + 1
+\end{align} 
+$$ (#eq:cKendall)
+
+As we can see from equation @ref(eq:cKendall), Kendall's $\tau$ - a
+measure of association - can be expressed in terms of the copula
+function only. It emphasizes once more that the copula captures the
+whole dependence structure between variables independent of any marginal
+distribution functions. An alternative representation of $\tau$ is in
+terms of the generator. We will mostly use this relation to estimate
+Kendall's $\tau$ under (wrongfully) assumed symmetry.
+
+For SACs, we can express the copula in terms of the generator bzw.
+dependence of the true parameter $\theta$ (see @nelsen2006 p. 162) The
+general formula to express tau in terms of parameter of the generator is
+given by @nelsen2006 p. 163 (This is the relationship between Kendall's
+tau and the parameter(s) in the generator function)
+
+TODO: Relationship Kendeall's tau, generator and parameter @zhang2019
+p.134 and 128
+
+<!-- @nelsen2006 p. 163 derives the Kendall distribution function. Let's see -->
+
+<!-- how relevant that is. According to GPT: often used to estimate -->
+
+<!-- parameters, can be used to compare theoretically implied Kendall -->
+
+<!-- function with the empirical one (goodness of fit) in hierarchical models -->
+
+<!-- it help to determine the dependence strength across variable subsets To -->
+
+<!-- my understanding: Kendall function kind of entails the same info as the -->
+
+<!-- copula itself as it is derived from it anyway. Thus it can be used for -->
+
+<!-- parameter estimation and model diagnostics. But there are some upsides -->
+
+<!-- to Kendall (GPT): Transforms the multivariate dependence structure into -->
+
+<!-- a UNIVARIATE distribution. WTF! That sounds super good! This helps with -->
+
+<!-- visualizing and all that! Also, it can provide how dependence across -->
+
+<!-- NACs evolves. Sometimes allow more robust parameter estimation; is done -->
+
+<!-- by minizing the difference between empirical and theoretical Kendall -->
+
+<!-- distr. -->
+
+Empirically, there are multiple versions of Kendall's $\tau$ depending
+on the data structure. Since this paper focuses on continuous variables
+only, we use the following formula given by @kendall1990 (p. 5): $$
+t = \frac{P-Q}{\frac{1}{2}n(n-1)}
+$$(#eq:eKendall)
+
+Where $P$ denotes the number of concordant and $Q$ the number of
+discordant pairs in the data.
+
+Significance test:\
+Formula @hollander2015 p. 396, formula 8.13 (case of no ties which is
+fine bc continuous variables)\
+cor.test with method = kendall implements this as seen in @hollander2015
+p. 398, 399\
+Do I only mention the formula for the test here and implementation in
+the implementation and package chapter?
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Software {#software}
+@Okhrin2012 
+
+According to @Nagler , the ML approach for vine copulas first fits all bivariate copulas and then uses the AIC to select the 
+best fitting ones. Finally, the joint copula is selected using the AIC.
+
+## Simulation {#sim}
+Simulation parameters
+Discuss most important results MAYBE one graph, but maybe just keep it with words 
+
+
+As section \@ref(nacs) already hinted to, FNACs fail to capture the dependence structure in the data. 
+This section examines what that really means for practical applications.
+
+## Application {#app}
+<!-- > DETAILED description of the results, presented with help of TABLES and ILLUSTRATIONS -->
+Copy structure of presentation
+Mention that I only use empirical PIT for fitting and only for prediction use GEV
+
+## Discussion {#discussion}
+<!-- 	> Brief recap of the objevtive of the project -->
+<!-- > Interpretation of the results with reference to initial objective  -->
+<!-- 	> Brief presentation of the most important results -->
+<!-- 	> Discusstion of the results (possible conclusions / warnings against misinterpretation) -->
+<!-- 	> Outlook (open questinos / reference to possible further analysis or research -> put into research context) -->
+<!-- !!!!! Introduction and Summary should be independently readable !!!!!!! -->
