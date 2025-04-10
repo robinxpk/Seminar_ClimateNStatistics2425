@@ -215,16 +215,15 @@ dmarginal = function(vec, obj, type = "GEV"){
   shape = FALSE
   if (type != "Gumbel") shape = mle[["shape"]]
   
-  
-  return(
-    extRemes::devd(
+  dens = extRemes::devd(
       vec, 
       loc = mle[["location"]],
       scale = mle[["scale"]], 
       shape = shape,
       type = type 
-    )[[1]]
-  )
+    )
+  if (length(vec) == 1) return(dens[[1]])
+  return(dens)
 }
 
 pmarginal = function(vec, obj, type = "GEV"){
@@ -669,7 +668,7 @@ plot_bavaria_taildep = function(taildep_df, bavaria_params, considered = c("Isar
   if (save_plot) savegg(plotname)
 }
 
-get_univariate_HQ_plot = function(scop_df, ref_flood, save_plot = FALSE, plotname = "Univariate_HQ"){
+get_univariate_HQ_plot = function(scop_df, ref_flood, gev_peak, save_plot = FALSE, plotname = "Univariate_HQ"){
   plot(ggplot(
       data = auc_plot_df <- data.frame(
         x = seq(from = 0, to = max(scop_df$peak)),
@@ -773,7 +772,7 @@ get_trivariate_HQ_plot = function(scop_df, ref_flood, vine, n_syn = 1e6, save_pl
 }
 
 # Model Evaluation --------------------------------------------------------
-model_evaluation = function(cop_df, nacs, vines, hq_probs, grid_size = 25, optimization_plots = F, debug = F){
+model_evaluation = function(cop_df, nacs, vines, hq_probs, grid_size = 25, save_plot = F, plotname = "model_eval",optimization_plots = F, debug = F){
   res = lapply(
     cop_df$unit |> unique(),
     # c("Landshut Flutmulde"),
@@ -811,49 +810,42 @@ model_evaluation = function(cop_df, nacs, vines, hq_probs, grid_size = 25, optim
     ) |> 
     dplyr::ungroup()
   
+  res = res |> dplyr::left_join(emp_hq_df |> dplyr::select(unit, tau_order) |> unique(), by = "unit")
   plot(
     emp_hq_df |>
     ggplot() +
     geom_boxplot(aes(x = as.factor(HQ), y = std_discharge)) +
-    geom_line(data = res, aes(x = as.factor(hq), y = std_discharge, group = unit, color = type)) + 
+    geom_line(data = res, aes(x = as.factor(hq), y = std_discharge, group = unit, color = tau_order)) + 
     facet_grid(type~river)
   )
-  
-  # Calculate mean squared error from median of the HQ value 
-    # (i.e. mean squared deviation from median of the empirical HQ-quantiles)
-  nac_error = calc_msdm(
-    fit = res |> dplyr::select(hq, type, std_discharge) |> dplyr::filter(type == "nac"),
-    emp = emp_hq_df |> dplyr::select(HQ, std_discharge)
-  )
-  vine_error = calc_msdm(
-    fit = res |> dplyr::select(hq, type, std_discharge) |> dplyr::filter(type == "vine"),
-    emp = emp_hq_df |> dplyr::select(HQ, std_discharge)
-  )
-  message(
-    paste(
-      "
-      NAC Error: ", nac_error,"
-      Vine Error: ", vine_error, "
-      Error Ratio: ", nac_error / vine_error," [nac/vine]
-      --------------------
-      Note: Error is the root mean squared deviation from the median of set of HQ quantiles.
-      Choose median because error then robust towards some of the outliers and median is also visible in plot.",
-      sep = ""
-    )
-  )
-  
-  # Checking the 3 stations where NACs performed well:
-  print("Rivers where NACs performed okay:")
-  print(res |> dplyr::filter(type == "nac", hq == 50) |> dplyr::arrange(desc(std_discharge)) |> head(3))
+  if (save_plot) savegg(plotname)
+
+  # Calc error and print them as message by river and model
+  calc_error(fit = res, emp = emp_hq_df)
 }
 
-calc_msdm = function(fit, emp) {
-  # Calculate the mean squared deviation from the empirical median of every group of HQ-quantiles
-  meds = emp |> dplyr::rename(hq = HQ) |> dplyr::summarise(med = median(std_discharge), .by = hq)
+calc_error = function(fit, emp) {
+  # Calculate the mean absolute distance to the empirical median of every HQ-group 
+  meds = emp |> 
+    dplyr::rename(hq = HQ) |> 
+    dplyr::summarise(med = median(std_discharge), .by = c(hq, river)) |> 
+    dplyr::mutate(key = paste(hq, river, sep = "-")) |> 
+    dplyr::select(-river, -hq)
   errors = fit |> 
-    dplyr::left_join(meds, by = "hq") |> 
-    dplyr::mutate(error = std_discharge - med, sqd_error = error^2) 
-  return(sqrt(mean(errors$sqd_error)))
+    dplyr::mutate(key = paste(hq, river, sep = "-")) |> 
+    dplyr::left_join(meds, by = "key") |>
+    dplyr::mutate(error = std_discharge - med, abs_error = abs(error))
+  
+  msg_df = errors |> 
+    dplyr::summarise(
+      mad = mean(abs_error),
+      .by = c(river, type)
+    )
+  message(
+    paste(
+      msg_df$river, "---", msg_df$type, "--- MAD:", msg_df$mad, "(mean absolute distance to hq median)\n"
+    )
+  )
 }
 
 get_most_probable_voldur_by_unit = function(station, scop_df, nac, vine, grid_size, hq_probs, optimization_plots = F, debug = F){
@@ -1276,7 +1268,6 @@ cond_marginal_dens = function(vol_dur_vec, peak, marginal_vol, marginal_dur, mar
   conditional_marginal_density =  copula_density *  f_vol * f_dur
   
   if (min) conditional_marginal_density = -factor * log(conditional_marginal_density)
-  if (is.infinite(conditional_marginal_density)) browser()
   return(conditional_marginal_density)
 }
 

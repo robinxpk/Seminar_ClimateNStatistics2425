@@ -477,7 +477,7 @@ Kendalls's $\tau$ is given by:
 
 $$
 \tau(X_1, X_2) = \mathbb{P}_C - \mathbb{P}_D
-$$Thus, Kendall's tau is difference in probailities of concordance and
+$$Thus, Kendall's tau is difference in probabilities of concordance and
 discordance.
 
 (#eq:pKendall)

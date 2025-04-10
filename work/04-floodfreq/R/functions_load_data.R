@@ -165,7 +165,6 @@ grab_flood_events = function(df, return_plot = F){
   # Based on: https://onlinelibrary.wiley.com/doi/epdf/10.1002/hyp.14563 
   # Find break points only using days average to reduce noise and faster model fitting
   
-  # TODO: Change to baseflowA as I liked it a bit better
   baseflow = hydroEvents::baseflowB(df$discharge) # Water flow idependent of event
   streamflow = df$discharge - baseflow$bf # Water flow due to event
   df = df |> 
@@ -570,7 +569,7 @@ create_dfs = function(
   doParallel::registerDoParallel(cluster)
   parallel::clusterEvalQ(cluster, source("functions.R"))
   
-  # create_and_save_dfs(in_dir = data_path, out_dir = extended_dfs_path)
+  create_and_save_dfs(in_dir = data_path, out_dir = extended_dfs_path)
   apply_and_save_flood_detection(in_dir = extended_dfs_path, out_dir = threshold_dfs_path, pattern = pattern)
   if (hydros) create_and_save_hydrographs(in_dir = threshold_dfs_path, out_dir = hydrograph_path)
   create_and_save_copula_dfs(in_dir = threshold_dfs_path, out_dir = copula_dfs_path)

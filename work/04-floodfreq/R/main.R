@@ -3,15 +3,15 @@ source("config.R")
 
 # Parameters --------------------------------------------------------------
 # In case this code is run for the first time, the data files need to be created --> Set to TRUE
-create_datafiles = TRUE
+create_datafiles = FALSE
 # Save the plots displayed during this session
-save_plots = FALSE
+save_plots = TRUE
 # Analysis focuses on some parts on one specific station. Define this station here:
 station = "München"
 # Reference year: The one year I consider in more detail
 ref_year = 2024
 # The bavaria plot takes quite some time to load.. Thus, control if it supposed to be loaded at all
-create_bavaria_plot = FALSE
+create_bavaria_plot = TRUE
 
 # Create Data Files (if necessary) ----------------------------------------
 if (create_datafiles) create_dfs(
@@ -67,13 +67,13 @@ taildep_df = lapply(
 
 # Data Section ------------------------------------------------------------
 ## Bavaria Plot ----------------------------------------------------------
-if (create_bavaria_plot) bavaria_params = get_bavaria_plot(cop_df)
+if (create_bavaria_plot) bavaria_params = get_bavaria_plot(cop_df, save_plot = save_plots, save_plotname = "data_bavaria_plot")
 
 ## Hydro Plot ------------------------------------------------------------
-get_hydrograph(df |> dplyr::filter(unit == station, year == ref_year), save_plot = save_plots)
+get_hydrograph(df |> dplyr::filter(unit == station, year == ref_year), save_plot = save_plots, plotname = "data_hydrograph")
 
 ## Correlation Plot ------------------------------------------------------
-get_cor_plot(cor_table, save_plot = save_plots)
+get_cor_plot(cor_table, save_plot = save_plots, plotname = "data_cor_plot")
 
 ## Further Descriptives --------------------------------------------------
 # Further descriptives for each river
@@ -96,46 +96,18 @@ get_events(cop_df, summary_df, rivername = "Isar")
 
 # Application Section -----------------------------------------------------
 # Visual GOF
-visualGOF(vine = vine, scop_df = scop_df, station = station, n_syn = n_syn, save_plot = save_plots, plotname = "visualGOF")
+visualGOF(vine = vine, scop_df = scop_df, station = station, n_syn = n_syn, save_plot = save_plots, plotname = "app_visualGOF")
 # Tail Dependencies
-if (create_bavaria_plot) plot_bavaria_taildep(taildep_df, bavaria_params)
+if (create_bavaria_plot) plot_bavaria_taildep(taildep_df, bavaria_params, save_plot = save_plots, plotname = "app_bavaria_taildep")
 # Comparison univariate vs. copula approach
-get_univariate_HQ_plot(scop_df, ref_flood)
-get_trivariate_HQ_plot(scop_df, ref_flood, vine, n_syn = 1e6, save_plot = T) 
+get_univariate_HQ_plot(scop_df, ref_flood, gev_peak, save_plot = save_plots, plotname = "app_univariate_hq")
+get_trivariate_HQ_plot(scop_df, ref_flood, vine, n_syn = 1e6, save_plot = save_plots, plotname = "app_multivariate_hq") 
 # Most likely Volume - Duration pairs for HQ values 
-model_evaluation(cop_df = cop_df, nacs = nacs, vines = vines, hq_probs = hq_probs)
-# Correlation Boxplots of these stations
-weird_stations = c("Rißbachdüker", "Landshut Flutmulde", "Sylvenstein")
-get_cor_plot(
-  cor_table |> 
-    dplyr::filter(unit == "Rißbachdüker"), 
-  save_plot = save_plots
+model_evaluation(
+  cop_df = cop_df |> dplyr::left_join(cor_table |> dplyr::select(id, tau_order) |> unique(), by = "id"), 
+  nacs = nacs, 
+  vines = vines, 
+  hq_probs = hq_probs,
+  save_plot = save_plots,
+  plotname = "app_modeleval"
 )
-get_cor_plot(
-  cor_table |> 
-    dplyr::filter(unit == "Landshut Flutmulde"), 
-  save_plot = save_plots
-)
-get_cor_plot(
-  cor_table |> 
-    dplyr::filter(unit == "Sylvenstein"), 
-  save_plot = save_plots
-)
-# --> Sylvenstein is somewhat of an outlier of the three. The other two have pretty similar lower correlations. 
-  # Based on the simulation, this does make sense!
-# Check difference between two smallest tau-values to confirm:
-test = cor_table |> 
-  dplyr::mutate(
-    smaller_tau_ratio = dplyr::case_when(
-      tau_order == "tau_dp<tau_vp<tau_vd" ~ tau_vp / tau_dp,
-      tau_order == "tau_dp<tau_vd<tau_vp" ~ tau_vd / tau_dp
-    )
-  )  
-  ggplot(test, aes(y = smaller_tau_ratio, x = river)) + 
-  geom_boxplot() + 
-  geom_point(data = test |> dplyr::filter(unit %in% weird_stations), color = "red") + 
-  geom_label(data = test |> dplyr::filter(unit %in% weird_stations), aes(label = unit), color = "red") + 
-  facet_wrap(~river, scale = "free")
-
-
-
