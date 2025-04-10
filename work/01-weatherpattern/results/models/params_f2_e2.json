@@ -1,0 +1,9 @@
+{
+  "learning_rate": 0.00028774125812897354,
+  "weight_decay": 0.00015062050741999393,
+  "dropout": 0.231256569909164,
+  "out_channels1": 16,
+  "out_channels2": 32,
+  "kernel_size": 7,
+  "fc1_size": 128
+}
