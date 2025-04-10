@@ -18,6 +18,7 @@ output:
 
 
 ## Introduction {#intro}
+ Mention: Isar has similar correlation structure as in paper
 	<!-- Motivation -->
 <!-- Zielsetung und Forschungsfrage formulieren und deren Relevanz motivieren -->
 	<!-- Short description of content and objective of the project -->
