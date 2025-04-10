@@ -1,6 +1,7 @@
 # Load Data ---------------------------------------------------------------
 # Sections contains all functions needed to go from the GKD input data to the data used for our analysis
 source("functions_load_data.R")
+source("functions_sim.R")
 
 # Load Data into Session --------------------------------------------------
 get_copula_df = function(

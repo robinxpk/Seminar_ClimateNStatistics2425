@@ -3,15 +3,12 @@ Functions used during the simulation process.
 File does not need to be loaded separately as it is loaded when functions.R is. 
 "
 
-
 get_nac_tau = function(tauvec){
   # Based on 3 taus, return largest and build average above the other two
   # Assumption: 3rd is largest tau
   tau = c(mean(tauvec[1:2]), tauvec[3])
   return(tau)
 }
-
-
 
 nac_tau2theta = function(family_index, tau){
   return(
@@ -21,6 +18,7 @@ nac_tau2theta = function(family_index, tau){
     )
   )
 }
+
 nac_theta2tau = function(family_index, theta){
   theta = unname(theta)
   return(
@@ -43,7 +41,6 @@ fit_ac = function(mat, cops, debug = FALSE){
   # NOTE HERE: Since p identical, we can just select smallest negative loglikelihood
   ac_lls = lapply(ac_fits, function(fit) - fit@min) # min gives the NEGATIVE loglikelihood
   ac_best_fit = which.max(ac_lls)
-  # if (is.integer(ac_best_fit) && length(ac_best_fit) == 0) ac_best_fit = sample(1:3, 1) # TODO: TEMP SOL: In case of it breaking down, select one copula at random
   ac_mle = ac_fits[[ac_best_fit]]@coef[[1]]
   
   # Actual copula
@@ -92,8 +89,7 @@ get_nac_estimates = function(nac_mdl){
 }
 
 fit_vine = function(mat, families){
-  # The VineCopula package is faster and applicable as long as we do not also estimate covariates
-  # Families: 3, 4, 5 (see docu)
+  # Families: 3, 4, 5 (see doku)
   vine = VineCopula::RVineStructureSelect(data = mat, rotations = FALSE, familyset = families)
   return(vine)
 }
@@ -164,117 +160,6 @@ run_one_nac = function(
   return(res)
 }
 
-
-
-
-# For each sample size (n), each copula family, each dependence structure (AC, NAC, Vine), tau:
-#   Repeat B times: 
-#     Draw random sample  
-#   For each sample, fit AC, NAC and Vine copula and evaluate
-# run_one_n_ac = function(
-#     seed, 
-#     n,
-#     cop,
-#     dep,
-#     copula_families = list("Gumbel" = 1, "Clayton" = 3, "Frank" = 5), # Copula families contained in the package
-#     beta_a = 2.5, 
-#     beta_b = 1.5
-#   ){
-#   # Simulate from true model ------------------------------------------------
-#   # For reproducibility
-#   set.seed(seed)
-#   
-#   # If symmetric, the values of the 'inner' and 'outer' tau bzw. copula parameter are simply identical
-#   tau_inner = rbeta(n = 1, shape1 = beta_a, shape2 = beta_b)
-#   tau_outer = tau_inner # base case is symmetric AC
-#   if (dep == "nac") tau_outer = 1/2 * tau_inner # Simple solution to ensure outer parameter is smaller than inner
-#   
-#   # Define a selection of possible tau
-#   # Derive a selection from the empirical observations? 
-#   # AC: Take average of the observed tau
-#   # NAC: Take most nested and average of other 2
-#   # Vine: Take the observed taus
-#   
-#   # Package uses integer for copulas. Get this integer 
-#   fam = copula_families[cop]
-#   
-#   # Create HAC-object
-#   true_mdl = HAC::hac.full(
-#     type = fam, 
-#     y = c("v3", "v2", "v1"), 
-#     theta = c(HAC::tau2theta(tau = tau_outer, type = fam), HAC::tau2theta(tau = tau_inner, type = fam))
-#   )
-#   
-#   # Draw sample according to true_mdl (simulated sample)
-#   mat = HAC::rHAC(n, true_mdl) 
-#   attr(mat, "true_mdl") = true_mdl 
-#   attr(mat, "tau") = c(outer = tau_outer, inner = tau_inner)
-#   
-#   # Fit models --------------------------------------------------------------
-#   
-#   # I) (symmetric) Archimedean copulas ----
-#   # Funny enough, HAC does not deal well with non-nested ACs, i.e. symmetric ACs. The fit seems to work, but then the logLikelihood cannot be evaluated
-#   # Lucky me, the copula package can fit ONLY non-nested ACs for more than 2 variables
-#   # Copula packages are a mess, wtf...
-#   # Also, due to the implementation in this package, I first fit all models, then use AIC to select the best one and finally create the best model
-#   # Copula package uses bbmle to fit (see: https://cran.r-project.org/web/packages/bbmle/bbmle.pdf)
-#   ac_fits = lapply(names(copula_families), function(name) copula::emle(u = mat, cop = copula::onacopula(family = name, nacStructure = C(1, 1:3))))
-#   # Select the one with smallest AIC
-#   # NOTE HERE: Since p identical, we can just select smallest negative loglikelihood
-#   ac_lls = lapply(ac_fits, function(fit) - fit@min) # min gives the NEGATIVE loglikelihood
-#   ac_best_fit = which.max(ac_lls)
-#   ac_mle = ac_fits[[ac_best_fit]]@coef[[1]]
-#   # Actual copula
-#   ac_mdl = copula::onacopulaL(family = names(copula_families)[ac_best_fit], nacList = list(ac_fits[[ac_best_fit]]@coef, 1:3))
-# 
-#   
-#   # II) Nested Archimedean copulas ----
-#   # Estimate copula using implemented selection method
-#   nac_mdl = HAC::estimate.copula(mat) # TODO There is no structure selection!! Again, solve this using AIC use type 1, 3, 5
-#   # Calculate ll to evaluate AIC
-#   nac_ll  = HAC::to.logLik(X = mat, hac = nac_mdl, eval = TRUE)
-#   
-#   estimates = c(outer = nac_mdl$tree[[3]], inner = nac_mdl$tree[[1]][[3]])
-#   
-#   # III) Vine copulas ----
-#   # The VineCopula package is faster and applicable as long as we do not also estimate covariates
-#   vine_mdl = VineCopula::RVineStructureSelect(
-#     data = mat, 
-#     rotations = FALSE, familyset = c(3, 4, 5) # Only allow for the considered copula families
-#   )
-#   vine_mdl
-#   
-#   # Save results in df ----
-#   res = data.frame(
-#     list(
-#       seed = seed,
-#       true_tau_inner = tau_inner,
-#       true_tau_outer = tau_outer,
-#       # Results of AC fit
-#       ac_selected_cop = names(copula_families)[ac_best_fit],
-#       ac_theta = ac_mle,
-#       ac_tau = HAC::theta2tau(ac_mle, type = copula_families[names(copula_families)[ac_best_fit]]),
-#       ac_aic = ll2aic(ll = ac_lls[[ac_best_fit]], p = 1),
-#       ac_bic = ll2bic(ll = ac_lls[[ac_best_fit]], p = 1),
-#       ac_kl = klMonteCarlo(true_mdl, HAC::nacopula2hac(ac_mdl), est_mdl_AC = TRUE),
-#       # Results of NAC fit
-#       nac_selected_cop = HAC::hac2nacopula(nac_mdl)@copula@name,
-#       nac_theta_outer = estimates["outer"][[1]],
-#       nac_theta_inner = estimates["inner"][[1]],
-#       nac_tau_outer = HAC::theta2tau(theta = estimates["outer"][[1]], type = nac_mdl$type),
-#       nac_tau_inner = HAC::theta2tau(theta = estimates["inner"][[1]], type = nac_mdl$type),
-#       nac_aic = ll2aic(ll = nac_ll, p = 2),
-#       nac_bic = ll2bic(ll = nac_ll, p = 2),
-#       nac_kl = klMonteCarlo(true_mdl, nac_mdl),
-#       # Results of Vine fit
-#       vine_aic = vine_mdl$AIC,
-#       vine_bic = vine_mdl$BIC,
-#       vine_kl = klMonteCarlo(true_mdl = true_mdl, est_mdl = vine_mdl, est_mdl_vine = TRUE)
-#     )
-#   )
-# 
-#   return(res)
-# }
 run_one_vine = function(
     seed,
     n,
@@ -393,122 +278,108 @@ vine_klMonteCarlo = function(
 
   return(mean(log(true_d / est_d) ))
 }
- 
-# TODO
-# run_one_vine = function(
-#     seed, 
-#     n,
-#     cop,
-#     dep
-#   ){
-#   # Simulate from true model ------------------------------------------------
-#   # Tau for the dependence structure
-#   tau_13 = rbeta(n = 1, shape1 = beta_a, shape2 = beta_b)
-#   tau_23 = 3/5 * tau_13
-#   tau_12 = 1/3 * tau_13
-#   
-#   # Vine matrix defining the (un)conditional copulas in the model
-#   # 1 - 2 - 3
-#   vine_matrix = matrix(
-#     c(
-#       1, 0, 0, 
-#       3, 2, 0,
-#       2, 3, 3
-#     ),
-#     nrow = 3, ncol = 3,
-#     byrow = TRUE
-#   )
-#   
-#   # Randomly drawing the combination of copula families
-#   fams = unlist(sample(copula_families, size = 3, replace = T))
-#   # Save families in family copula matrix
-#   family_matrix = matrix(0, nrow = 3, ncol = 3)
-#   family_matrix[2, 1] = fams[1]
-#   family_matrix[3, 1:2] = fams[2:3]
-#   
-#   params = matrix(0, nrow = 3, ncol = 3)
-#   params[2, 1] = VineCopula::BiCopTau2Par(fams[1], tau_13)
-#   params[3, 1:2] = c(
-#     VineCopula::BiCopTau2Par(fams[2], tau_12),
-#     VineCopula::BiCopTau2Par(fams[3], tau_23)
-#   )
-#   
-#   rvmat = VineCopula::RVineMatrix(Matrix = vine_matrix, family = family_matrix, par = params)
-#   mat = VineCopula::RVineSim(n, RVM = rvmat)
-#   
-#   attr(mat, "rvm") = rvmat
-#   colnames(mat) = c("v1", "v2", "v3")
-#   
-#   # Fit models --------------------------------------------------------------
-#   
-#   
-#   # I) (symmetric) Archimedean copulas ----
-#   # Funny enough, HAC does not deal well with non-nested ACs, i.e. symmetric ACs. The fit seems to work, but then the logLikelihood cannot be evaluated
-#   # Lucky me, the copula package can fit ONLY non-nested ACs for more than 2 variables
-#   # Copula packages are a mess, wtf...
-#   # Also, due to the implementation in this package, I first fit all models, then use AIC to select the best one and finally create the best model
-#   # Copula package uses bbmle to fit (see: https://cran.r-project.org/web/packages/bbmle/bbmle.pdf)
-#   ac_fits = lapply(names(copula_families), function(name) copula::emle(u = mat, cop = copula::onacopula(family = name, nacStructure = C(1, 1:3))))
-#   # Select the one with smallest AIC
-#   # NOTE HERE: Since p identical, we can just select smallest negative loglikelihood
-#   ac_lls = lapply(ac_fits, function(fit) - fit@min) # min gives the NEGATIVE loglikelihood
-#   ac_best_fit = which.max(ac_lls)
-#   ac_mle = ac_fits[[ac_best_fit]]@coef[[1]]
-#   # Actual copula
-#   ac_mdl = copula::onacopulaL(family = names(copula_families)[ac_best_fit], nacList = list(ac_fits[[ac_best_fit]]@coef, 1:3))
-#   
-#   # II) Nested Archimedean copulas ----
-#   # Estimate copula using implemented selection method
-#   nac_mdl = HAC::estimate.copula(mat)
-#   # Calculate ll to evaluate AIC
-#   nac_ll = HAC::to.logLik(X = mat, hac = nac_mdl, eval = TRUE)
-#   
-#   # III) Vine copulas ----
-#   # The VineCopula package is faster and applicable as long as we do not also estimate covariates
-#   vine_mdl = VineCopula::RVineStructureSelect(
-#     data = mat, 
-#     rotations = FALSE, familyset = c(3, 4, 5) # Only allow for the considered copula families
-#   )
-#   vine_mdl
-#   
-#   # Save result df ----
-
-# Simulation Analysis -----------------------------------------------------
-klplots = function(
-    df,
-    cop_name,
-    dens_alpha = 1,
-    col_ac = "red",
-    col_nac = "blue",
-    col_vine = "green",
-    scales = "fixed"
-  ){
-  p = df |> 
-    dplyr::filter(cop == cop_name) |> 
-    dplyr::select(n, contains("_kl")) |> 
-    tidyr::pivot_longer(
-      cols = contains("_kl"),
-      names_to = "dep",
-      values_to = "kld"
-    ) |>
-    dplyr::mutate(dep = as.factor(stringr::str_remove(dep, "_kl"))) |>
-    ggplot() + 
-    geom_density(aes(x = kld, color = dep), alpha = dens_alpha) +
-    geom_vline(xintercept = 0, color = "black") + 
-    facet_wrap(~ n, scale = scales) +
-    labs(
-      title = "Kullback Leibler by Sample Size and Fit",
-      x = "Kullback Leibler Divergence",
-      y = "Density"
-    ) +
-    theme(legend.position = "bottom") 
-    
-  return(p)
-}
 
 get_vine_famname = function(idx){
   vine_famlist = list("4" = "Gumbel", "3" = "Clayton", "5" = "Frank")
   return(unname(unlist(lapply(idx, function(i) vine_famlist[as.character(i)]))))
 }
 
+ll2aic = function(ll, p){
+  return(-2 * ll + 2 * p)
+}
+
+klMonteCarlo = function(
+    true_mdl, 
+    est_mdl, 
+    est_mdl_AC = FALSE, 
+    est_mdl_vine = FALSE, 
+    values =  seq(from = 0.01, to = 0.99, length.out = 25) # Keep from (to) relatively high (low) simmplifying numerical stability. Downside: KL not considering full support..........lol.
+                                                           # This implies that I am "numerically blind" for differences below or above these thresholds. 
+  ){
+  "
+  Function to numerically approximate the KL divergence.
+  Not fully reliable tbh... have to work on it. But not now, I postpone this until later.
+  "
+  # Ensure correct names (Is an issue when dealing with copula to HAC transformed copula. Cannot deal with it any other way aparently)
+  if (est_mdl_AC) for (i in 1:3) est_mdl$tree[[i]] = paste("v", i, sep = "")
+  
+  # Grid points where the copula density is evaluated on
+  grid = expand.grid(v1 = values, v2 = values, v3 = values)
+  
+  # Densities
+  true_d = HAC::dHAC(as.matrix(grid), true_mdl)
+  # ifelse cannot return matrices, aparently. Thus, keep it in two if-statements...
+  if (est_mdl_vine) est_d = VineCopula::RVinePDF(newdata = grid, RVM = est_mdl)
+  if (!est_mdl_vine) est_d = HAC::dHAC(as.matrix(grid), est_mdl)
+
+  # Numerically estimate E[log(p/q)] by mean(log(p/q)) 
+  # The way I calculate KL now lead to NAs for:
+  # tau_inner = 0.2011794
+  # tau_outer = 0.1005897
+  # Not sure why tho...
+  return(mean(log(true_d / est_d) ))
+}
+
+# Evaluate Sim ------------------------------------------------------------
+read_dep_files = function(
+    true_dep ,
+    in_dir = "../data/simulation/"
+  ){
+  filenames = paste(
+    in_dir, 
+    list.files(in_dir, pattern = paste("dep", true_dep, sep = "")),
+    sep = ""
+  )
+  
+  return(purrr::map_dfr(filenames, load_depdata))
+}
+
+load_depdata = function(filepath){
+  # IMPORTANT! Assumes only 1 object / df within the rdata file
+  # Note: Use new environment for each load to prevent overwriting within lapply
+  env = new.env()
+  load(filepath, envir = env)
+  get(ls(env)[1], envir = env)
+  
+  # Append attributes to df. Necessary before merging them into one big df
+  n = attr(env$res, "n")
+  dep = attr(env$res, "dep")
+  cop = attr(env$res, "cop")
+  if (dep == "vine") cop = "vine"
+  
+  # Sanity messages
+  message(paste("n:", n, "-- cop:", cop, "-- dep:", dep,"-- #seeds:", nrow(env$res)))
+  
+  return(env$res <- env$res |> dplyr::mutate(n = n, cop = cop, dep = dep, .after = seed))
+}
+
+get_nac_bias_in_vine_dgp = function(in_dir = "../data/simulation/", save_plot = F, plotname = "sim_nac_if_vine"){
+  plot(read_dep_files(true_dep = "vine", in_dir = in_dir) |>
+    dplyr::mutate(
+      true_famname_12 = get_vine_famname(true_fam_12),
+      true_famname_13 = get_vine_famname(true_fam_13),
+      true_famname_23 = get_vine_famname(true_fam_23),
+      famcomb = as.factor(
+        paste(
+          substr(true_famname_12, start = 1, stop = 1),
+          substr(true_famname_23, 1, 1),
+          substr(true_famname_13, 1, 1),
+          sep = "-"
+        )
+      )
+    ) |> 
+    dplyr::mutate(
+      x = dplyr::row_number(),
+      .by = c(river, n)
+    ) |> 
+    ggplot() +
+    geom_line(aes(y = true_tau_12, x = x)) + 
+    geom_line(aes(y = true_tau_23, x = x)) + 
+    geom_line(aes(y = true_tau_13, x = x)) + 
+    geom_line(aes(y = nac_tau_outer, x = x), color = "blue", alpha = 0.4) + 
+    geom_line(aes(y = nac_tau_inner, x = x), color = "red", alpha = 0.4) + 
+    facet_grid(n ~ river, scale = "free_x")
+    )
+  if (save_plot) savegg(plotname)
+}
 

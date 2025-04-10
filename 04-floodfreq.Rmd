@@ -185,20 +185,16 @@ The next section introduces the central theorem in copula theory and also derive
 
 ### Sklar's Theorem {#sklarstheorem}
 Sklar's Theorem is central to the theory of copulas as it proves
-that any multivariate model can be constructed using copulas
+that any multivariate distribution can be constructed using copulas
 (@nelsen2006 p. 17, @durante2016 p. 42). Thereby, this theorem allows
 to separate the representation of the dependence structure and marginal
 distribution functions. The theorem is given by @nelsen2006 (p. 18):\
 Let $F_{1,..,d}$ be a $d$-dimensional joint distribution function with
 univariate margins $F_1, ..., F_d$. Then, there exists a $d$-dimensional
 copula $C$ such that $$
-F_{1, ..., d}(x_1, ..., x_d) = C(F_1(x_1), ..., F_d(x_d)) = C(u_1, ..., u_d)
+F_{1, ..., d}(x_1, ..., x_d)  = C(F_1(x_1), ..., F_d(x_d)) = C(u_1, ..., u_d)
 (\#eq:sklar)
 $$ where $u_i = F_i(x_i)$. Also, $C$ is unique if $F_1, ..., F_d$ are continuous. 
-<!-- \ \forall\ (x_1, ..., x_d)\in \mathbb{R}^d -->
-<!-- (continuous, but not "absolutely continuous") -->
-<!-- continuous: no jumps in function -->
-<!-- absolutely continous: no kinks in function bzw. function is differentiable everywhere -->
 Equation \@ref(eq:sklar) allows $2$ important conclusion: One,
 any multivariate CDF may be expressed as a composition of a copula
 function $C$ and the univariate margins $F_1, ..., F_d$. Thereby,
@@ -230,7 +226,6 @@ However, SACs remain an important building block for more complex copula models.
 Thus, this section introduces the concept of a generator function as it determines the family a SACs belongs to.
 Then, we specifically focus on bivariate SACs because following models are based on these.
 
-
 We first give the general idea of a generator, then the
 representation of a copula in terms of the generator and in the end the
 copula families we use for our analysis.\
@@ -239,25 +234,8 @@ continuous and strictly decreasing function
 $\phi: [0, 1] \to [0, \infty)$ such that $\phi(1) = 0$. 
 If $\phi(0) \to \infty$, the generator is considered to be strict.
 The inverse $\phi^{-1}:[0, \infty) \to [0, 1]$  of such generators is 
-<!-- non-increasing on -->
-<!-- $[0, \infty)$ and  -->
 strictly decreasing on $[0, \phi(0)]$. 
 We only apply strict generators as seen towards the end of this section.\
-<!-- and given by -->
-<!-- @nelsen2006 (p. 110): $$ -->
-<!-- \phi^{[-1]}(t) = \begin{cases} -->
-<!--     \phi^{-1}(t) & \text{ if } 0 \leq t \leq \phi(0)\\ -->
-<!--     0 & \text{ if } \phi(0) \leq t \lt \infty -->
-<!-- \end{cases} -->
-<!-- $$  -->
-<!-- The pseudo-inverse thereby allows more flexibility in the choice of -->
-<!-- generator functions which becomes clear when considering strict -->
-<!-- generators.  -->
-<!-- A strict generator fulfills not only the above conditions, -->
-<!-- but also $\phi(0) \to \infty$ (see @nelsen2006, p. 112). Then, the -->
-<!-- pseudo-inverse simplifies to $\phi^{[-1]}(t) =\phi^{-1}(t)$. However, by -->
-<!-- using the pseudo-inverse, non-strict generators are available to build a -->
-<!-- copula. -->
 For a generator to yield a valid $d$-dimensional copula,
 @grimaldi2006 and @zhang2019 (p. 124) mention that the inverse
 requires to be completely monotone which is given if it has
@@ -265,12 +243,6 @@ derivatives of all orders with alternating sign $$
 (-1)^k \frac{d^k \phi^{-1}(t|\theta)}{dt^k} \geq 0.
 (\#eq:changingsign)
 $$
-<!-- While all strict generators fulfill these conditions,  -->
-<!-- any specific generator is -->
-<!-- determined by its functional form and its parameters. As we will see, -->
-<!-- while the functional form is subject to assumption, parameter values -->
-<!-- vary and influence the strength of dependence between variables. For our -->
-<!-- analysis, we focus on generators defined by a single parameter $\theta$. -->
 Now, we are in the position to formulate the general representation of a
 $d$-dimensional SAC in terms of its generator. 
 The relation is given by
@@ -298,36 +270,52 @@ Exchangeability is a form of symmetry and implies that the copula treats
 all its arguments the same. 
 Thereby, this representation displays the aforementioned restriction of SACs being able to only depict one unique dependence structure. 
 
-| Copula Family | Parameter \( \theta\)           | Generator Function \( \phi(t) \) |
-|:-------------------|:-----------------|:-------------------|
-| Clayton       | \( \theta \in [-1, \infty)\setminus\{0\} \)       | \( \phi(t|\theta) = \frac{1}{\theta}(t^{-\theta} - 1) \) |
-| Gumbel-Hougaard        | \( \theta \in [1, \infty) \)    | \( \phi(t|\theta) = (-\ln t)^\theta \) |
-| Frank         | \( \theta \in (-\infty, \infty)\setminus\{0\} \)    | \( \phi(t|\theta) = -\ln \left( \frac{e^{-\theta t} - 1}{e^{-\theta} - 1} \right) \) |
+| Copula Family | Parameter \( \theta\)           | Generator Function \( \phi(t) \) | Tail Dep.|
+|:--------------|:----------------|:------------------|:---------|
+| Clayton       | \( \theta \in [-1, \infty)\setminus\{0\} \)       | \( \phi(t|\theta) = \frac{1}{\theta}(t^{-\theta} - 1) \) | Lower |
+| Gumbel-Hougaard        | \( \theta \in [1, \infty) \)    | \( \phi(t|\theta) = (-\ln t)^\theta \) | Upper |
+| Frank         | \( \theta \in (-\infty, \infty)\setminus\{0\} \)    | \( \phi(t|\theta) = -\ln \left( \frac{e^{-\theta t} - 1}{e^{-\theta} - 1} \right) \) | None |
 
-Table: (\#tab:generators) Generator functions of selected Archimedean copulas according to @zhang2019 (p. 130)
+Table: (\#tab:generators) Generator functions of selected Archimedean copulas according to @zhang2019 (p. 130) and tail dependencies according to @zhang2019 (p. 132).
 
+### Taildependence and Rotation
+After explaining what it means for a copula to be of a certain family, 
+the following introduces the family specific concept of tail dependence. 
+Also, we briefly explain how copulas are manipulated to extend the dependence possible structure one family 
+captures.
 
-
-<!-- Thus, the order of the input variables does -->
-<!-- not affect the value of the copula. One conclusion from this -->
-<!-- exchangeability is that SACs only allow the same degree of dependence, -->
-<!-- as already mentioned.  -->
-
-
-
-<!-- TODO: Based on the copula representation in terms of generator, -->
-<!-- @grimaldi2004 p1157 mentions that marginals of a $d$ copula are a $d-1$ -->
-<!-- variate copula because $\phi(1) = 0$ which simply reduces the sum by one -->
-<!-- term. This goes to show that setting one variable to 1 gives the $d-1$ -->
-<!-- variate margin. -->
-
-<!-- In our paper, we focus on one-parameter generator functions as we will -->
-<!-- introduce non-exchangeable (asymmetric) dependence across variable -->
-<!-- groups by applying NACs (oder so to argue that I only use one-parametric -->
-<!-- family); erstmal sag ich nichts dazu. Vielleicht nur "in our paper, we -->
-<!-- focus on 1 parameter fams") -->
-
-
+Tail dependence is differentiated into upper and lower tail dependence. 
+Their formulas are given by @czado2019 (p. 34 - 35) as 
+$$
+\lambda^{\text{upper}} = \lim_{t \to 1^{-}} \mathbb{P}\left( X_2 > F_2^{-1}(t) \,\middle|\, X_1 > F_1^{-1}(t) \right) = \lim_{t \to 1^{-}} \frac{1 - 2t + C(t, t|\theta)}{1 - t}
+\(#eq:uppertaildep)
+$$
+and 
+$$
+\lambda^{\text{lower}} = \lim_{t \to 0^{+}} \mathbb{P}\left( X_2 \leq F_2^{-1}(t) \,\middle|\, X_1 \leq F_1^{-1}(t) \right) 
+= \lim_{t \to 0^{+}} \frac{C(t, t|\theta)}{t}.
+\(#eq:lowertaildep)
+$$
+As seen from both equations, tail dependence is defined as conditional probability that both variables are above 
+or below a threshold quantile.
+<!-- a probabilistic statement in its limits. -->
+Thereby, tail dependence 
+measures how likely it is for both random variables to jointly exhibit extreme behavior. 
+However, upper tail dependence refers to both variables attaining large values while lower tail dependence means 
+both variables are jointly small. 
+Note that both, upper and lower tail dependence, depend on the copula function $C$ and, thus, on the copula 
+family. The tail dependencies implied by the copula families we consider are also listed in 
+table \@ref(tab:generators) as stated in @zhang2019 (p. 132).\
+Finally, tail dependence is a family specific property, however, a copula function may be rotated to 
+change its native tail dependence behavior. 
+Following @pan2024, this is done by modelling $u_i' = 1 - u_i$ instead of $u_i$ itself. 
+Every such transformation concludes in a $90$ degree rotation of the copula function in the corresponding 
+direction. This approach is based on the definition of the copula function as multivariate CDF.
+Because if instead of $u_i$ the transformation $u_i'$ is modelled, 
+the probabilistic statement of the copula in the continuous case changes to 
+$C(u_1', u_2|\theta) =  \mathbb{P}(X_1 \geq x_1,X_2 \leq x_2)$ and 
+$C(u_1, u_2'|\theta) =  \mathbb{P}(X_1 \leq x_1,X_2 \geq x_2)$
+, respectively. 
 
 ### Fully Nested Archimedean copulas {#nacs}
 Fully nested Archimedean copulas (FNACs) build upon SACs
@@ -521,7 +509,9 @@ $$
 $$ 
 where $\phi'(t|\theta)$ denotes the derivative of the generator function. Note that this relation is positive
 which is seen in @zhand2019 (p. 134). That is, if the parameter of copula increases, the strength of dependence
-increases. Vice versa, if correlation increases, $\theta$ increases, too. 
+increases. Vice versa, if correlation increases, $\theta$ increases, too. Also, note that this implies that 
+estimating a $\theta$ implicitly estimates a $\tau$ value.
+This is a relation we will use during our simulation.
 <!-- As we can see from equation @ref(eq:cKendall), Kendall's $\tau$ - a -->
 <!-- measure of association - can be expressed in terms of the copula -->
 <!-- function only. It emphasizes once more that the copula captures the -->
@@ -561,19 +551,83 @@ Finally, GEV distribution were fitted using the function
 `extRemes` package by @gilleland2016 which uses MLE to determine the parameters mentioned in \@ref(gev).
 
 ## Simulation {#sim}
-Simulation parameters
-Discuss most important results MAYBE one graph, but maybe just keep it with words 
+To examine how the fact that FNACs are not able to capture $3$ distinct dependence structures in a trivariate
+setting affects the model results, we ran a simulation. 
+We limit this section to the most crucial finding 
+which is highly relevant for the interpretation of our results in the following section.
 
-As section \@ref(nacs) already hinted to, FNACs fail to capture the dependence structure in the data. 
-This section examines what that really means for practical applications.
+We set up the simulation by drawing $27000$ times a random samples of size $15, 30, 50, 1000$. 
+The sample size of $50$ is closest to our actual setting while $1000$ observations aim to examine large sample behavior. The two smaller samples sizes are interesting because we decided to remove stations due to their small
+sample size.
+Additionally, for every drawn sample, 
+the underlying vine copula model had $2$ wheels to tweak:
+First, each copula density 
+of the underlying vine copula density is allowed to be of one of the copula families 
+listed in table \@ref(tab:generators) leading to a possible total of $3^3 = 27$ copula family combinations. 
+And second, we allowed for $4$ different correlation values, $2$ of which correspond to the observed average 
+correlation values in the Isar and the Danube. The remaining $2$ aimed to examine general behavior of FNACs 
+if the true underlying model is a vine model with $3$ distinct strength of dependence. That is, 
+we added a Low-Medium-High correlation structure with correlation values of $0.1, 0.5, 0.85$ and a 
+Low-High-High correlation structure with values of $0.1, 0.8, 0.8$.\
+Thereby, we had $27000$ data points per sample size which were divided by all $27$ possible copula family combinations
+and $4$ possible correlation structures leading to roughly $\frac{27000}{4\cdot 27} = 250$ data points per setup.
+It is not exactly $250$ per setup because we used a uniform draw to select copula families and correlation 
+structure as simplified coding a lot. 
 
-Thus, we expect them to outperform FNACs given the observed data strucutre. To confirm this, we 
-compared FNACs and vines using a simulation and drew conclusions on the behavior of FNACs in a vine setting. 
+The result we want to highlight is displayed in figure \@ref(simresults).
+```{r simresults, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/sim_NAC_if_Vine_DPG.png")
+```
+This figure uses multiple subplots to display the trace plots of the $\tau$ values implictly estimated by the FNAC model 
+as mentioned in section \@ref(kendallstau). That is, Kendall's $\tau$ is displayed on the y-axis while the index 
+of the iteration in which this model was fitted is on x-axis. Note that this plot does not differ by 
+copula family combination leading to roughly $\frac{27000}{4} = 6750$ iterations each.
+The black lines in each subplot refers to the true underlying correlation values.
+The name of the corresponding 
+correlation structure is to the right hand side of the plot.
+Additionally, the figure is also divided by the sample size on which the estimated FNAC model is based. From a 
+sample size of $15$ on the left up to a size of $1000$ on the right. Color-wise, the red line refers to the $\tau$ of the inner copula and the blue line to the outer copula.
+Due to the mentioned sufficient nesting condition in section \@ref(nacs), the inner $\tau$ in each iteration  
+must always be larger than the outer.\
+The first observation is the decrease in noise as the sample size increases from left to right for 
+every possible correlation structure. For now, focus only on the column of sample size $1000$. In every subplot,
+the noise
+in the red line is drastically reduced and we see that it mainly moved around the most upper black line. 
+This is nicely seen in one of the river correlation structures. 
+Thereby, the inner $\tau$ of FNACs seems to correctly estimate the larges correlation value.
+However, when considering the blue line, it always moves around the second largest black line. 
+Thereby, FNACs smallest $\tau$ attains the second largest correlation value in the (simulated) data.
+This implies that due to the same copula margins mentioned in section \@ref(nacs) that FNACs systematically
+overestimate the weakest dependence strength.\
+This is an important result because it explains not only the compareably bad performance of FNACs during our 
+application, but also their bias in the results.
+
 
 ## Application {#app}
 <!-- > DETAILED description of the results, presented with help of TABLES and ILLUSTRATIONS -->
 Copy structure of presentation
 Mention that I only use empirical PIT for fitting and only for prediction use GEV
+
+```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/app_visualGOF.png")
+```
+
+```{r bavariaTaildep, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/app_bavaria_taildep.png")
+```
+
+```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/app_univariate_hq.png")
+```
+
+```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/app_multivariate_hq.png")
+```
+
+```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
+```
+
 
 ## Discussion {#discussion}
 <!-- 	> Brief recap of the objevtive of the project -->

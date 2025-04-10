@@ -5,13 +5,13 @@ source("config.R")
 # In case this code is run for the first time, the data files need to be created --> Set to TRUE
 create_datafiles = FALSE
 # Save the plots displayed during this session
-save_plots = TRUE
+save_plots = FALSE
 # Analysis focuses on some parts on one specific station. Define this station here:
 station = "München"
 # Reference year: The one year I consider in more detail
 ref_year = 2024
 # The bavaria plot takes quite some time to load.. Thus, control if it supposed to be loaded at all
-create_bavaria_plot = TRUE
+create_bavaria_plot = FALSE
 
 # Create Data Files (if necessary) ----------------------------------------
 if (create_datafiles) create_dfs(
@@ -95,6 +95,14 @@ summary_df
 get_events(cop_df, summary_df, rivername = "Donau")
 # Isar events
 get_events(cop_df, summary_df, rivername = "Isar")
+
+
+# Simulation Section ------------------------------------------------------
+# IMPORTANT: Assumes that the simulation is already run and simulation data is available
+# Display correlation average to confirm used correlation values in simulation
+cor_table |> dplyr::summarise(mean_vd = mean(tau_vd), mean_vp = mean(tau_vp), mean_dp = mean(tau_dp), .by = river) 
+get_nac_bias_in_vine_dgp(save_plot = save_plots, plotname = "sim_NAC_if_Vine_DPG")
+
 
 # Application Section -----------------------------------------------------
 # Visual GOF
