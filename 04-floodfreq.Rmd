@@ -18,7 +18,7 @@ output:
 
 
 ## Introduction {#intro}
- Mention: Isar has similar correlation structure as in paper
+TODO: Add something "decoupling"... bla
 	<!-- Motivation -->
 <!-- Zielsetung und Forschungsfrage formulieren und deren Relevanz motivieren -->
 	<!-- Short description of content and objective of the project -->
@@ -37,55 +37,112 @@ output:
 <!-- Das Ziel der Arbeit(WOZU) -->
 
 ## Data {#data}
-<!-- 1) Background, type of data collection and description of variables of interest -->
-GKD data, what variables we are interested in and how to obtain that from discharge values
-Mention data sample sizes
-<!-- 		- VERY brief descriptive analysis of data -->
-Correlation structure  --> Issues of the paper
-  (Mention that these correlations are kendall's tau. Methods part discusses this is more detail)
-Correlation structure by river and slope
-<!-- 	> Description of the project's objectives (content and statistical goals) -->
+Hannes: Ist meine Variablenbeschreibung korrekt? 
+Könntest du noch definieren, was ein baseflow und was ein streamflow ist?
+
+@grimaldi2006 used the variables peak, volume and duration
+of the most severe flood event within a year. 
+These variables are derivable from yearly hydrological discharge data.
+Discharge, measured in $[m^3/s]$, denotes the volume of water passed through a river within $1$ second of time. 
+The discharge data we use during our analysis 
+is provided by the 
+Bavarian Environmental Agency's hydrological service (GKD) (@GKDwebsite) which 
+is data from multiple measurement station along the Isar and the Danube. 
+Based on this, the following 
+gives a brief description of the data,
+discusses possible flood event detection methods,
+derives the variables of interest based on the flood definition and 
+ends with a display of the crucial aspects of the obtained data.
+
+Initially, the data contains discharge values in $15$ minute steps for 
+$27$ stations along the Isar and Danube from different starting time points, but always up to 31.12.2024.
+We removed removed $6$ measurement stations because these contained only a few observed years 
+which is problematic 
+because the final copula model is fit on yearly data. Thus, the number of observed years 
+corresponds to the number of data points our copula model relies on.\
+Of the remaining $21$ stations, $12$ stations are along the Isar and $9$ along the Danube where every station had at least $44$ years of observation. 
+As seen towards the end of this section, the alpine river Isar and the low-lying Danube have contrasting 
+hydrological characteristics, enabling a meaningful comparison of flood dynamics in Bavaria.
+The exact spatial distribution of the considered station displayed plot \@ref(fig:bavaria). 
+```{r bavaria, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/data_bavaria_plot.png")
+```
+
+Given the annual discharge data for all these stations, we require to identify the 
+most severe flood event within each year which defined as the event with the largest discharge peak. 
+To stabilize event detection, the following is based on daily average discharge values we 
+calculated based on the $15$ minute time intervals in the original data.\
+The flood detection approach proposed by @grimaldi2006 of using the straight-line method based on a fixed threshold 
+was found to be highly unreliable, but so  was a quantile-based straight-line method.
+Both approaches exhibit significant uncertainties in identifying flood events, 
+particularly, they tend to overestimate flood duration.
+Instead, we applied
+the baseflow methods proposed and implemented by @wasko2021. 
+This method relies on the baseflow index (BFI) which is the ratio of the baseflow volume to the volume of streamflow. 
+<!-- Calculte BFI at each time step and extracts discrete flood events when the BFI falls below the specified threshold for a user-specified minimum duration. -->
+
+TODO: Definition baseflow and streamflow
+
+A default BFI threshold of 0.5 was used to distinguish events dominated by rapid runoff contributions typically associated with rainfall- or melt-induced flooding.
+
+Exemplary, figure \@ref(fig:hydro) shows the hydrograph for the station in Munich in 2024. 
+
+```{r hydro, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/data_hydrograph.png")
+```
+
+TODO: Depending on plot, describe what the F is seen here
+
+Based on all identified flood events, the event with the largest peak discharge is selected and, finally, the 
+variables of interst are determined. That is, 
+flood peak is the maximum discharge value occurring within the event,
+flood duration is the time span measured in days between the start and end of the event, as determined by the BFI threshold crossings.
+Flood volume is the cumulative streamflow over the flood duration, representing total discharge volume in $m^3$.
+
+TODO: Do I want to give some max values? 
+
+Finally, we come to the most crucial aspect in our data, but show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
+between every possible combination between the $3$ variables separated by river.
+In section \@ref(kendallstau) we further discuss Kendall's $\tau$, but for now, it is sufficient to consider it as measure of the strength of the dependence between two variables.
+
+```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/data_cor_plot.png")
+```
+
+The boxplots in figure \@ref(fig:corplot) 
+are based on the $9$ and $12$ stations along each river, respectively, and 
+depict the $\tau$ values for the corresponding variable combination seen on the $x$-Axis.
+The black dots refer to the $\tau$ values observed by @grimaldi2006. 
+Most important here is that none of the boxplots align horizontally. That is, the dependence strength 
+between all variable pairs differ to the others. 
+Thereby, our data suggests $3$ different distinct dependencies.
+This finding is most crucial and, as we will see later on, renders @grimaldi2006 approach infeasible. Because, as seen from the black dots, not only our data suggest $3$ separate dependence structures, but also the river @grimaldi2006 considered.\
+Also interesting is the difference between the rivers in what variables have the strongest dependence. 
+According to the figure, volume and duration are highly correlated with only little variation seen from the 
+width of the boxplot. For the Isar, on the other hand, we observe not only more variation in the correlation
+values, but here the most correlated pair tends to be volume and peak. 
+This emphazises the aforementioned contrasting 
+hydrological characteristics which are highly relevant for copula modelling and, thereby, for our analysis.
+<!-- Mention: Isar has similar correlation structure as in paper -->
 
 ## Methods {#methods}
-<!-- - Jeder Abschnitt ein Schritt zum Ziel -->
-<!-- - Untergliederung im Hauptteil sollte dem Leser helfen, die Inhalte gedanklich zu strukturieren und in den Gesamtzu -->
-<!-- sammenhang einordnen zu können -->
-<!-- - Titel eines Abschnitts sollte expressiv und präzise sein -->
-<!-- - (Hauptteil sollte eigenständig lebar sein); DER KERN DES TEXTES SOLLTE VERSTÄNDLICH SEIN OHNE DEN ANHANG ZU  -->
-<!-- KONSULTIEREN - wenn dies nicht der Fall ist, dann gehören die Teile des Anhangs in den Hauptteil -->
-
-
-
-Leserführung: 
-This section introduces basic copula theory and builds archimedean, nested archimedean and vine copulas on top of it. Additionally, concepts for copula fitting and selection are briefly explained. 
-Thereby, this chapter introduces the theory on which this paper is based on. 
-
-As seen in data, we deal with three distinct correlation structures. We introduce models of increasing complexity with only vine copula being able to capture the data underlying structure (oder so)
-<!-- 	> Description / explanation of statistical methods that are used   -->
-Basic copula theory 
- - Applies to all copulas. Then, introduce the special case of archimedean copulas 
-
-For the following: Mention underlying assumptions / limitations and explain why this is the issue
-  - archimedean copulas
-  - nested archimedean copulas
-  - vines
-  
-Brief discussion of used theoretical methods
-  - MLE (how it is used)
-  - AIC 
-  - Kendall's tau
-  
-<!-- 	> Indicate clearly the software (packages) AND what they do!  -->
+To address the dependence structures identified in the previous section, 
+this chapter 
+extends the approach of @grimaldi2006 by incorporating vine copulas. 
+This extension is necessary because a simpler approach is insufficient to capture the full correlation pattern
+observed in the data. 
+The following introduces the foundational theory of copulas, 
+the family of Archimedean copulas as well as nested Archimedean and vine copula models. 
+In addition, methods for copula fitting and model selection are briefly discussed. 
+Then, some applied, but non-essential methods are briefly established. 
+Together, these elements form the theoretical framework on which this paper is based.
+Finally, a few words to the implementation of these methods and used packages.
 	
-The first section gives a mathematical definition of copulas followed by
-Sklar's Theorem which is crucial in copula theory and also helps to
-understand the first sentences of my copula theory. lol.
-
 ### Copulas {#cops}
 
 @zhang2019 (p. 62) describe a copula as a cumulative distribution
-function with standard uniform margins. The dimension $d$ of a copula
-denotes the number of random variables it relates and, hence, a copula is at least bivariate ($d \geq 2$).\
+function (CDF) with standard uniform margins. The dimension $d$ of a copula
+denotes the number of random variables it relates and, hence, a copula is at least bivariate ($d \geq 2$).
 To give a mathematical definition, consider the vector
 $u = (u_1, ..., u_d) \in \mathbb{R}^d$ where $u_j \in [0, 1]$ for
 $j = 1, .., d$. Then, a $d$ dimensional copula is defined by
@@ -104,11 +161,11 @@ iii) $C$ is $d$-increasing
 <!-- the greatest element in the domain of the copula, respectively (see -->
 <!-- @nelsen2006, p. 9). -->
 
-According to @nelsen2016 (p. 9), condition i. shows that copulas 
+According to @nelsen2006 (p. 9), condition i. shows that copulas 
 are grounded. In this context, grounded means that
 plugging in $0$ for just one of the variables yields a copula value of $0$, independent of the 
 other variables' value.
-The author also mentions that using condition ii., the margins of the function $C$ wrt. a certain variables are obtained by 
+The author also mentions that, using condition ii., the margins of the function $C$ with respect to a certain variables are obtained by 
 plugging in $1$ for all other variables. 
 Finally, the condition of $C$ to be $d$-increasing is cumbersome to map out in
 higher dimensions, which is why the following is restricted to the $d = 2$ case.
@@ -117,22 +174,19 @@ $2$-increasing if for all $u_1, u_2, v_1, v_2 \in [0,1]$ with
 $u_1 \leq u_2$ and $v_1 \leq v_2$: 
 $$
 C(u_2, v_2) - C(u_2, v_1) - C(u_1, v_2) + C(u_1, v_1) \geq 0
-(#eq:twoincreasing)
+(\#eq:twoincreasing)
 $$ Simply put, 2-increasing means that the volume under the copula density
 function over the rectangle $[u_1, u_2] \times [v_1, v_2]$ is
-non-negative. This interpretation follows from the copula definition as CDF and also holds for higher dimensions.
-Based on condition i. and iii., @nelson2006 (p. 9) also concludes that to 
-the copula function $C$ is nondecreasing in
-each argument. \
-The next section introduces the central theorem in copula theory and also derives the now mentioned copula density. 
+non-negative. This interpretation follows from the fact that copula functions are defined as CDF and holds for higher dimensions, too.\
+<!-- Based on condition i. and iii., @nelsen2006 (p. 9) also concludes that to  -->
+<!-- the copula function $C$ is nondecreasing in -->
+<!-- each argument. \ -->
+The next section introduces the central theorem in copula theory and also derives the already mentioned copula density. 
 
 ### Sklar's Theorem {#sklarstheorem}
-
-<!-- <!-- that represent the dependence structure between random variables independent of the marginal distribution functions, allowing the multivariate distribution to be expressed in separated terms. -->
-
 Sklar's Theorem is central to the theory of copulas as it proves
 that any multivariate model can be constructed using copulas
-(@nelsen2006 (p. 17), @durante2016, p. 42). Thereby, this theorem allows
+(@nelsen2006 p. 17, @durante2016 p. 42). Thereby, this theorem allows
 to separate the representation of the dependence structure and marginal
 distribution functions. The theorem is given by @nelsen2006 (p. 18):\
 Let $F_{1,..,d}$ be a $d$-dimensional joint distribution function with
@@ -142,12 +196,10 @@ F_{1, ..., d}(x_1, ..., x_d) = C(F_1(x_1), ..., F_d(x_d)) = C(u_1, ..., u_d)
 (\#eq:sklar)
 $$ where $u_i = F_i(x_i)$. Also, $C$ is unique if $F_1, ..., F_d$ are continuous. 
 <!-- \ \forall\ (x_1, ..., x_d)\in \mathbb{R}^d -->
-
 <!-- (continuous, but not "absolutely continuous") -->
 <!-- continuous: no jumps in function -->
 <!-- absolutely continous: no kinks in function bzw. function is differentiable everywhere -->
-
-Equation \@ref(eq:sklar) allows two important conclusion: One,
+Equation \@ref(eq:sklar) allows $2$ important conclusion: One,
 any multivariate CDF may be expressed as a composition of a copula
 function $C$ and the univariate margins $F_1, ..., F_d$. Thereby,
 @zhang2019 (p. 66) conclude that $C$ connects the multivariate CDF to
@@ -169,23 +221,18 @@ f(x_1, ..., x_d) = c(u_1, ..., u_d)\Pi_{i = 1}^df_i(x_i)
 (\#eq:marginalpdf)
 $$
 
-Before further discussing the use cases of the copula density, the following introduces the copulas we apply 
-during our analysis and discuss their implicit assumptions.
-
 ### Symmetric Archimedean copulas and generator functions {#archcops}
 As Nelsen (p. 109) states, symmetric Archimedean copulas (SACs) are
 widely applied due to their large variety and easy construction. However, SACs only allow the same 
-dependence structure among all possible pairs of variables as @zhang2019
-(p.124) point out. Therefore, they are not suitable, as section REFERENCE(Correlation in Data) observed $3$ distinct structures in the data we work with. 
-But SACs remain an important building block for more commplex approaches. Thus, 
-this section introduces SACs and the concept of a generator function while 
-following sections 
-focus on fully nested Archimedean copulas (FNACs) and Vine copulas which build on SACs
-and alleviate their restrictions by increasing complexity.
+dependence strength and structure among all possible pairs of variables as @zhang2019
+(p.124) point out. Therefore, they are not suitable for our analysis as concluded from figure \@ref(fig:corplot) which suggested $3$ distinct correlation values.
+However, SACs remain an important building block for more complex copula models. 
+Thus, this section introduces the concept of a generator function as it determines the family a SACs belongs to.
+Then, we specifically focus on bivariate SACs because following models are based on these.
 
-SACs are uniquely defined by their generator
-function. Thus, we first give the general idea of a generator, then the
-representation of a copula in terms of the generator and finally the
+
+We first give the general idea of a generator, then the
+representation of a copula in terms of the generator and in the end the
 copula families we use for our analysis.\
 @nelsen2006 (p. 110, 111) defines a generator to be a
 continuous and strictly decreasing function
@@ -212,40 +259,36 @@ We only apply strict generators as seen towards the end of this section.\
 <!-- using the pseudo-inverse, non-strict generators are available to build a -->
 <!-- copula. -->
 For a generator to yield a valid $d$-dimensional copula,
-@grimaldi2004 and @zhang2019 (p. 124) mention that the inverse
+@grimaldi2006 and @zhang2019 (p. 124) mention that the inverse
 requires to be completely monotone which is given if it has
 derivatives of all orders with alternating sign $$
 (-1)^k \frac{d^k \phi^{-1}(t|\theta)}{dt^k} \geq 0.
 (\#eq:changingsign)
 $$
-
-
-
-
-
 <!-- While all strict generators fulfill these conditions,  -->
 <!-- any specific generator is -->
 <!-- determined by its functional form and its parameters. As we will see, -->
 <!-- while the functional form is subject to assumption, parameter values -->
 <!-- vary and influence the strength of dependence between variables. For our -->
 <!-- analysis, we focus on generators defined by a single parameter $\theta$. -->
-
 Now, we are in the position to formulate the general representation of a
 $d$-dimensional SAC in terms of its generator. 
 The relation is given by
 @zhang2019 (p. 123) as$$
-C(u_1, ..., u_d|\theta) = \phi^{-1}\left( \sum^d_{j = 1} \phi(u_j|\theta)\ \middle| \theta\right).
-(#eq:generatorSAC)
-$$  Equation \@ref(eq:generatorSAC) shows that SACs are uniquely defined by their
-generator and a parameter vector $theta$ which we introduce next.\
+C(u_1, u_2, u_3 \mid \theta) = \phi^{-1} \left( \phi(u_1 \mid \theta) + \phi(u_2 \mid \theta) + \phi(u_3 \mid \theta) \,\middle|\, \theta \right).
+(\#eq:generatorSAC)
+$$  
+Equation \@ref(eq:generatorSAC) shows that
+SACs are uniquely defined by their generator
+function and a parameter vector $\theta$ which we introduce next.
 As mentioned by @nelsen2006 (p. 110, 111, 114), the 
 assumed functional form of the generator translates to a specific copula
-family. Thus, assuming a copula families means enforcing a specific generator function. 
+family. Or, vice versa, assuming a copula family implies assuming a specific generator function. 
 The $\theta$ vector, on the other hand, 
-has direct influence on the dependence strength within the assumed copula family 
+influences the dependence strength within the assumed copula family 
 as seen in @zhang2019 (p. 86). 
 This parameter vector takes on an important role in fitting a copula to observed data. 
-That is, assuming a certain copula family, this parameter vector remains to be estimated from the data. 
+That is, for an assumed copula family, this parameter vector remains to be estimated from the data. 
 The exact approach is further discussed in section \@ref(est).
 For now, note that we focus on the $3$ generator functions with a one-dimensional $\theta$ vector. 
 These are specified in table \@ref(tab:generators).\
@@ -287,31 +330,37 @@ Table: (\#tab:generators) Generator functions of selected Archimedean copulas ac
 
 
 ### Fully Nested Archimedean copulas {#nacs}
-As mentioned in the previous section, the following introduces a more complex approach 
-than simple SACs. However, seen in this section, fully nested Archimedean copulas (FNACs) only allow 
-for $d-1$ distinct dependence structures and, thereby, also fail to capture the data underlying structure. 
-However, to discuss shortcomings in @grimaldi2004 who made extensive use of FNACs, they must be introduced.
+Fully nested Archimedean copulas (FNACs) build upon SACs
+and partially alleviate their restrictions. 
+Note that these are the models @grimaldi2006 made extensive use of.\
+As our analysis applies to the trivariate case, FNACs and vines in section \@ref(vines) are introduced
+for this trivariate case only.
 
 FNACs are built by nesting bivariate SACs 
 $$
-C(u_1, ..., u_d|\theta) = C_1\left( C_2(...C_{d-2}(C_{d-1}(u_1, u_2|\theta_{d-1}), u_3|\theta_{d-2})...|\theta_2), u_{d} \middle| \theta_1\right).
-(#eq:defFNAC) 
+C(u_1, u_2, u_3 \mid \theta) = C_1\left( C_2(u_1, u_2 \mid \theta_2), u_3 \mid \theta_1 \right),
+(\#eq:defFNAC) 
 $$
-Where $\theta_1, ..., \theta_{d-1}$ are the parameters corresponding to copula function $C_1, ..., C_{d-1}$ and 
-$\theta = (\theta_1, ..., \theta_{d-1})$ is a vector containing all these parameters. 
-Note that there are only $d-1$ distinct parameters $\theta_i$ for $i = 1, ..., d-1$. Thereby, FNACs are only able to model $d-1$ distinct dependence structures. 
-Hence, partial exchangeability remains
-because within the bivariate nested copulas, the two arguments are
+where $\theta_1$ and $\theta_2$ are the parameters corresponding to copula function $C_1$ and $C_2$ and 
+$\theta = (\theta_1, \theta_{2})$ is a vector containing all parameters. 
+Note that there are only $2$ distinct parameters $\theta_i$ which is why FNACs, in the trivariate
+case, are only able to capture $2$ distinct dependence structures.
+This allows $2$ conclusions. First, partial exchangeability remains which means that 
+within the bivariate nested copulas $C_2$, the two arguments $u_1, u_2$ are
 interchangeable (see @embrecht2003 p. 375). So to a degree, symmetry
-prevails.\
-Additionally to this restriction, @hofer2016 (p. 2 "On struc..") mention that FNACs 
+prevails.
+And second, the nested variables $u_1, u_2$ have the same marginal relation with $u_3$.
+That is, $C(a, 1, u_3|\theta) = C(1, a, u_3 | \theta) = C_1(a, u_3|\theta_1)$.
+In essence, the statements are equivalent but the important take away is that FNACs are not 
+able to display $3$ distinct dependence structures. Thereby, they are not suitable for analysis.
+As also @grimaldi2006 observed $3$ distinct correlations, their results are questionable for the same reason.\
+Additionally to this restriction, @hofert2016 mention that FNACs 
 require the sufficient nesting condition to be fulfilled for equation \@ref(eq:defFNAC) to yield a valid copula.
-For FNACs, we limit our considerations to what 
-@grimaldi2004 used in their analysis. 
-Thereby, the sufficient nesting condition is fulfilled if all nested copulas are from the same family and 
-more nested variables have a stronger degree of dependence, i.e. $\theta_1 \leq ... \leq \theta_{d-1}$.
-(see @grimaldi2004, p. 1157). 
-
+We limit our considerations to FNACs where all nested copulas are of the same family. 
+This corresponds to what @grimaldi2006 used in their analysis. 
+Then, the sufficient nesting condition is fulfilled if 
+deeper nested variables have a stronger degree of dependence, i.e. $\theta_1 \leq \theta_{2}$.
+(see @grimaldi2006). 
 <!-- As mentioned by @embrecht2003 (p. 375), the number of distinct -->
 <!-- generators or bivariate copulas, respectively, is only $d-1$ while the -->
 <!-- number of all possible pairs for $d$ variables is $\frac{d(d-1)}{2}$. -->
@@ -367,28 +416,29 @@ However, discussing these requirements is beyond the purpose of this paper. The 
 <!-- varying strength of dependence via $\theta_j$ which equation -->
 <!-- ref:eq:cFNAC displays.\ -->
 
-### Vine Copulas
-Vine copulas are the most flexible models we introduce. They are able to depict all 
-$\frac{d(d-1)}{2}$ unique dependence structures and, hence, are well suited for the data structure we observed.
-
-Vine copulas use the pair-copula construction (PCC) explained by @Czado2019 (p. 77 - 80) to characterize 
+### Vine Copulas {#vines}
+Vine copulas use the pair-copula construction (PCC) explained by @czado2019 (p. 77 - 80) to characterize 
 multivariate dependence structures. 
-That is, PCC decomposes multivariate densities into products of conditional bivariate densities (see @Czado p. 88).  
+That is, PCC decomposes multivariate densities into products of (conditional) bivariate densities (see @czado2019 p. 88).  
 There exist multiple vine copula classes, depending on the structure the PCC implies, but as we are concerned with the trivariate case, 
-these constructions are equivalent. Without loss of generality, we use @Czado2019 (p. 78, 90) and devine the trivariate density as 
+these constructions are equivalent. 
+
+We use @czado2019 (p. 78, 90) and devine the trivariate copula density as 
 $$
-c_{123}(u_1, u_2, u_3) = c_{12}(u_1, u_2) \cdot  c_{23}(u_2, u_3)  \cdot c_{13|2}(u_1|u_2, u_3|u_2))
+c_{123}(u_1, u_2, u_3|\theta) = c_{12}(u_1, u_2|\theta_{12}) \cdot  c_{23}(u_2, u_3|\theta_{23})  \cdot c_{13|2}(u_1|u_2, u_3|u_2\mid \theta_{13|2})
 (\#eq:simpvinecopdf)
 $$
-where $u_i|u_j = F_{i|j}(u_i|u_j)$ denotes the conditional probability.
-Note that this copula density is based on the simplifying assumption for vines (@Czado2019 p.90, @Nagler2017) which means 
-that the conditional bivariate density $c_{13|2}$ is not conditioned on $x_2$. 
-Thereby, the simplified assumption implies that the conditional copula is independent of the exact $x_2$ value conditioned on and 
-only depends on the conditional probabilities. 
-
-In contrast to FNACs from section \@ref(nacs) where we followed @grimaldi2004, we do not require the bivariate copulas to 
-enforce the same copula family. Thereby, not only the strength of dependence between all $3$ variables may differ, also 
+where $u_i|u_j = F_{i|j}(x_i|x_j)$ denotes the conditional probability.
+Note that this copula density is based on the simplifying assumption for vines (@czado2019 p.90, @nagler2018) which means 
+that the conditional bivariate density $c_{13|2}$ is independent of exact $x_2$ values. 
+It only depends on the conditional probabilities.\
+Visible from the number of parameters in the $\theta$-vector, vines are able to capture all $3$ distinct
+dependence structures in the trivariate case. 
+Also, in contrast to FNACs from section \@ref(nacs) where we followed @grimaldi2006, we do not require the bivariate copulas to be of the same family. Thereby, 
+not only the strength of dependence between all $3$ variables may differ, also 
 the dependence structure is allowed to change from pair to pair. 
+
+
 
 ### Estimation and Selection Process {#est}
 In practice, we need not only to estimate the parameter vector $\theta$, but also select the best fitting copula.
@@ -396,16 +446,16 @@ Thus, the following briefly introduces the pseudo maximum likelihood (ML) approa
 Also, we give a reminder on the Akaike Information Criterion (AIC) as it is our information criterion of choice to select a copula model.
 
 To avoid assumptions on the marginal distributions, 
-we estimate the parameter vector $\theta$ using the pseudo-likelihood proposed by @Genest1995 
+we estimate the parameter vector $\theta$ using the pseudo-likelihood proposed by @genest1995 
 $$
-\hat{\theta} = argmax_\theta\ l(\theta) = argmax_\theta\ \sum_{k = 1}^{n}log[c_\theta(u_{1k}, u_{2k}, u_{3k})]
+\hat{\theta} = argmax_\theta\ l(\theta) = argmax_\theta\ \sum_{k = 1}^{n}log[c(u_{1k}, u_{2k}, u_{3k}|\theta)],
 (\#eq:pseudologlik)
 $$
-where $u_{ik}$ denotes the marginal empirical distribution function scaled by $\frac{n}{n+1}$.\
-Depending on the copula model, the definition of the copula density changes. The exact implementation in the used packages
-is discussed in section \@ref(software)
-
-@Fahrmeir2013 (p. 164) give the AIC formula by 
+where $u_{ik}$ denotes the marginal empirical distribution function scaled by $\frac{n}{n+1}$.
+And depending on the copula model, the definition of the copula density follows either from 
+equation \@ref(eq:defFNAC) or \@ref(eq:simpvinecopdf).
+Thus, the exact estimation process slightly differs between copula models. \
+The AIC is given by @fahrmeir2013 (p. 164) as 
 $$
 AIC = -2 l(\hat{\theta}) + 2 (|M| + 1)
 (\#eq:AIC)
@@ -439,149 +489,86 @@ We select that copula model with the smallest AIC.
 
 ### Identifying univariate margins {#gev}
 While the the estimation process described in section \@ref(est) utilizes the 
-empirical distribution function, this function performs badly for re-transforming simulated copula data.
-That is, during estimation the empirical distribution functions ensures we 
-do not affect the copula model fit by misspecifying the marginal distributions. 
-However, after fitting the copula, whenever the inverse of the empirical distribution is applied, it bins the continuous data
-because it is a step-wise function. This, of course, limits the power of our copula analysis. 
-Thus, we decided to fit a Generalized Extreme Values (GEV) distribution to the marginal distribution only for re-transformation of 
-copula data which prevents misspecifications to affect the estimated dependence structure.
+empirical distribution function, an empirical function has undesired properties when re-transforming copula data.
+That is, during the estimation process, the empirical distribution functions ensures we 
+do not affect the copula model fit by missspecifying the marginal distributions. 
+However, after fitting the copula, whenever the inverse of the empirical distribution is applied, it bins any continuous data because it is a step-wise function. This, of course, limits the power of our copula analysis. 
+Thus, we decided to fit a Generalized Extreme Values (GEV) distribution to the marginal distribution only for re-transforming any results from the fitted copula models.
 
-
-
+The distribution function for the GEV family is given by @coles2001 (p. 47)
+$$
+G(z) = \exp\left\{ -\left[ 1 + \xi \left( \frac{z - \mu}{\sigma} \right) \right]^{-1/\xi} \right\},
+$$
+defined for $\left\{ z \middle| 1 + \xi \left(\frac{z - \mu}{\sigma}\right) > 0 \right\}$ where 
+$-\infty < \mu < \infty$ denotes the location parameter,
+$\sigma > 0$ the scale parameter and 
+$-\infty < \xi < \infty$ the shape parameter. 
+In practice, these parameters are usually unknown, but @coles2001 (p. 50) describes how these parameters are estimated from data using the ML approach.\
+Since GEV distributions are not at essence for our work, we refer the interested reader to @coles2001 (chapter 3)
+for a more detailled consideration.
 
 ### Kendall's $\tau$ {#kendallstau}
-
-NOTE: If I do not like this section too much, check nelsen p. 157 for
-another definition of concordance / discordance
-
-According to @kendall1990 p.6, $\tau$ is a measure of association
-between two random variables that distinguishes between concordance and
-discordance. Concordance means that the two variables move in the same
-direction while discordance means moving in opposite directions. This
-becomes more clear by considering the probabilistic representation of
-the theoretical value of Kendall's $\tau$ given by @zhang2019 (p. 85,
-86) or @nelsen2006 (p. 158).\
-Consider two continuous bivariate random vectors $X = (X_1, X_2)^T$ and
-$X^* = (X^*_1, X^*_2)^T$ that are independent, but follow the same
-distribution. From $X$ to $X^*$, the random variables $X_1$ and $X_1^*$
-move in the same direction as $X_2$ and $X_2^*$ if
-$(X_1 - X_1^*)(X_2 - X_2^*) > 0$. Because for the product to be larger
-than $0$, the sign of both terms must be the same. Analogously,
-discordance is given if $(X_1 - X_1^*)(X_2 - X_2^*) < 0$. Using $$
-\mathbb{P}_{C} = \mathbb{P}\left(\left[(X_1 - X_1^*)(X_2 - X_2^*)\right] > 0 \right) \\
-\mathbb{P}_D = \mathbb{P} \left( \left[ (X_1 - X_1^*)(X_2 - X_2^*)\right] < 0  \right)
+According to @kendall1990 (p. 6), $\tau$ is a measure of association
+between two random variables that distinguishes concordant and
+discordant pairs. Concordance means that the two variables move in the same
+direction while discordance means moving in opposite directions.\
+@zhang2019 (p. 86) and @nelsen2006 (p. 159,
+161 - 164) show that Kendall's $\tau$ is directly connected to the generator function and, thus,
+a function in the parameter $\theta$.
 $$
-
-Kendalls's $\tau$ is given by:
-
-$$
-\tau(X_1, X_2) = \mathbb{P}_C - \mathbb{P}_D
-$$Thus, Kendall's tau is difference in probabilities of concordance and
-discordance.
-
-(#eq:pKendall)
-
-Based on @ref(eq:pKendall), @zhang2019 (p. 86) and @nelsen2006 (p. 159,
-161) show that Kendall's $\tau$ may be expressed in term of a bivariate
-copula function.
-<!-- This is the population value bzw. theoretical value of -->
-<!-- Kendall's $\tau$ (see @nelsen p.162) -->
-
-$$
-\begin{align}
-\tau(X_1, X_2) &=  4 \int_{[0, 1]^2} C(u, v)\ dC(u, v) - 1  \\
-\tau(t)&= 4 \int_0^1 \frac{\phi(t)}{\phi'(t)}dt + 1
-\end{align} 
-$$ (#eq:cKendall)
-
-As we can see from equation @ref(eq:cKendall), Kendall's $\tau$ - a
-measure of association - can be expressed in terms of the copula
-function only. It emphasizes once more that the copula captures the
-whole dependence structure between variables independent of any marginal
-distribution functions. An alternative representation of $\tau$ is in
-terms of the generator. We will mostly use this relation to estimate
-Kendall's $\tau$ under (wrongfully) assumed symmetry.
-
-For SACs, we can express the copula in terms of the generator bzw.
-dependence of the true parameter $\theta$ (see @nelsen2006 p. 162) The
-general formula to express tau in terms of parameter of the generator is
-given by @nelsen2006 p. 163 (This is the relationship between Kendall's
-tau and the parameter(s) in the generator function)
-
-TODO: Relationship Kendeall's tau, generator and parameter @zhang2019
-p.134 and 128
-
-<!-- @nelsen2006 p. 163 derives the Kendall distribution function. Let's see -->
-
-<!-- how relevant that is. According to GPT: often used to estimate -->
-
-<!-- parameters, can be used to compare theoretically implied Kendall -->
-
-<!-- function with the empirical one (goodness of fit) in hierarchical models -->
-
-<!-- it help to determine the dependence strength across variable subsets To -->
-
-<!-- my understanding: Kendall function kind of entails the same info as the -->
-
-<!-- copula itself as it is derived from it anyway. Thus it can be used for -->
-
-<!-- parameter estimation and model diagnostics. But there are some upsides -->
-
-<!-- to Kendall (GPT): Transforms the multivariate dependence structure into -->
-
-<!-- a UNIVARIATE distribution. WTF! That sounds super good! This helps with -->
-
-<!-- visualizing and all that! Also, it can provide how dependence across -->
-
-<!-- NACs evolves. Sometimes allow more robust parameter estimation; is done -->
-
-<!-- by minizing the difference between empirical and theoretical Kendall -->
-
-<!-- distr. -->
+\tau(t)= 4 \int_0^1 \frac{\phi(t|\theta)}{\phi'(t|\theta)}dt + 1
+(\#eq:cKendall)
+$$ 
+where $\phi'(t|\theta)$ denotes the derivative of the generator function. Note that this relation is positive
+which is seen in @zhand2019 (p. 134). That is, if the parameter of copula increases, the strength of dependence
+increases. Vice versa, if correlation increases, $\theta$ increases, too. 
+<!-- As we can see from equation @ref(eq:cKendall), Kendall's $\tau$ - a -->
+<!-- measure of association - can be expressed in terms of the copula -->
+<!-- function only. It emphasizes once more that the copula captures the -->
+<!-- whole dependence structure between variables independent of any marginal -->
+<!-- distribution functions. An alternative representation of $\tau$ is in -->
+<!-- terms of the generator. We will mostly use this relation to estimate -->
+<!-- Kendall's $\tau$ under (wrongfully) assumed symmetry. -->
 
 Empirically, there are multiple versions of Kendall's $\tau$ depending
 on the data structure. Since this paper focuses on continuous variables
-only, we use the following formula given by @kendall1990 (p. 5): $$
-t = \frac{P-Q}{\frac{1}{2}n(n-1)}
-$$(#eq:eKendall)
-
-Where $P$ denotes the number of concordant and $Q$ the number of
+only, the formula given by @kendall1990 (p. 5) is applicable
+$$
+t = \frac{P-Q}{\frac{1}{2}n(n-1)}.
+(\#eq:eKendall)
+$$
+$P$ denotes the number of concordant and $Q$ the number of
 discordant pairs in the data.
 
-Significance test:\
-Formula @hollander2015 p. 396, formula 8.13 (case of no ties which is
-fine bc continuous variables)\
-cor.test with method = kendall implements this as seen in @hollander2015
-p. 398, 399\
-Do I only mention the formula for the test here and implementation in
-the implementation and package chapter?
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Software {#software}
-@Okhrin2012 
-
-According to @Nagler , the ML approach for vine copulas first fits all bivariate copulas and then uses the AIC to select the 
-best fitting ones. Finally, the joint copula is selected using the AIC.
+The whole analysis is implemented using the programming language R. 
+We used the `hydroEvents` package by @wasko2025 
+`eventBaseflow`. This method relies on the BFI as explained in the data section using a deftault BFI of $0.5$. , 
+Additionally, `eventBaseflow` function calculates the BFI at each time step and extracts discrete flood events when the BFI falls below the specified threshold for a user-specified minimum duration.
+For copulas, we relied on the `copula` package by 
+@hofert2025 and the `pobs` function to apply the empirical distribution function as described in section \@ref(est). 
+FNACs are dealt with using the 
+`HAC` by @okhrin2014, especially the 
+function.
+`estimate.copula` for FNAC fitting which implements the ML approach from section \@ref(est). This required 
+some additional code to select the best fitting copula according to the AIC.
+For vine copulas, 
+`VineCopula` package by @nagler2024 was consulted. 
+Especially the function
+`RVineCopSelect` which implicitly fits a selection of copulas and also selects the one with the smallest AIC.
+Finally, GEV distribution were fitted using the function
+`fevd` from the 
+`extRemes` package by @gilleland2016 which uses MLE to determine the parameters mentioned in \@ref(gev).
 
 ## Simulation {#sim}
 Simulation parameters
 Discuss most important results MAYBE one graph, but maybe just keep it with words 
 
-
 As section \@ref(nacs) already hinted to, FNACs fail to capture the dependence structure in the data. 
 This section examines what that really means for practical applications.
+
+Thus, we expect them to outperform FNACs given the observed data strucutre. To confirm this, we 
+compared FNACs and vines using a simulation and drew conclusions on the behavior of FNACs in a vine setting. 
 
 ## Application {#app}
 <!-- > DETAILED description of the results, presented with help of TABLES and ILLUSTRATIONS -->

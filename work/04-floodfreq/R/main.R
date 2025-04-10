@@ -79,6 +79,8 @@ get_cor_plot(cor_table, save_plot = save_plots, plotname = "data_cor_plot")
 # Further descriptives for each river
 # Number of observations
 table((cop_df |> dplyr::summarise(n = dplyr::n(), .by = id))$n)
+cop_df |> dplyr::filter(year == min(cop_df$year))
+cop_df |> dplyr::summarise(.by = c(unit, river)) |> dplyr::summarise(n = dplyr::n(), .by = river)
 print(paste("Total number of flood events:", cop_df |> nrow()))
 # Some characteristics of variable distribution
 summary_df = cop_df |> 
