@@ -10,7 +10,7 @@ output:
 
 *Supervisor: Henri Funk *
 
-```{r setup, include=FALSE,message=FALSE, warning=FALSE,}
+```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE,}
 library(bookdown)
 library(svglite)
 
