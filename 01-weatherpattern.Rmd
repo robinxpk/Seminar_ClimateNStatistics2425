@@ -27,7 +27,7 @@ Accurate classification of these CTs is crucial for diagnosing long-term climate
 
 Using a convolutional neural network (CNN) architecture (inspired by applications in climate science and optimization techniques from), we trained the model on high-resolution ERA5 reanalysis data (1950–1980), with sea-level pressure (SLP) and geopotential height at 500 hPa (z500) fields as key predictors. To ensure robustness, a nested cross-validation approach was employed, achieving an overall accuracy of 53.17% and a macro F1 score of 55.14%, outperforming traditional classification methods.
 
-Applied to the CanESM2 ensemble projections, which simulate observed past climate, our results show significant future frequency shifts in circulation types, notably an increase in Icelandic High, Cyclonic (HNZ) occurrences during both summer and winter half-years. This methodological advancement not only enhances classification accuracy but also offers robust ensemble analyses critical for climate-informed decision-making.
+Applied to the CanESM2 ensemble projections, which simulate observed past climate, our results show significant future frequency shifts in CTs, notably an increase in Icelandic High, Cyclonic (HNZ) occurrences during both summer and winter half-years. This methodological advancement not only enhances classification accuracy but also offers robust ensemble analyses critical for climate-informed decision-making.
 
 ## Introduction
 
@@ -58,8 +58,8 @@ In the following, the classification according to Hess & Brezwosky will be refer
 
 HB CTs can be attributed to certain weather situation at certain locations in Europe [@Werner2010]. 
 Hence in the past, the classification of HB CTs has been used to identify regularities in frequency and duration of occurrences of certain weather conditions. 
-@Bissolli2001 describes a relationship between frequency and duration of the HB circulation types and mean annual air temperature and precipitation. 
-Moreover, extreme weather events—such as heavy rainfall, floods, and heat waves—can often be linked to specific HB circulation types [@Mittermeier2022]. 
+@Bissolli2001 describes a relationship between frequency and duration of the HB CTs and mean annual air temperature and precipitation. 
+Moreover, extreme weather events—such as heavy rainfall, floods, and heat waves—can often be linked to specific HB CTs [@Mittermeier2022]. 
 Such kinds of application could not only be useful to analyse past climate. 
 Future climate projections could also be analysed using the HB CTs, allowing conclusions to be drawn about future developments. 
 However, analyzing future CTs requires many model ensembles to account for internal variability [@Wyser2021]. 
@@ -88,7 +88,7 @@ We only use two variables mentioned above:
 
 Due to reanalysis data's high-quality, accurate, and detailed historical atmospheric representation, it is enabled to get a robust and precise training of the deep learning model.
 
-The difference of ERA5 (Figure \@ref(fig:ERA5)) and ERA-20C (Figure \@ref(fig:ERA20C)) lies on: 
+The difference of ERA5 (Figure \@ref(fig:ERA5)) and ERA-20C (Appendix Figure \@ref(fig:ERA20C)) lies on: 
 
 | Reanalysis Dataset         | Temporal Coverage | Spatial Resolution         |
 |:---------------------------|:------------------|:----------------------------|
@@ -99,10 +99,7 @@ The difference of ERA5 (Figure \@ref(fig:ERA5)) and ERA-20C (Figure \@ref(fig:ER
 ```{r ERA5,fig.cap = 'Synoptic patterns of the 29 HB CTs created using ERA5 data averaged over the period 1950 - 1980, showing SLP on the left and z500 on the right side.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/circulation_types_regrid.png')
 ```
-  
-```{r ERA20C,fig.cap = 'Synoptic patterns of the 29 HB CTs created using ERA-20C data averaged over the period 1900 -1980, showing SLP on the left and z500 on the right side [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
-knitr::include_graphics('work/01-weatherpattern/figures/paper/circulation_types.png')
-```
+
 
 #### Future Climate Projections - Change Analysis
 
@@ -127,16 +124,16 @@ The data should be preprocessed with the same variables, scale, domain, resoluti
     * Provider: Swedish Meteorological and Hydrological Institute
     * Model Used: EC-Earth3 (Climate Model Intercomparison Project phase 6, CMIP6)
     * Ensemble Members: 50 (to effectively capture internal variability)
-    * Scenario: SSP3-7.0, representing a medium-to-high greenhouse gas emission pathway
+    * Scenario: SSP3-RCP7.0, representing a high GHG emission pathway
     * Temporal Coverage:
         * Historical Reference: 1991–2020
         * Future Projections: 2071–2100
     * Spatial Resolution: Around 0.7°
      
-As a result with higher greenhouse gas emission under SSP3-7.0 scenario, and with a more distant future in the paper:
+As a result with higher greenhouse gas emission under SSP3-RCP7.0 scenario, and with a more distant future in the paper:
 
 1. Future warming and circulation shifts might be more pronounced than our implementation.
-2. Frequency changes in circulation types may appear larger in the paper, simply because the climate change signal is stronger.
+2. Frequency changes in HB CTs may appear larger in the paper, simply because the climate change signal is stronger.
 
 ### Data Preprocessing Steps
 
@@ -155,7 +152,7 @@ The CNN architecture (Figure \@ref(fig:network)) comprises:
 1. Input Layer: Two separate input channels corresponding to SLP and z500.
 2. Convolutional Layers: Two convolutional layers applied to extract spatial patterns and features from input atmospheric fields. These layers use convolutional kernels to identify local and spatially coherent patterns.
 3. Dropout Layer: Included for regularization to mitigate overfitting by randomly dropping out units during training, thus improving the model's generalization.
-4. Fully Connected Layers: Two fully connected layers following the convolutional and dropout layers, used for integrating learned spatial features into final predictions of circulation types.
+4. Fully Connected Layers: Two fully connected layers following the convolutional and dropout layers, used for integrating learned spatial features into final predictions of HB CTs.
 5. Output Layer: Outputs softmax probabilities for each of the 29 HB CTs, which are then converted into classifications.
 
 ```{r network,fig.cap = 'Schematic diagram of the CNN network', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
@@ -234,14 +231,14 @@ Without enforcing this constraint, the raw neural network predictions may contai
 Thus, transition smoothing is necessary to:
 
 1. Remove unrealistic, very short-lived classifications.
-2. Produce physically consistent and stable time series of circulation types.
+2. Produce physically consistent and stable time series of HB CTs.
 3. Ensure that predictions align with domain-specific expectations.
 
 According to the original paper:
 
-1. Step 1: Identify all transitions where the predicted circulation type lasts fewer than three days.
+1. Step 1: Identify all transitions where the predicted HB CT lasts fewer than three days.
 2. Step 2: Check neighborhood consistency:
-    * If the circulation type before and after the short transition is the same, assign this type to the transition days.
+    * If the HB CT before and after the short transition is the same, assign this type to the transition days.
 3. Step 3: If different types occur before and after:
     * Compare the predicted probabilities (confidence scores) for each neighboring type.
     * Assign the transition days to the neighbor with the higher predicted probability (i.e., stronger membership).
@@ -262,9 +259,10 @@ Since the original code is not available, our transition_smoothing function foll
 
 ### Classification Performance
 
-The classification performance of our model was evaluated using a confusion matrix, F1-scores per class, 
-macro F1-score, and overall accuracy, following the approach used in the reference study [@Mittermeier2022].
+#### F1-score
 
+The classification performance of our model was evaluated using a confusion matrix, F1-scores per class, 
+macro F1-score [@Opitz2019], and overall accuracy [@Alberg2004], following the approach used in the reference study [@Mittermeier2022].
 The overall accuracy achieved by our model on the cross-validation test set is 53.17%, and the macro F1-score is 55.14%.
 Among all HB CTs (Appendix Figure \@ref(fig:f1score)), the best performing classes in terms of F1-score are WZ (70.21), HM (63.7), and HB (62.78).
 These types exhibit distinct spatial patterns, aiding CNN identification.
@@ -272,10 +270,9 @@ The lowest F1-scores are observed for classes like NA (33.61) and SEZ (44.37).
 These are likely due to class imbalance caused by rare occurrence.
 Generally, accuracy for each type is quite high, which may imply overfitting.
 
-The confusion matrix (Appendix Figure \@ref(fig:conf)) shows that most misclassifications occur among CTs with similar dynamical structures, consistent with expectations from atmospheric science. Diagonal dominance is visible but moderate, reflecting the challenging nature of this classification task.
+The confusion matrix (Appendix Figure \@ref(fig:conf)) shows that most misclassifications occur among HB CTs with similar dynamical structures, consistent with expectations from atmospheric science. Diagonal dominance is visible but moderate, reflecting the challenging nature of this classification task.
 
-
-Compared to the paper results, which reported an overall accuracy of 41.1% and a macro F1-score of 38.3%,
+Compared to the paper results, which reported an overall accuracy of 41.1% and a macro F1-score of 38.3% [@Mittermeier2022],
 our model achieves slightly higher overall accuracy and macro F1-score.
 
 | Metric                | Paper (%) | Our Model (%) |
@@ -284,10 +281,25 @@ our model achieves slightly higher overall accuracy and macro F1-score.
 | Overall accuracy       | 41.1      | 53.2          |
 : Metric comparison
 
-To further evaluate the quality of the predictions, the RMSE (Root-Mean-Square Error) between the predicted circulation type composites and the true label composites was calculated for variable SLP. 
+The boxplots of F1-score under each HB CT (Figure \@ref(fig:box); Appendix Figure \@ref(fig:boxpaper)) confirm our conclusion:
+
+1. Original study has considerably lower overall F1-scores (around 0.3–0.5), indicating challenges in reliable classification.
+2. Our model demonstrates much higher stability with F1-scores generally between 0.80–0.95, suggesting improved reliability and robustness in identifying circulation patterns.
+
+#### RMSE
+
+To further evaluate the quality of the predictions, the Root-Mean-Square Error (RMSE) between the predicted HB CT composites and the true label composites was calculated for variable SLP. 
+
+Equation for the calculation of the RMSE with I being the predicted image (in our case: signature plot of the deep learning classifier) and K being the reference image (in our case: signature plot of the labels). 
+M are number of rows and N the number of columns
+of the pictures to compare. 
+The RMSE thus compares the pixel-wise values of two images. 
+A value of zero indicates a perfect match [@Mittermeier2022; @Mueller2020].
+$$\text{RMSE} = \sqrt{\frac{1}{M\times N}\sum_{i=0,j=0}^{M-1,N-1}[I(i,j)-K(i,j)]^2}$$
+
 Additionally, RMSEs for false positives and false negatives were computed separately.
 
-The average RMSE for our implementation’s predictions across all circulation types is 0.88,
+The average RMSE for our implementation’s predictions across all HB CTs is 0.88,
 while the false positives and false negatives yielded RMSEs of 1.08 and 1.23, respectively.
 
 | RMSE Category          | Paper | Implementation |
@@ -297,15 +309,15 @@ while the false positives and false negatives yielded RMSEs of 1.08 and 1.23, re
 | False negatives RMSE   | 1.28  | 0.69           |
 : RMSE comparison
 
-Our implementation achieves a lower prediction RMSE (0.74) compared to the paper (0.89).
-This indicates that, on average, the spatial patterns of the correctly predicted circulation types are more similar to the true labels in our model than in the reference study.
+Our implementation achieves a lower prediction RMSE (0.74) compared to the original paper (0.89) [@Mittermeier2022].
+This indicates that, on average, the spatial patterns of the correctly predicted HB CTs are more similar to the true labels in our model than in the reference study.
 
-However, the false positives RMSE is much higher (1.45) than in the paper (1.09).
-This suggests that when our implementation wrongly predicts a circulation type, 
+However, the false positives RMSE is much higher (1.45) than in the paper (1.09) [@Mittermeier2022].
+This suggests that when our implementation wrongly predicts a HB CT, 
 the resulting spatial pattern is less similar to the true pattern than in the paper.
 
-Our implementation shows a lower false negatives RMSE (0.69) compared to the paper (1.28).
-This means that when the model misses a true circulation type, 
+Our implementation shows a lower false negatives RMSE (0.69) compared to the paper (1.28) [@Mittermeier2022].
+This means that when the model misses a true HB CT, 
 the spatial signature remains relatively closer to the correct pattern than in the paper.
 
 The overall pattern suggests that:
@@ -315,21 +327,21 @@ The overall pattern suggests that:
 
 ### Signature Plot Analysis
 
-Figure \@ref(fig:sig) shows the signature plots for four circulation types (CTs) selected based on our RMSE results:
+Figure \@ref(fig:sig) shows the signature plots for four HB CTs selected based on our RMSE results:
 
-1. Two CTs with lowest RMSE: WZ and TRW (best performance)
-2. Two CTs with highest RMSE: NA and HNFA (worst performance)
+1. Two HB CTs with lowest RMSE: WZ and TRW (best performance)
+2. Two HB CTs with highest RMSE: NA and HNFA (worst performance)
 
-For each CT, four different composite plots are displayed:
+For each HB CT, four different composite plots are displayed:
 
 1. Labels: Composite of true labels.
 2. Predictions: Composite of model predictions.
-3. False Positives: Days predicted as the CT but labeled differently.
-4. False Negatives: Days labeled as the CT but predicted differently.
+3. False Positives: Days predicted as the HB CT but labeled differently.
+4. False Negatives: Days labeled as the HB CT but predicted differently.
 
 RMSE values are shown below each panel, comparing each composite to the true label composite.
 
-```{r sig, fig.cap = 'Signature plot of slp', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r sig, fig.cap = "Signature plots of four selected circulation patterns at slp. Column 1: labels showing the indicated HB CT, Column 2: deep ensemble predictions showing the indicated HB CT, Column 3: signature pattern, when the deep ensemble predicts the indicated HB CT while labels state differently, Column 4: labels stating the indicated HB CT while deep ensemble predicts differently. The RMSE values are calculated by comparing the respective signature plot to the signature plot of the labels (column 1).", cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/slp_signature_plots.png')
 ```
 
@@ -348,72 +360,63 @@ Based on our results, we can observe that:
     *	Predictions for HNFA also show high RMSE (1.20).
     *	False positives (2.80) and false negatives (1.09) are large, implying HNFA is a difficult type for the model to classify.
 
-Differences from the original paper (Figure \@ref(fig:sigpaper)) arise primarily from data variations, model differences, and random initialization.
-
-```{r sigpaper,fig.cap = 'Signature plot of slp of the paper', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
-knitr::include_graphics('work/01-weatherpattern/figures/paper/slp_signature_plots.png')
-```
+Differences from the original paper (Appendix Figure \@ref(fig:sigpaper)) arise primarily from data variations, model differences, and random initialization.
 
 Although the specific CTs selected differ, the general trend remains consistent with the findings of the paper:
 
-1. Some circulation types are easier to predict (low RMSE), others are harder (high RMSE).
+1. Some HB CTs are easier to predict (low RMSE), others are harder (high RMSE).
 2. False positives tend to have higher RMSE than correct predictions.
-3. A larger discrepancy in the color distribution indicates a higher complexity of CT, and false negatives vary depending on CT complexity.
+3. A larger discrepancy in the color distribution indicates a higher complexity of HB CT, and false negatives vary depending on HB CT complexity.
 
-Thus, while specific CTs differ, our results fundamentally agree with the conclusions of the paper that certain patterns are systematically easier or harder to classify, and signature plots are effective to visualize these tendencies.
+Thus, while specific HB CTs differ, our results fundamentally agree with the conclusions of the paper that certain patterns are systematically easier or harder to classify, and signature plots are effective to visualize these tendencies.
 
-### Frequency Distribution of Circulation Types
+### Frequency Distribution of HB CTs
 
-Figure \@ref(fig:count) shows the frequency distribution of the 29 circulation types, expressed as the average number of days per year for the period 1950–1980.
-For each circulation type, the frequency derived from the true labels (blue bars) is compared to the frequency derived from the network predictions (yellow bars).
+Figure \@ref(fig:count) shows the frequency distribution of the 29 HB CTs, expressed as the average number of days per year for the period 1950–1980.
+For each HB CT, the frequency derived from the true labels (blue bars) is compared to the frequency derived from the network predictions (yellow bars).
 
-```{r count,fig.cap = 'CTs frequency (implementation)', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r count,fig.cap = 'Frequency distribution of the 29 HB CTs in number of days per year for the training period 1950–1980 (blue) and for predictions of the CNN (yellow).', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/daycount.png')
 ```
 
-Overall, the CNN reliably reproduces observed CT frequencies:
+Overall, the CNN reliably reproduces observed HB CT frequencies:
 
-1. Dominant CTs (e.g., WZ, HM) are captured accurately, reflecting robust model learning.
-2. Rarer CTs (e.g., NA, SZ) exhibit minor deviations, suggesting challenges in accurately learning patterns due to fewer examples, which may indicate slight overfitting.
+1. Dominant HB CTs (e.g., WZ, HM) are captured accurately, reflecting robust model learning.
+2. Rarer HB CTs (e.g., NA, SZ) exhibit minor deviations, suggesting challenges in accurately learning patterns due to fewer examples, which may indicate slight overfitting.
 
-```{r countpaper,fig.cap = 'CTs frequency (paper)', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
-knitr::include_graphics('work/01-weatherpattern/figures/paper/daycount.png')
-```
+In comparison with the original study (Appendix Figure \@ref(fig:countpaper)), despite differences in dataset periods (our study: 1950–1980; original: 1900–1980), frequency patterns remain consistent. Slight discrepancies in rarer HB CTs are likely due to dataset differences, emphasizing the importance of extended or more balanced training datasets for better generalization.
 
-In comparison with the original study (Figure \@ref(fig:countpaper)), despite differences in dataset periods (our study: 1950–1980; original: 1900–1980), frequency patterns remain consistent. Slight discrepancies in rarer CTs are likely due to dataset differences, emphasizing the importance of extended or more balanced training datasets for better generalization.
-
-The agreement between the label frequencies and the network predictions, as well as the similarity to the paper’s findings, indicates that our model effectively learns the relative occurrence rates of the different circulation types.
-
-Overall, the frequency distribution results support the conclusions of the original study, confirming that the network can reliably reproduce the occurrence rates of various circulation types.
+The agreement between the label frequencies and the network predictions, as well as the similarity to the paper’s findings, indicates that our model effectively learns the relative occurrence rates of the different HB CTs.
+Overall, the frequency distribution results support the conclusions of the original study, confirming that the network can reliably reproduce the occurrence rates of various HB CTs.
 
 ### Future Change
 
-Figure \@ref(fig:boxn) and Figure \@ref(fig:box) show the relative changes in the frequency of occurrence of the 29 circulation types between the future period (2031–2060) and the historical reference period (1971–2000), for the entire year, winter half-year, and summer half-year, based on 12 climate model realizations.
+Figure \@ref(fig:boxn) and Figure \@ref(fig:box) show the relative changes in the frequency of occurrence of the 29 HB CTs between the future period (2031–2060) and the historical reference period (1971–2000), for the entire year, winter half-year, and summer half-year, based on 12 climate model realizations.
 Figure \@ref(fig:boxn) is the conclusion directly from predicted results, while Figure \@ref(fig:box) is obtained after transition smoothing.
 Positive values indicate an increase in occurrence; negative values indicate a decrease.
 The lower panels show the F1-scores of the classification model ensemble.
 Higher F1-scores indicate better classification stability and reliability.
-The grouping by wind direction allows visual comparison of performance across different CT categories.
+The grouping by wind direction allows visual comparison of performance across different HB CT categories.
 
-```{r boxn,fig.cap = 'Boxplot of freq change and f1 score without transitional smoothing', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r boxn,fig.cap = 'Boxplots of frequency change and f1 score without transitional smoothing. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/non_s_combined_boxplot.png')
 ```
   
 
-```{r box,fig.cap = 'Boxplot of freq change and f1 score after transitional smoothing', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r box,fig.cap = 'Boxplots of frequency change and f1 score after transitional smoothing. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/combined_boxplot.png')
 ```
 
 Without transition smoothing (Figure \@ref(fig:boxn)):
 
-1. The boxplots show relatively smaller spreads for most circulation types.
+1. The boxplots show relatively smaller spreads for most HB CTs.
 2. Most relative changes are within ±50%.
 3. Fewer extreme outliers are observed, and the whiskers are relatively short.
 4. The overall signal is dominated by noise, making it hard to detect consistent climate change trends.
 
 With transition smoothing (Figure \@ref(fig:box)):
 
-1. The boxplots show larger spreads, particularly for rare circulation types.
+1. The boxplots show larger spreads, particularly for rare HB CTs.
 2. Relative changes frequently extend beyond ±50%, and even approach ±100% in some cases.
 3. More extreme outliers appear.
 4. F1-score distributions are lower and broader, indicating less stable classification performance.
@@ -421,24 +424,20 @@ With transition smoothing (Figure \@ref(fig:box)):
 Overall, transition smoothing, while theoretically beneficial, introduces higher internal variability in our implementation, complicating clear signal identification. 
 Variability differences from the original study stem from methodological factors (ensemble size, smoothing implementation) and underlying climate model characteristics.
 
-Our findings reaffirm the value of multi-model ensembles and careful consideration of methodological choices when projecting future circulation trends, 
+Our findings reaffirm the value of a multi-ensemble approach and careful consideration of methodological choices when projecting future circulation trends, 
 underscoring the need for robust ensemble analysis techniques to better discern climate-driven circulation changes from internal variability.
 
-```{r boxpaper,fig.cap = 'Boxplot of freq change and f1 score of paper', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
-knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot.png')
-```
-
-The original study (Figure \@ref(fig:boxpaper)) shows relatively controlled variability, mostly within ±50%, and fewer extreme outliers, indicating relatively stable and moderate shifts in circulation types.
-Our results (Figure \@ref(fig:boxn)) exhibit larger variability, particularly notable in specific circulation types such as NA, SEA, HNFZ, and SZ, with frequency changes frequently exceeding ±50%, even reaching ±100%.
+The original study (Appendix Figure \@ref(fig:boxpaper)) shows relatively controlled variability, mostly within ±50% [@Mittermeier2022], and fewer extreme outliers, indicating relatively stable and moderate shifts in HB CTs.
+Our results (Figure \@ref(fig:boxn)) exhibit larger variability, particularly notable in specific HB CTs such as NA, SEA, HNFZ, and SZ, with frequency changes frequently exceeding ±50%, even reaching ±100%.
 
 1. Entire Year:
-    *	Original study shows moderate shifts centered around zero, with clear signals for types like WA and SEA.
+    *	Original study shows moderate shifts centered around zero, with clear signals for types like WA and SEA [@Mittermeier2022].
 	  * Our implementation shows notably higher variability with clear signals (e.g., strong increase in HNZ, HM and significant decreases in HB and NEZ).
 2. Winter Half-Year:
-	  *	Original study depicts clear moderate increases for WW and HFA with relatively smaller variability.
+	  *	Original study depicts clear moderate increases for WW and HFA with relatively smaller variability [@Mittermeier2022].
 	  *	Our data demonstrate significant changes with pronounced variability and stronger extremes, especially in HNZ and rare CTs like NA and SZ.
 3. Summer Half-Year:
-	  *	Original data indicate mild variability and clear, moderate increases and decreases in specific types (e.g., decreases in HNFZ, increases in WA).
+	  *	Original data indicate mild variability and clear, moderate increases and decreases in specific types (e.g., decreases in HNFZ, increases in WA) [@Mittermeier2022].
 	  *	Our results again illustrate increased variability with substantial increases (e.g., HNZ, HM) and decreases (e.g., HB, NEZ).
 
 In both cases, the summer half-year has a greater influence on the entire year, despite the winter half-year showing higher variability.
@@ -446,38 +445,33 @@ Rare CTs such as NA and SZ are observed with significant changes.
 It would be interesting to analyze how rare conditions evolve, 
 however, due to the unbalanced data, the results are not very reliable.
 
-Key Circulation Type Differences:
+Key CT Differences:
 
 1. WA (Westerly Anticyclonic):
-	  *	Original study consistently shows WA increasing clearly across all seasons.
-	  *	Our results show only slight increases, with less pronounced signals for WA, especially compared to significant changes in other types.
+    *	Our results show only slight increases, with less pronounced signals for WA, especially compared to significant changes in other types.
+	  *	Original study consistently shows WA increasing clearly across all seasons [@Mittermeier2022].
 2. HNZ (Icelandic High Cyclonic):
 	  *	In our results, HNZ consistently shows marked increases, particularly pronounced in the summer and winter half-years.
-	  *	Original study presents less dramatic decreasing changes for HNZ, reflecting a critical methodological or scenario-driven difference.
+	  *	Original study presents less dramatic decreasing changes for HNZ, reflecting a critical methodological or scenario-driven difference [@Mittermeier2022].
 3. NA and SZ (Northerly Anticyclonic and Southerly Cyclonic):
 	  *	Our results exhibit significantly larger variability and extreme reductions in NA, while SZ shows extreme negative changes particularly in summer.
-	  *	Original study maintains relatively modest decreasing changes for these types.
-
-F1-Score Stability:
-
-1. Original study has considerably lower overall F1-scores (around 0.3–0.5), indicating challenges in reliable classification.
-2. Our model demonstrates much higher stability with F1-scores generally between 0.80–0.95, suggesting improved reliability and robustness in identifying circulation patterns, despite higher variability in frequency projections.
+	  *	Original study maintains relatively modest decreasing changes for these types [@Mittermeier2022].
 
 The differences in projected frequency changes between our results and the original study primarily stem from:
 
-1. Time period difference.
+1. Time period difference (2031-2060 vs. 2071-2100).
 2. Scenario differences: CanESM2 model (historical) in our study vs. original SMHI-LENS (SSP3-7.0).
 3. Model and methodological distinctions: Implementation differences (e.g., transitional smoothing, dataset variations, and resolution).
 4. Ensemble size effects: Our smaller ensemble size (12 vs. original 50) could amplify internal variability signals.
 
-These differences underline the sensitivity of circulation type projections to methodological choices, highlighting the importance of transparent documentation of scenario assumptions and model details to ensure the accurate interpretation and comparability of future climate studies.
+These differences underline the sensitivity of CT analysis to methodological choices, highlighting the importance of transparent documentation of scenario assumptions and model details to ensure the accurate interpretation and comparability of future climate studies.
 
 ## Conclusion and Outlook
 
 In this study, we successfully implemented a CNN-based deep learning approach for classifying large-scale atmospheric CTs over Europe, building upon the established HB framework. 
 Using high-resolution ERA5 data for model training, our method achieved an overall accuracy of 53.17% and a macro F1 score of 55.14%, clearly outperforming traditional classification approaches.
 
-Our analysis of future projections based on the CanESM2 model (historical) highlights significant shifts in circulation type frequencies, particularly an increased frequency of certain CTs such as Icelandic High Cyclonic (HNZ) during both summer and winter half-years. Notably, our results differ from previous studies, primarily due to distinct methodological choices such as dataset selection, scenario assumptions, and smoothing techniques. These variations underline the sensitivity of circulation type projections and stress the importance of transparent methodological reporting.
+Our analysis of future projections based on the CanESM2 model (historical) highlights significant shifts in HB CT frequencies, particularly an increased frequency of certain CTs such as Icelandic High Cyclonic (HNZ) during both summer and winter half-years. Notably, our results differ from previous studies, primarily due to distinct methodological choices such as dataset selection, scenario assumptions, and smoothing techniques. These variations underline the sensitivity of HB CT projections and stress the importance of transparent methodological reporting.
 
 The CNN model effectively learned dominant circulation patterns, yet faced challenges classifying rare or inherently complex CTs. These limitations indicate potential issues of class imbalance and inherent labeling uncertainties associated with manual classifications.
 
@@ -498,9 +492,15 @@ could enhance prediction accuracy by directly modeling the persistence character
 
 ## Appendix
 
-CTs (Figure \@ref(fig:cts))
+Synoptic patterns of the 29 HB CTs using ERA20C (Figure \@ref(fig:ERA20C))
 
-```{r cts,fig.cap = 'Circulation types', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r ERA20C,fig.cap = 'Synoptic patterns of the 29 HB CTs created using ERA-20C data averaged over the period 1900 -1980, showing SLP on the left and z500 on the right side [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/paper/circulation_types.png')
+```
+
+HB CTs (Figure \@ref(fig:cts))
+
+```{r cts,fig.cap = 'HB CTs', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/cts.png')
 ```
 
@@ -508,6 +508,24 @@ F1 score comparison table (Figure \@ref(fig:f1score))
 
 ```{r f1score,fig.cap = 'Macro F1', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/f1.png')
+```
+
+Signature plots of paper - SLP (Figure \@ref(fig:sigpaper))
+
+```{r sigpaper,fig.cap = "Signature plots of four selected circulation patterns at slp. Column 1: labels showing the indicated HB CT, Column 2: deep ensemble predictions showing the indicated HB CT, Column 3: signature pattern, when the deep ensemble predicts the indicated HB CT while labels state differently, Column 4: labels stating the indicated HB CT while deep ensemble predicts differently. The RMSE values are calculated by comparing the respective signature plot to the signature plot of the labels (column 1). The four HB CTs are chosen as positive (green) and negative (red) examples [@Mittermeier2022].", cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/paper/slp_signature_plots.png')
+```
+
+Frequency distribution of paper (Figure \@ref(fig:countpaper))
+
+```{r countpaper,fig.cap = 'Frequency distribution of the 29 HB CTs in number of days per year for the training period 1900–1980 (blue) and for predictions of the CNN (yellow) [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/paper/daycount.png')
+```
+
+Boxplot of future change and  F1 score of paper (Figure \@ref(fig:boxpaper))
+
+```{r boxpaper,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot.png')
 ```
 
 RMSE table of our implementation - SLP (Figure \@ref(fig:rmse))
