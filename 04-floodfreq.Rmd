@@ -15,35 +15,63 @@ output:
 *Suggested degree: Master*
 
 ## Abstract {.unnumbered}
-
+Floods are among the most impactful natural hazards in Bavaria, 
+causing significant economic and ecological damages. 
+Traditional univariate flood frequency analyses, 
+which estimate return periods based solely on peak discharge, 
+often fall short in capturing the complexity of real-world flood events characterized by interdependent 
+features such as volume, duration, and peak. 
+This chapter investigates multivariate modeling approaches using copula theory to better describe 
+the joint behavior of these variables. 
+Building on the foundational work of @grimaldi2006, the study evaluates the applicability 
+of nested Archimedean copulas and extends the modeling framework to vine copulas 
+to accommodate asymmetric dependencies and varying tail behaviors. 
+Empirical data from $21$ hydrological stations across the Isar and Danube rivers are analyzed, 
+revealing $3$ distinct dependence structures that cannot be adequately captured by symmetric or 
+nested copulas alone. This work compares copula model performances
+and discusses implications for estimating multivariate return periods. 
+The findings underscore the importance of flexible dependence modeling in flood risk 
+assessment.
 
 ## Introduction {#intro}
-TODO: Add something "decoupling"... bla
-	<!-- Motivation -->
-<!-- Zielsetung und Forschungsfrage formulieren und deren Relevanz motivieren -->
-	<!-- Short description of content and objective of the project -->
-	<!-- Short explanation of statistical methods used -->
-	<!-- 	( maybe something like: Pearon's correlation coefficient measueres linear correlation between continuous vars and will be used to examine xy) -->
-	<!-- > Brief presentation of key findings -->
-	<!-- > Overview of each section -->
-<!-- - den zum Erreichen des Ziel gewählten Weg beschreiben; dh. einen Überblick über den roten Faden der Arbeit geben -->
-<!-- - Ergebnisse Zusammenfassen -->
-<!-- - Arbeit strukturieren (Wie im Paper) -->
-
-<!-- -> Klären des WAS WARUM WIE WOZU -->
-<!-- Konkretisieren der Fragestellung(WAS) -->
-<!-- Die praktische und wissenschaftliche Relevant (WARUM) -->
-<!-- Die Vorgehensweise (WIE) -->
-<!-- Das Ziel der Arbeit(WOZU) -->
+Floods rank among the most severe natural hazards in Bavaria, both in terms of ecological and socio-economic impact. 
+Structural damages in Bavaria typically occur to private residential buildings, agricultural facilities, 
+public infrastructure, and critical transport systems such as roads and bridges. In 2024 alone, flood events 
+in Bavaria caused an estimated €4 billion in damages. Environmental impacts, such as contamination 
+from leaked heating oil, also pose serious consequences but are often difficult to quantify in 
+monetary values (@lfU2025).
+These significant damages emphasize the need for robust risk assessment tools 
+to support decision-making in floodplain management and infrastructure design. 
+Traditional flood frequency analysis in hydrology has largely focused on univariate approaches, 
+where the relationship between flood peak and its return period is estimated independently of other 
+hydrological variables (@khajehali2025 et al., 2025). 
+While such analyses are suitable for preliminary risk assessments, 
+they have limited capability to represent the complexity of real-world flood events, 
+especially when applied to the design of hydraulic structures or the 
+planning of flood protection measures (@grimaldi2006).
+Flood events are characterized not only by their peak discharge but also by their volume and duration. 
+These variables are interdependent, and their joint behavior plays a critical role in determining the severity of flooding impacts. 
+For instance, a moderate peak may still result in significant inundation if the flood duration is long or 
+if the volume exceeds reservoir capacity. 
+To model these dependencies, multivariate statistical techniques have been introduced, 
+enabling the analysis of joint cumulative distribution functions and probability density functions across multiple variables (@grimaldi2006).
+Copula theory provides a robust statistical framework for conducting multivariate flood analyses. 
+By separating the marginal distributions from the dependence structure, the joint behaviour of hydrological variables can be studied more flexibly.\
+In particular, asymmetric copula functions—such are highly effective in flood frequency analysis due to their ability to model varying strengths of dependence between pairs of variables. 
+This is particularly relevant in hydrology, where empirical evidence suggests that the flood peak can strongly influence the dependence between volume and duration, introducing asymmetry into the joint distribution (@grimaldi2006).
+The work of @grimaldi2006 represents a significant contribution in this field. They proposed a trivariate flood event analysis using nested Archimedean copulas to jointly model flood peak, volume, and duration. 
+However, this work points out the shortcomings of nested Archimedean copulas and extends the author's approach
+by vine copulas. 
+The present thesis addresses three main research questions:
+(1) How can copula models be applied to characterize flood events in Bavaria, similarly to the approach by @grimaldi2006? 
+(2) How do nested Archimedean copulas compare to more flexible structures such as vine copulas in representing interdependencies? 
+(3) How does the interpretation of return periods differ when using univariate versus multivariate approaches?
+By addressing these questions, this work aims to contribute to a more nuanced understanding of flood risk, ultimately improving predictive accuracy and informing better flood management strategies in Bavaria.
 
 ## Data {#data}
-Hannes: Ist meine Variablenbeschreibung korrekt? 
-Könntest du noch definieren, was ein baseflow und was ein streamflow ist?
-
 @grimaldi2006 used the variables peak, volume and duration
 of the most severe flood event within a year. 
 These variables are derivable from yearly hydrological discharge data.
-Discharge, measured in $[m^3/s]$, denotes the volume of water passed through a river within $1$ second of time. 
 The discharge data we use during our analysis 
 is provided by the 
 Bavarian Environmental Agency's hydrological service (GKD) (@GKDwebsite) which 
@@ -54,20 +82,16 @@ discusses possible flood event detection methods,
 derives the variables of interest based on the flood definition and 
 ends with a display of the crucial aspects of the obtained data.
 
-Initially, the data contains discharge values in $15$ minute steps for 
-$27$ stations along the Isar and Danube from different starting time points, but always up to 31.12.2024.
-We removed removed $6$ measurement stations because these contained only a few observed years 
-which is problematic 
-because the final copula model is fit on yearly data. Thus, the number of observed years 
-corresponds to the number of data points our copula model relies on.\
-Of the remaining $21$ stations, $12$ stations are along the Isar and $9$ along the Danube where every station had at least $44$ years of observation. 
+After removing stations with too little observations, 
+the data contains discharge values in $15$ minute steps for 
+$21$ stations along the Isar and Danube from different starting time points, but always up to 31.12.2024.
+Of these stations, $12$ are along the Isar and $9$ along the Danube where every station had at least $44$ years of observation. 
 As seen towards the end of this section, the alpine river Isar and the low-lying Danube have contrasting 
 hydrological characteristics, enabling a meaningful comparison of flood dynamics in Bavaria.
 The exact spatial distribution of the considered station displayed plot \@ref(fig:bavaria). 
 ```{r bavaria, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/data_bavaria_plot.png")
 ```
-
 Given the annual discharge data for all these stations, we require to identify the 
 most severe flood event within each year which defined as the event with the largest discharge peak. 
 To stabilize event detection, the following is based on daily average discharge values we 
@@ -80,13 +104,8 @@ Instead, we applied
 the baseflow methods proposed and implemented by @wasko2025. 
 This method relies on the baseflow index (BFI) which is the ratio of the baseflow volume to the volume of streamflow. 
 <!-- Calculte BFI at each time step and extracts discrete flood events when the BFI falls below the specified threshold for a user-specified minimum duration. -->
-
-TODO: Definition baseflow and streamflow
-
 A default BFI threshold of 0.5 was used to distinguish events dominated by rapid runoff contributions typically associated with rainfall- or melt-induced flooding.
-
 Exemplary, figure \@ref(fig:hydro) shows the hydrograph for the station in Munich in 2024. 
-
 ```{r hydro, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/data_hydrograph.png")
 ```
@@ -94,17 +113,13 @@ knitr::include_graphics("./work/04-floodfreq/figures/data_hydrograph.png")
 TODO: Depending on plot, describe what the F is seen here
 
 Based on all identified flood events, the event with the largest peak discharge is selected and, finally, the 
-variables of interst are determined. That is, 
+variables of interest are determined. That is, 
 flood peak is the maximum discharge value occurring within the event,
 flood duration is the time span measured in days between the start and end of the event, as determined by the BFI threshold crossings.
 Flood volume is the cumulative streamflow over the flood duration, representing total discharge volume in $m^3$.
 
-TODO: Do I want to give some max values? 
-
-Now, we come to the most crucial aspect in our data, but show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
-between every possible combination between the $3$ variables separated by river.
-In section \@ref(kendallstau) we further discuss Kendall's $\tau$, but for now, it is sufficient to consider it as measure of the strength of the dependence between two variables.
-
+Now, we come to the most crucial aspect in our data and show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
+of every possible combination between the $3$ variables separated by river.
 ```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/data_cor_plot.png")
 ```
@@ -132,19 +147,14 @@ hydrological characteristics which are highly relevant for copula modelling and,
 
 Finally, the analysis section utilizes return periods of flood peaks to derive 
 average discharge values conditioned on a certain peak.
-A return period is the average duration it takes for a peak value to re-occure and is usually measured in years.
-This period follows from the inverse probability of an event to take place. Thus, the peak value
-increases with an increasing return period.
-An average discharge value refers to the average discharge during a flood event. 
-Thus, it is obtained by 
-$\frac{volume[m^3]}{duration[s]}$ and to ensure these are 
+To ensure these are 
 comparable among stations, they are normalized by the station specific mean and standard deviation. 
 To now characterize a conditional distribution using our data, we ordered all flood events within each station
 by their peak values and then selected the quantiles corresponding to the 
 return periods $2, 5, 10, 20$ and $50$ years.
 Thereby, we obtained $21$ average discharge values for each return period.
 Consider figure \@ref(condEmpBoxplots) for a visualization.
-```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="Caption"}
+```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="TODO"}
 knitr::include_graphics("./work/04-floodfreq/figures/data_condBoxplots.png")
 ```
 First of all, note that the average discharge values are on the 
@@ -154,6 +164,7 @@ return periods of the peak based on the quantile approach.
 To account for the different structure between rivers, the figure considers them separately. 
 Thereby, each boxplot in the Danube column is based on $9$ data points and $12$ for the Isar where each data
 point corresponds to a station. 
+
 For both subplots, the average discharge increases with an increase in the return period. 
 However, while the subplot of the Danube suggests a moderate increase in average discharge values, 
 the Isar has a stark increase. But by the size of the boxplot at return period $50$, this increase does not 
@@ -648,14 +659,12 @@ application, but also their bias in the results.
 
 ## Application {#app}
 Due to our finding during the simulation, we focus on presenting the fitted vine copulas models.
-Only for the predictive performance, we jointly consider FNACs and vines to discuss the 
+Only for the the model comparison, we jointly consider FNACs and vines to discuss the 
 effect of the bias in FNACs and its practical meaning. 
 
-### Visual Goodness of Fit
-To each of the $21$ stations, we fitted every possible copula family combination also allowing for a
-copula function to be rotated. Then, the best fitting copula, according to the AIC, is selected. 
-Thereby, the following discusses the one best vine copula fit we found.
-Exemplary, we visually assess the goodness of fit  for the Munich station using figure \@ref(fig:visualGoF).
+### Goodness of Fit
+The following discusses the goodness of fit for the vine copula model 
+based on the Munich station using figure \@ref(fig:visualGoF).
 ```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_visualGOF.png")
 ```
@@ -717,17 +726,10 @@ In general, we observe lighter colors for the duration and peak pairs which is d
 small correlation values. This follows from the reasoning in the previous section.
 Duration and volume exhibit the darkest colors suggesting that if the flood duration is short, the 
 flood volume tends to be small, too, for the majority of the considered stations. 
-
-Especially towards the alpine regions, the plot suggests a spatial trend.
-
-TODO: Any hydrologically intersting reasoning for this? Slope? Mention that our slope data was shit or smth? 
-
-
-Finally, especially for the Isar, peak and volume seem to exhibit upper tail dependence. Thereby, 
-a high peak is more likely to appear with a high flood volume for the stations along the Isar.
-
-TODO: Any hydrological reason here?
-
+This is especially the case at the Isar stations. But, the relationship begins to shift towards a positive dependence approximately at the middle of the river, likely due to the influence of tributaries that contribute additional water as the river progresses downstream.
+In contrast, the Danube displays mixed signals for the duration-volume pair, indicating a more complex or variable relationship, possibly reflecting the diverse hydrological influences across its larger catchment area.\
+For the peak-volume pair, both rivers show a positive tail dependence, indicating that higher peak flows are generally associated with larger flood volumes. This is consistent with expected hydrological patterns where significant peak events often appear with substantial volumes of water. The duration-peak pair exhibits the weakest tail dependence, suggesting that the flood duration does not strongly influence the peak discharge. This weak correlation is indicative of the more dynamic nature of peak discharges, which may be influenced by short-term, localized weather events rather than the overall duration of the flood.\
+Across all three pairs, the Isar consistently demonstrates more extreme tail dependence trends compared to the Danube. This difference is likely due to the more extreme flood characteristics in the Isar, which are influenced by factors such as snowmelt, topography, and high spring rainfall events (@parajkaa2019). 
 
 ### Event Probability
 The following examines the difference between a univariate and the multivariate approach 
@@ -778,84 +780,82 @@ In contrast, the univariate consideration of
 peak values only 
 is not capable to account for this. 
 
-### Conditional Discharges
-This any good?: 
-
+### Model Comparison 
 Finally, this section examines the effect of different peak values onto the other characteristics of a flood. 
 Mainly, we are interested in the average discharge value during a flood event as it is a measure 
 of the average energy the system has to deal with. 
 
 First, we fit 
-station specific GEV distributions onto the observed peak values and determine station specific 
-peak values that only occure every $2, 5, 10, 20$ and $50$ years. 
+station specific GEV distributions onto the observed peak values and determine peaks 
+for the return periods of $2, 5, 10, 20$ and $50$ years. 
 We choose the upper bound of $50$ years to validate the model predictions using the available data.
-Conditional on these peaks, the most likely combination of duration and volume are determined.
-From these, the average discharge values are calculated and standardized in the same manner explained in 
-section \@ref(data).
-<!-- Then, we considered the conditional joint distribution of volume and duration given peak which is  -->
-<!-- obtained based on \@ref(eq:jointdens). This allows to determine the most likely combination of  -->
-<!-- volume and duration for a given peak.  -->
-<!-- Based on these pairs, -->
-<!-- the average discharge values are calculated.  -->
+Conditional on these peaks, the most likely combination of duration and volume are determined as well as 
+the average discharge values calculated and standardized.
 Figure  \@ref(fig:modelEval) is based on figure \@ref(fig:) and displays our results.
 ```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
 ```
-
-The rows of the figure refer to the model structure applied to predict the average discharges. Here, 
-we also consider FNAC models because this application nicely depicts their shortcomings and reason why they are
-not suitable if their assumptions are violated.
+The rows of the figure refer to the model structure applied to predict the average discharges. 
 Additionally, we colored each model prediction by which variable pair had the highest correlation.
 First, consider the vine model fits in the bottom row.  The models 
 correctly capture the trend suggested by the boxplots independent of which pair of variables has the highest 
 correlation. For a return period of $50$, model predictions and boxplots increase in variance. 
-
-Does this make sense, hydrologically?:
 This is reasonable because the manner in which an event is extreme depends on the station. Thereby, a joint 
 behavior in boxplot and model prediction suggests a good fit. 
+For FNACs, consider their performance within the stations of the Isar first. There is a visible 
+difference in model performance depending on which variable pair has a larger correlation value. 
+If volume 
+and peak 
+have a larger correlation value, 
+the model captures the underlying data structure more reliable than for 
+volume and duration being stronger correlated pair.
+For the Danube, FNAC models barely move at all failing to capture any trend in the data whatsoever.
+To quantify the visual analysis, consider the mean absolute difference of the model prediction to the median
+of the data: For FNACs, the error for the Danube is 
+$0.70$
+and the error for the Isar 
+$0.90$
+.
+Vine outperformed FNACs with an error of 
+$0.35$
+for the Danube and 
+$0.53$
+for the Isar.
+However, 
+take these with a grain of salt because especially for a return period of $50$ years, 
+we deal with an extreme event. 
+And it is reasonable to expect extreme events to be highly station specific.
+Thereby, a model perfectly predicting the median of the average discharge data is desirable. 
+\
+The reason for the underperformance of FNACs is their incapability of capturing $3$ unique dependence structures 
+which leads to $2$ distinct effects.
+First and mainly, due to the shared bivariate marginal copula, the performance of FNAC models is 
+highly impacted by which variable pair is higher correlated. Because by the sufficient nesting condition,
+the stronger correlated variable pair is required to build the nested copula. 
+If duration - volume is the higher correlated pair and, thus, peak in the outer copula,
+the dependence between duration - peak and volume - peak is forced to be identical. Thereby, conditioning on 
+a peak value has the identical effect on both nested variables.
+However, if peak is inside the nested copula, duration - peak and volume - peak remain a distinct 
+relation structure to peak. Thereby, both models are wrong, but one of them remains more flexible. 
+The second effect is independent of the nesting structure. As result of the simulation we observed a systematic
+overestimation of the lower correlation value. Because in our data, the smallest correlation
+value is always between duration - peak, this strength of dependence is systematically overestimated. 
+This implies that an increase in peak affect duration more than it should. And because 
+all observed correlation values between the two variable are positive, the duration of a flood 
+for given an increasing peak is always overestimated. This implies that the average discharge predicted by
+FNACs is systematically too low because the volume is divided by a duration that is too long. In conlusion,
+even if some of the FNAC models look as if they captured the underlying structure, they really did not. 
+Thereby, this application 
+nicely depicts the shortcomings of FNACs and the reason why they are
+not suitable if their assumptions are violated.
 
-For FNACs, consider their performance within the stations of the Isar first. Their is a visible 
-difference in model performance depending on which variable pair has a larger correlation. That is, if volume 
-and peak build the inner copula due to their larger correlation, the model performs better than for 
-volume and duration being stronger correlated. 
-For the Danube, FNAC models bare move at all failing to capture any trend in the data whatsoever. 
-
-TODO: Where do we explain why this is the case? (FNACS failing)
-TODO: Systematic underestimation of average discharge bc bias
-
-<!-- The plot itself is divided into subplots where the columns refer to data observed in the corresponding  -->
-<!-- river. The boxplots are river specific and aim to display the empirical equivalent to a conditional  -->
-<!-- quantile. That is, for each station, we selected peak quantiles according to the return period of the peak. Then, -->
-<!-- we determined the average discharge of this event, giving us an average discharge given that the peak  -->
-<!-- was of a certain return period.  -->
-<!-- This approach was applied to all stations and made compareable by standarization.  -->
-
-
-<!-- We also standadized the model results to make  -->
-<!-- them compareable which brings us to the rows of figure \@ref(modelEval). -->
-<!-- Actually, would I not have to put this whole plot into data?? I mean, the whole description from ealier???  -->
-<!-- We also introduce the following plot, as we built upon in during our application  -->
-<!-- Refernce plot here and then ONLY evaluate model. Do not discuss data bs here. Wtf...  -->
-
-<!-- conditional boxplot to new -->
-
-
-## Discussion {#discussion}
-
-From Probabilty section:
-As this section shows, we 
-urge to not solely rely on a marginal GEV distribution of peak to fully characterize a flood event.
-Instead, a multivariate event consideration is required. 
-
-Discuss flood detection and effect onto results?
-
-Use the fitted models to predict the most likeli discharge for some HQ100
-<!-- and  -->
-<!-- then determine the probability of a certain peak to occure.  -->
-<!-- Using copulas, a flood is characterized more wholistically, potentially leading to quite different results. -->
-<!-- 	> Brief recap of the objevtive of the project -->
-<!-- > Interpretation of the results with reference to initial objective  -->
-<!-- 	> Brief presentation of the most important results -->
-<!-- 	> Discusstion of the results (possible conclusions / warnings against misinterpretation) -->
-<!-- 	> Outlook (open questinos / reference to possible further analysis or research -> put into research context) -->
-<!-- !!!!! Introduction and Summary should be independently readable !!!!!!! -->
+## Conclusion {#conclusion}
+The aim of this work was to investigate the potential of copula-based multivariate models for flood risk assessment in Bavaria, focusing on the joint behaviour of flood peak, volume and duration. 
+Three main research questions were addressed: the applicability of copula models to Bavarian flood data, the comparative performance of NACs and vine copulas, and the impact of using multivariate rather than univariate approaches to estimate return periods. 
+Our results confirm that copula theory provides a robust framework for modelling the dependence structure between multiple hydrological variables. By applying both vine and FNACs to $21$ stations, we demonstrated that multivariate models are capable of capturing complex, asymmetric dependencies that are not accounted for in traditional univariate analyses.
+A key finding is the spatial variability in tail dependence structures across the study area. The Isar, in particular, exhibited more pronounced and often more extreme dependencies—especially between volume and duration, suggesting stronger hydrological controls related to topography, snowmelt, and spring precipitation patterns. 
+In contrast, the Danube showed more mixed signals, underscoring the necessity for flexible dependence structures that can adapt to regional hydrological conditions.
+When comparing the model structures, vine copulas consistently outperformed FNACs which suffered from structural biases. This limitation was particularly evident when analysing conditional average discharge values, where FNACs systematically underestimated flood severity.
+Finally, the comparison of univariate and multivariate return period estimations underscores the need of a multivariate perspective. 
+For the 2024 Munich flood event, the return period increased from $5$ to $37$ years when considering the joint severity of peak, volume, and duration. This highlights the risk of underestimating extreme events when relying solely on univariate peak discharge values.
+In conclusion, the integration of flexible multivariate copula models, especially vine copulas, represents a significant advancement in flood risk analysis. Their ability to capture spatial and structural dependencies can greatly improve the reliability of flood risk assessments and help create more resilient flood management strategies in Bavaria.
