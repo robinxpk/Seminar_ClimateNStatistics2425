@@ -74,6 +74,7 @@ get_hydrograph(df |> dplyr::filter(unit == station, year == ref_year), save_plot
 
 ## Correlation Plot ------------------------------------------------------
 get_cor_plot(cor_table, save_plot = save_plots, plotname = "data_cor_plot")
+cor_table |> dplyr::summarise(n = dplyr::n(), .by = c(river, tau_order))
 
 ## Further Descriptives --------------------------------------------------
 # Further descriptives for each river
@@ -109,8 +110,9 @@ visualGOF(vine = vine, scop_df = scop_df, station = station, n_syn = n_syn, save
 # Tail Dependencies
 if (create_bavaria_plot) plot_bavaria_taildep(taildep_df, bavaria_params, save_plot = save_plots, plotname = "app_bavaria_taildep")
 # Comparison univariate vs. copula approach
-get_univariate_HQ_plot(scop_df, ref_flood, gev_peak, save_plot = save_plots, plotname = "app_univariate_hq")
+# München flood 2024
 cop_df |> dplyr::filter(unit == "München", year == 2024)
+get_univariate_HQ_plot(scop_df, ref_flood, gev_peak, save_plot = save_plots, plotname = "app_univariate_hq")
 get_trivariate_HQ_plot(scop_df, ref_flood, vine, n_syn = 1e6, save_plot = save_plots, plotname = "app_multivariate_hq") 
 # Most likely Volume - Duration pairs for HQ values 
 model_evaluation(

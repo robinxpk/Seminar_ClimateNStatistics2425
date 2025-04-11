@@ -773,16 +773,12 @@ get_trivariate_HQ_plot = function(scop_df, ref_flood, vine, n_syn = 1e6, save_pl
     (cont_dur_peak | cont_dur_vol | cont_peak_vol)
   )
   
-  # P(X>x, Y>y, Z>z)
-  syn_vals = syn_df |> dplyr::select(pobs_dur, pobs_peak, pobs_vol)  
-  thresh_vals = c(ref_flood$pobs_dur, ref_flood$pobs_peak, ref_flood$pobs_vol)
-  # Idea: Use threshold from reference flood
-  # For every entry in synthetic data, check if value is larger corresponding threshold
-  # If all three (rowsum) are larger than their thresholds, they are an occurance of X>x, Y>y, Z>z
-  # Determine frequence of these events
-  prob = sum(rowSums(syn_vals > thresh_vals) == 3) / nrow(syn_df)
-  
-  message(paste("MESSAGE: Estimated event probability:"), prob)
+  message(
+    paste(
+      "MESSAGE: Estimated event probability:", 
+      VineCopula::RVineCDF(1 - ref_flood |> dplyr::select(vine$names), vine, N = 1e6)
+    )
+  )
   if (save_plot) savegg(plotname)
 }
 

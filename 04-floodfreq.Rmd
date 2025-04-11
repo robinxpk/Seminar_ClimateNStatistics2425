@@ -101,7 +101,7 @@ Flood volume is the cumulative streamflow over the flood duration, representing 
 
 TODO: Do I want to give some max values? 
 
-Finally, we come to the most crucial aspect in our data, but show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
+Now, we come to the most crucial aspect in our data, but show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
 between every possible combination between the $3$ variables separated by river.
 In section \@ref(kendallstau) we further discuss Kendall's $\tau$, but for now, it is sufficient to consider it as measure of the strength of the dependence between two variables.
 
@@ -113,17 +113,51 @@ The boxplots in figure \@ref(fig:corplot)
 are based on the $9$ and $12$ stations along each river, respectively, and 
 depict the $\tau$ values for the corresponding variable combination seen on the $x$-Axis.
 The black dots refer to the $\tau$ values observed by @grimaldi2006. 
-Most important here is that none of the boxplots align horizontally. That is, the dependence strength 
-between all variable pairs differ to the others. 
+Most important here is that none of the boxplots align horizontally. That is, the strength of dependence 
+differs between all pairs of variables. 
 Thereby, our data suggests $3$ different distinct dependencies.
 This finding is most crucial and, as we will see later on, renders @grimaldi2006 approach infeasible. Because, as seen from the black dots, not only our data suggest $3$ separate dependence structures, but also the river @grimaldi2006 considered.\
-Also interesting is the difference between the rivers in what variables have the strongest dependence. 
-According to the figure, volume and duration are highly correlated with only little variation seen from the 
-width of the boxplot. For the Isar, on the other hand, we observe not only more variation in the correlation
-values, but here the most correlated pair tends to be volume and peak. 
+Also interesting is the exact order of correlation values by each river.
+<!-- difference between the rivers in what variables have the strongest dependence.  -->
+For both rivers, duration and peak always had the lowest correlation value.
+For the Danube, 
+volume and duration are always the variables with the highest correlation with an exception of only one station.
+Nevertheless, all these values are quite similar as seen from the width of the boxplot in figure \@ref(corplot).
+For the Isar, on the other hand, we observe not only more variation in the correlation
+values, but here the most correlated pair tends to be volume and peak. Of the $12$ stations, $8$ 
+had volume and peak to be the pair with the highest correlation.\
 This emphazises the aforementioned contrasting 
 hydrological characteristics which are highly relevant for copula modelling and, thereby, for our analysis.
 <!-- Mention: Isar has similar correlation structure as in paper -->
+
+Finally, the analysis section utilizes return periods of flood peaks to derive 
+average discharge values conditioned on a certain peak.
+A return period is the average duration it takes for a peak value to re-occure and is usually measured in years.
+This period follows from the inverse probability of an event to take place. Thus, the peak value
+increases with an increasing return period.
+An average discharge value refers to the average discharge during a flood event. 
+Thus, it is obtained by 
+$\frac{volume[m^3]}{duration[s]}$ and to ensure these are 
+comparable among stations, they are normalized by the station specific mean and standard deviation. 
+To now characterize a conditional distribution using our data, we ordered all flood events within each station
+by their peak values and then selected the quantiles corresponding to the 
+return periods $2, 5, 10, 20$ and $50$ years.
+Thereby, we obtained $21$ average discharge values for each return period.
+Consider figure \@ref(condEmpBoxplots) for a visualization.
+```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="Caption"}
+knitr::include_graphics("./work/04-floodfreq/figures/data_condBoxplots.png")
+```
+First of all, note that the average discharge values are on the 
+y-axis ranging from $-1$ to $5$. This is due to the 
+standardization process within each station. The x-axis denotes the 
+return periods of the peak based on the quantile approach. 
+To account for the different structure between rivers, the figure considers them separately. 
+Thereby, each boxplot in the Danube column is based on $9$ data points and $12$ for the Isar where each data
+point corresponds to a station. 
+For both subplots, the average discharge increases with an increase in the return period. 
+However, while the subplot of the Danube suggests a moderate increase in average discharge values, 
+the Isar has a stark increase. But by the size of the boxplot at return period $50$, this increase does not 
+hold for all stations. 
 
 ## Methods {#methods}
 To address the dependence structures identified in the previous section, 
@@ -696,65 +730,129 @@ TODO: Any hydrological reason here?
 
 
 ### Event Probability
+The following examines the difference between a univariate and the multivariate approach 
+for flood characterization and thereby addresses one of our research questions. 
+<!-- We now examine how flood event probabilities differ between a univariate and multivariate approach.  -->
+To answer it, the
+following focuses on the flood event in Munich 2024 
+which had a peak of $462m^3/s$, took $20$ days and had a volume of $406m^3$. 
 
-Mention flood detection?
-Mention that the probabiliy of course depends on the exact variable values and 
-that probability can be low due to one variable being extreme oder so
-Thus, the next section uses HQs to check most probable stuff 
-
-After mainly describing our fitted models, we now 
-examine how flood event probabilities differ between a univariate and multivariate approache. 
-It is common in hydrology to fit a GEV distribution to flood peak values and 
-then determine the probability of a certain peak to occure. 
-Using copulas, a flood is characterized more wholistically, potentially leading to quite different results.
-The following focuses on the flood in Munich 2024 to showcase these differences.
-
-Figure \@ref(probUni) displays the marginal fit of a GEV distribution to peak data of the Munich station. 
+Figure \@ref(probUni) displays the marginal fit of a GEV distribution to the peak data for the Munich station. 
 ```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_univariate_hq.png")
 ```
-The x-axis of this plot denotes peak values, the y-axis the density of the fitted GEV model. 
-The histogram displays the original data to which the GEV distribution is fit. The resulting smooth distribution 
-is marked by the blue line. The red vertical line and the shaded area are the visual display of the probability
-for the flood event in Munich 2024.
-During this flood, the discharge reached a peak of $462$$[m^3/s]$ which corresponds to a probability of 
-$19\%$ according to the fitted GEV distribution. Thereby, this approach assigns the a 
-return period of such a peak to be $\frac{1}{0.19} \approx5$ years.
+The x-axis of this plot denotes the peak values, the y-axis the density of the fitted GEV model. 
+The histogram displays the original data to which the GEV distribution was fitted. The resulting smooth distribution 
+is marked by the blue line. The red vertical line marks the peak value of $462m^3/s$ and 
+the the shaded area visualizes the probability 
+to observe a peak at least as large. Based on the GEV fit, the probability is calculated to be 
+$19\%$. Thereby, this approach assigns the a 
+return period of such a peak to be $\frac{1}{0.19} \approx5$ years. 
+Thus, Characterizing the whole flood event only by its peak,
+the return period of the whole flood in Munich of 2024 according to the univariate model is $5$ years.
 
-Additional to the flood peak, we also feed volume and duration values into our trivariate copula model.
-The following figure \@ref(fig:probMulti) is based on figure \@ref(visualGoF) and visualizes these observed values 
-in pseudo-observation scale.
+The trivariate copula model allows to also consider volume and duration values to characterize a flood event.
+Figure \@ref(fig:probMulti) is based on figure \@ref(visualGoF) and visualizes 
+how the multivariate model determines the probability for a flood event to be at least as severe. 
+Also, this plot helps to understand the quite stark differences in the probabilities.
 ```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_multivariate_hq.png")
 ```
-The red lines in the figure mark the observed pseudo observations for the referenced flood event.
+Note that, as before, this figure displays the data in terms of their pseudo observations.
+The red dot in each subplot marks the event in 2024 and the red lines correspond to the univariate 
+univariate observed pseudo values. 
+Thereby, a flood event is at least as severe as the flood in Munich if it lies wihtin the shaded area. 
+Thus, the probability is obtained by integrating the joint copula density over the cube made 
+up by the shaded area. 
+According to our model, this adds up to be $2.7\%$ which corresponds to a return period of merely $\frac{1}{0.027} \approx 37$ years. 
+Thereby, the return period for such an extreme flood is $\frac{37}{5}\approx7$ times longer
+if the flood is characterized not only but its peak, but also by its volume and duration value.
+The reason for this drastic difference is 
+seen in figure \@ref(fig:probMulti). While the pseudo observation 
+of the peak value of the event is around $0.76$,
+the volume is at $0.96$. That is, the volume during this flood was exceptionally large which 
+decreases the 
+probability of such an event to occure. 
+Visually, this is seen from the shaded area being very slim. 
+In contrast, the univariate consideration of 
+peak values only 
+is not capable to account for this. 
 
+### Conditional Discharges
+This any good?: 
 
-Thereby, this results shows that characterizing a flood event by only its peak may be misleading. Because
-a merely univariate approach neglects additional features that are of importance.
+Finally, this section examines the effect of different peak values onto the other characteristics of a flood. 
+Mainly, we are interested in the average discharge value during a flood event as it is a measure 
+of the average energy the system has to deal with. 
 
-Univariate only considers peak, but this does not sufficiently characterizes a flood
-While the marginal probability of sucha peak is pretty large, the more complex condieration 
-of the flood shows that it was one of the more seldome floods 
-ODER SO
-
-
-
-
-
-
-Discuss low probability and implies flood with this combination of variables only appears 
-every 100years according to our vine model
-Based on figure \@ref(fig:probMulti), the especially the observed volume value is small. 
-
-
-
+First, we fit 
+station specific GEV distributions onto the observed peak values and determine station specific 
+peak values that only occure every $2, 5, 10, 20$ and $50$ years. 
+We choose the upper bound of $50$ years to validate the model predictions using the available data.
+Conditional on these peaks, the most likely combination of duration and volume are determined.
+From these, the average discharge values are calculated and standardized in the same manner explained in 
+section \@ref(data).
+<!-- Then, we considered the conditional joint distribution of volume and duration given peak which is  -->
+<!-- obtained based on \@ref(eq:jointdens). This allows to determine the most likely combination of  -->
+<!-- volume and duration for a given peak.  -->
+<!-- Based on these pairs, -->
+<!-- the average discharge values are calculated.  -->
+Figure  \@ref(fig:modelEval) is based on figure \@ref(fig:) and displays our results.
 ```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
 ```
 
+The rows of the figure refer to the model structure applied to predict the average discharges. Here, 
+we also consider FNAC models because this application nicely depicts their shortcomings and reason why they are
+not suitable if their assumptions are violated.
+Additionally, we colored each model prediction by which variable pair had the highest correlation.
+First, consider the vine model fits in the bottom row.  The models 
+correctly capture the trend suggested by the boxplots independent of which pair of variables has the highest 
+correlation. For a return period of $50$, model predictions and boxplots increase in variance. 
+
+Does this make sense, hydrologically?:
+This is reasonable because the manner in which an event is extreme depends on the station. Thereby, a joint 
+behavior in boxplot and model prediction suggests a good fit. 
+
+For FNACs, consider their performance within the stations of the Isar first. Their is a visible 
+difference in model performance depending on which variable pair has a larger correlation. That is, if volume 
+and peak build the inner copula due to their larger correlation, the model performs better than for 
+volume and duration being stronger correlated. 
+For the Danube, FNAC models bare move at all failing to capture any trend in the data whatsoever. 
+
+TODO: Where do we explain why this is the case? (FNACS failing)
+TODO: Systematic underestimation of average discharge bc bias
+
+<!-- The plot itself is divided into subplots where the columns refer to data observed in the corresponding  -->
+<!-- river. The boxplots are river specific and aim to display the empirical equivalent to a conditional  -->
+<!-- quantile. That is, for each station, we selected peak quantiles according to the return period of the peak. Then, -->
+<!-- we determined the average discharge of this event, giving us an average discharge given that the peak  -->
+<!-- was of a certain return period.  -->
+<!-- This approach was applied to all stations and made compareable by standarization.  -->
+
+
+<!-- We also standadized the model results to make  -->
+<!-- them compareable which brings us to the rows of figure \@ref(modelEval). -->
+<!-- Actually, would I not have to put this whole plot into data?? I mean, the whole description from ealier???  -->
+<!-- We also introduce the following plot, as we built upon in during our application  -->
+<!-- Refernce plot here and then ONLY evaluate model. Do not discuss data bs here. Wtf...  -->
+
+<!-- conditional boxplot to new -->
+
 
 ## Discussion {#discussion}
+
+From Probabilty section:
+As this section shows, we 
+urge to not solely rely on a marginal GEV distribution of peak to fully characterize a flood event.
+Instead, a multivariate event consideration is required. 
+
+Discuss flood detection and effect onto results?
+
+Use the fitted models to predict the most likeli discharge for some HQ100
+<!-- and  -->
+<!-- then determine the probability of a certain peak to occure.  -->
+<!-- Using copulas, a flood is characterized more wholistically, potentially leading to quite different results. -->
 <!-- 	> Brief recap of the objevtive of the project -->
 <!-- > Interpretation of the results with reference to initial objective  -->
 <!-- 	> Brief presentation of the most important results -->
