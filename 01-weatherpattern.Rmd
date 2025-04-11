@@ -27,7 +27,7 @@ Accurate classification of these CTs is crucial for diagnosing long-term climate
 
 Using a convolutional neural network (CNN) architecture (inspired by applications in climate science and optimization techniques from), we trained the model on high-resolution ERA5 reanalysis data (1950–1980), with sea-level pressure (SLP) and geopotential height at 500 hPa (z500) fields as key predictors. To ensure robustness, a nested cross-validation approach was employed, achieving an overall accuracy of 53.17% and a macro F1 score of 55.14%, outperforming traditional classification methods.
 
-Applied to the CanESM2 ensemble projections, which simulate observed past climate, our results show significant future frequency shifts in CTs, notably an increase in Icelandic High, Cyclonic (HNZ) occurrences during both summer and winter half-years. This methodological advancement not only enhances classification accuracy but also offers robust ensemble analyses critical for climate-informed decision-making.
+Applied to the CanESM2 ensemble projections, which simulate data with assumptions that climate conditions were consistent with history, our results show significant future frequency shifts in CTs, notably an increase in Icelandic High, Cyclonic (HNZ) occurrences during both summer and winter half-years. This methodological advancement not only enhances classification accuracy but also offers robust ensemble analyses critical for climate-informed decision-making.
 
 ## Introduction
 
@@ -113,7 +113,7 @@ The data should be preprocessed with the same variables, scale, domain, resoluti
     * Provider: Canadian Centre for Climate Modelling and Analysis (CCCma)
     * Model Used: Climate Model Intercomparison Project phase 5 (CMIP5)
     * Ensemble Members: 50 (due to downloading limitation, we only used 12 ensemble)
-    * Scenario: historical, simulate the condition as observed past climate fro, 1850 to at least 2005.
+    * Scenario: historical, simulate the condition as observed past climate from 1850 to at least 2005 [@Friedlingstein2008].
     * Temporal Coverage:
         * Historical Reference: 1971–2000
         * Future Projections: 2031–2060
@@ -468,11 +468,15 @@ These differences underline the sensitivity of CT analysis to methodological cho
 
 ## Conclusion and Outlook
 
-In this study, we successfully implemented a CNN-based deep learning approach for classifying large-scale atmospheric CTs over Europe, building upon the established HB framework. Using high-resolution ERA5 data for model training, our method achieved an overall accuracy of 53.17% and a macro F1-score of 55.14%, clearly outperforming traditional classification approaches. The CNN model effectively learned dominant circulation patterns, yet faced challenges classifying rare or inherently complex CTs. These limitations indicate potential issues of class imbalance and inherent labeling uncertainties associated with manual classifications.
+In this study, we successfully implemented a CNN-based deep learning approach to classify large-scale CTs over Europe, building upon the established HB framework. Using high-resolution ERA5 data for model training, our method achieved an overall accuracy of 53.17% and a macro F1-score of 55.14%, clearly outperforming traditional classification approaches. 
+
+The CNN model effectively learned dominant circulation patterns, yet faced challenges classifying rare or inherently complex CTs. These limitations indicate potential issues of class imbalance and inherent labeling uncertainties associated with manual classifications.
+One potential improvement to the statistical analysis would be reducing the number of subdivisions of CTs. Subdividing CT according to the wind direction of the jet stream, for example, could increase the robustness of the results. Additionally, the original study found that the most frequent misclassifications occurred between pairs of anticyclonic and cyclonic circulation types [@Mittermeier2022], which could be addressed through refined classification methods. Furthermore, future research should be conducted to quantify human-level errors in labelling to better understand the impacts of manual classification biases.
 
 Besides the primary training session and results shown in this report, 
 we conducted another model training experiment using a narrower range of hyperparameters. 
-The results, are illustrated in the presentation, demonstrated noticeably different classification performance compared to the setup here. However, it's relatively closer to the findings of the paper. In particular, I suspect that the size of the fully connected linear layers leads to this difference. Since in earlier experiments with narrower range of hyperparameters, we tuned the fully connected layer size to fixed 50 dimensions, however, in the latest optimization round, where more extensive hyperparameter tuning were applied, the model consistently favored a dimension size of 128, which leads to high accuracy for each HB CTs. Therefore, the model shows good performance on the current dataset, it is important to note that this does not necessarily guarantee the absence of overfitting. 
+The results, which are illustrated in the presentation, demonstrated noticeably different classification performance compared to the setup we introduced here. 
+In particular, I suspect that the size of the fully connected linear layers is the mean reason for this difference. Since in earlier experiments with narrower range of hyperparameters, we set the fully connected layer size as fixed 50 dimensions, however, in the latest optimization round, where more extensive hyperparameter tuning were applied, the model consistently favored a dimension size of 128, which leads to high accuracy for each HB CTs. Therefore, the model shows good performance on the current dataset, it is important to note that this does not necessarily guarantee the absence of overfitting. 
 
 Due to limited computational resources, we were unable to perform a more thorough investigation to validate these observations or further optimize the model architecture. Future work should focus on systematically assessing the impact of fully connected layer sizes and further regularization strategies to ensure model robustness and generalization.
 
@@ -482,15 +486,17 @@ When focusing only on the frequency of HB CTs, without considering their duratio
 
 To further evaluate the uncertainties in frequency changes, it would be beneficial to combine multi-model and single-model ensembles under different forcing scenarios. This approach could help assess the uncertainties arising from various climate models and the assumptions in different forcing scenarios.
 
-The classification used in this study is based on a subjective approach, and it is crucial to quantify the potential human-level errors in labeling. This could provide valuable insight into the accuracy and reliability of the classification system used.
-
-One potential improvement to the statistical analysis would be to reduce the number of subdivisions of circulation types. For example, subdividing the Großwetterlagen according to the wind direction of the jet stream could increase the robustness of the results. Additionally, the study found that the most frequent misclassifications occurred between pairs of anticyclonic and cyclonic circulation types, which could be addressed through refined classification methods.
-
 For future studies, we recommend quantifying human-level errors in labeling to understand better the impacts of manual classification biases. 
 Additionally, models that explicitly capture temporal continuity, such as Deep Hidden Markov Models [@Yu2015] or temporal-aware CNN architectures (e.g., ConvLSTM [@Moishin2021]), 
 could enhance prediction accuracy by directly modeling the persistence characteristic inherent in circulation patterns [@Mittermeier2022].
 
 ## Appendix
+
+### Statement
+
+The implementation was carried out using Python version 3.9.18.
+
+### Figures
 
 Synoptic patterns of the 29 HB CTs using ERA20C (Figure \@ref(fig:ERA20C))
 
