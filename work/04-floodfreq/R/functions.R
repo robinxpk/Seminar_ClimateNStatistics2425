@@ -397,7 +397,10 @@ get_bavaria_plot = function(
 }
 
 get_hydrograph = function(df, save_plot = FALSE, plotname = "selected_hydrograph"){
-  plot(create_hydrograph(df))
+  plot(
+    create_hydrograph(df) +
+       ggtheme
+    )
   if(save_plot) savegg(plotname)
 }
 
@@ -428,7 +431,8 @@ get_cor_plot= function(cor_table, save_plot = FALSE, plotname = "cor_plot"){
       x = ""
     ) + 
     ylim(-0.12, 1) + 
-    facet_wrap(~river)
+    facet_wrap(~river) + 
+      ggtheme
   )
   if(save_plot) savegg(plotname)
 }
@@ -481,7 +485,7 @@ visualGOF = function(
     x_lab = "",
     bwidth = 0.1,
     contour_alpha = 0.7
-  ) 
+  ) + ggtheme
   cont_peak_vol = get_contour(
     rel = "Peak - Volume", 
     splot_df = dens_df, 
@@ -493,7 +497,7 @@ visualGOF = function(
     x_lab = "",
     bwidth = 0.1,
     contour_alpha = 0.7
-  ) 
+  ) + ggtheme
   cont_dur_vol = get_contour(
     rel = "Duration - Volume", 
     splot_df = dens_df, 
@@ -505,7 +509,7 @@ visualGOF = function(
     x_lab = "",
     bwidth = 0.2,
     contour_alpha = 0.7
-  ) 
+  ) + ggtheme
   
   syn_dur_peak = get_syn_scatter(
     ssyn_df = syn_df, 
@@ -521,7 +525,7 @@ visualGOF = function(
     x_max = 1,
     y_min = 0,
     y_max = 1
-  )
+  )+ ggtheme
   syn_peak_vol = get_syn_scatter(
     ssyn_df = syn_df, 
     vary_syn = "pobs_peak", 
@@ -536,7 +540,7 @@ visualGOF = function(
     x_max = 1,
     y_min = 0,
     y_max = 1
-  )
+  )+ ggtheme
   syn_dur_vol = get_syn_scatter(
     ssyn_df = syn_df, 
     vary_syn = "pobs_dur", 
@@ -551,7 +555,7 @@ visualGOF = function(
     x_max = 1,
     y_min = 0,
     y_max = 1
-  )
+  ) + ggtheme
   
   plt = (cont_dur_peak | cont_peak_vol| cont_dur_vol) / 
       (syn_dur_peak| syn_peak_vol| syn_dur_vol) + 
@@ -699,15 +703,7 @@ get_univariate_HQ_plot = function(scop_df, ref_flood, gev_peak, save_plot = FALS
       x = latex2exp::TeX("Peak ($m^3/s$)"),
       y = "Density",
       title = paste(scop_df$unit |> unique(), "station - GEV Fit on Peak")
-    ) + 
-    theme(
-      title = element_text(size = 20),
-      axis.text = element_text(size = 15),
-      axis.text.x = element_text(angle = 90),
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.title = element_text(size = 20)
-    )
+    ) + ggtheme
   )
   message(paste("MESSAGE: Estimated event probability:", round(1 - pmarginal(ref_flood$peak, gev_peak), 2)))
   
@@ -730,7 +726,7 @@ get_trivariate_HQ_plot = function(scop_df, ref_flood, vine, n_syn = 1e6, save_pl
     y_lab = "P.Obs. Duration",
     bwidth = 0.1,
     contour_alpha = 0.7
-  ) +
+  ) +ggtheme+
     geom_point(data = ref_flood, aes(y = pobs_dur, x = pobs_peak), color = "red") +
     geom_segment(data = ref_flood, aes(y = 0, yend = 1, x = pobs_peak, xend = pobs_peak), color = "red") +
     geom_segment(data = ref_flood, aes(y = pobs_dur, yend = pobs_dur, x = 0, xend = 1), color = "red") +
@@ -747,7 +743,7 @@ get_trivariate_HQ_plot = function(scop_df, ref_flood, vine, n_syn = 1e6, save_pl
     y_lab = "P.Obs. Peak",
     bwidth = 0.1,
     contour_alpha = 0.7
-  )  + 
+  )  + ggtheme+
      geom_point(data = ref_flood, aes(y = pobs_peak, x = pobs_vol), color = "red") +
     geom_segment(data = ref_flood, aes(y = 0, yend = 1, x = pobs_vol, xend = pobs_vol), color = "red") +
     geom_segment(data = ref_flood, aes(y = pobs_peak, yend = pobs_peak, x = 0, xend = 1), color = "red") +
@@ -764,7 +760,7 @@ get_trivariate_HQ_plot = function(scop_df, ref_flood, vine, n_syn = 1e6, save_pl
     y_lab = "P.Obs. Duration",
     bwidth = 0.1,
     contour_alpha = 0.7
-  )  + 
+  )  + ggtheme+
      geom_point(data = ref_flood, aes(y = pobs_dur, x = pobs_vol), color = "red") +
     geom_segment(data = ref_flood, aes(y = 0, yend = 1, x = pobs_vol, xend = pobs_vol), color = "red") +
     geom_segment(data = ref_flood, aes(y = pobs_dur, yend = pobs_dur, x = 0, xend = 1), color = "red") +
@@ -826,8 +822,20 @@ model_evaluation = function(cop_df, nacs, vines, hq_probs, grid_size = 25, save_
     emp_hq_df |>
     ggplot() +
     geom_boxplot(aes(x = as.factor(HQ), y = std_discharge)) +
-    geom_line(data = res, aes(x = as.factor(hq), y = std_discharge, group = unit, color = tau_order)) + 
-    facet_grid(type~river)
+    geom_line(data = res, aes(x = as.factor(hq), y = std_discharge, group = unit, color = tau_order), alpha = 0.5) + 
+    facet_grid(type~river) + 
+      scale_color_manual(
+        name = "Largest τ",  # legend title
+        values = c(
+          "tau_dp<tau_vd<tau_vp" = "darkred",
+          "tau_dp<tau_vp<tau_vd" = "darkblue"
+        ),
+        labels = c(
+          "tau_dp<tau_vd<tau_vp" = "Volume–Peak",
+          "tau_dp<tau_vp<tau_vd" = "Volume–Duration"
+        )
+      ) + 
+      labs(y = "Standardized Average Discharge", x = "Return Period")
   )
   if (save_plot) savegg(plotname)
 
@@ -1306,3 +1314,33 @@ add_hq_cat_col = function(df, hqs, init_hq_value = 2){
   return(df)
 }
 
+
+get_cond_boxplots = function(save_plot = F, plotname = "data_condBoxplots"){
+  emp_hq_df = cop_df |>
+    dplyr::group_by(unit) |>
+    dplyr::arrange(peak) |>
+    dplyr::mutate(idx = dplyr::row_number()) |>
+    dplyr::mutate(
+      avg_discharge = get_avg_discharge_from_vol_dur_pair(vol = volume, dur = duration_days),
+      mean_avg_discharge = mean(avg_discharge),
+      sd_avg_discharge = sd(avg_discharge),
+      std_discharge = (avg_discharge - mean_avg_discharge) / sd_avg_discharge
+    ) |>
+    dplyr::filter(idx %in% c(nrow(scop_df) - floor(HQ_probs * nrow(scop_df)))) |>
+    dplyr::select(-c(east, north, pobs_peak, pobs_dur, pobs_vol)) |>
+    dplyr::ungroup() |>
+    dplyr::arrange(id, idx) |>
+    dplyr::group_by(unit) |>
+    dplyr::mutate(
+      HQ = HQs[1:dplyr::n()]
+    ) |> 
+    dplyr::ungroup()
+  
+  plot(emp_hq_df |>
+    ggplot() +
+    geom_boxplot(aes(x = as.factor(HQ), y = std_discharge)) +
+    facet_wrap(~river) + 
+      labs(y = "Standardized Average Discharge", x = "Return Period")
+  ) + ggtheme
+  if(save_plot) savegg(plotname)
+}

@@ -43,3 +43,12 @@ HQ_probs = 1/HQs # Corresponding probability for return period
 n_syn = 1000
 
 
+
+# gg themes ---------------------------------------------------------------
+ggtheme = theme(
+  plot.title = element_text(size = 18, face = "bold"),
+  plot.subtitle = element_text(size = 14),
+  axis.title = element_text(size = 14),
+  axis.text = element_text(size = 12),
+  legend.text = element_text(size = 12)
+)

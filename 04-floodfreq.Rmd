@@ -39,12 +39,12 @@ Structural damages in Bavaria typically occur to private residential buildings, 
 public infrastructure, and critical transport systems such as roads and bridges. In 2024 alone, flood events 
 in Bavaria caused an estimated €4 billion in damages. Environmental impacts, such as contamination 
 from leaked heating oil, also pose serious consequences but are often difficult to quantify in 
-monetary values (@lfU2025).
+monetary values (@lfu2025).
 These significant damages emphasize the need for robust risk assessment tools 
 to support decision-making in floodplain management and infrastructure design. 
 Traditional flood frequency analysis in hydrology has largely focused on univariate approaches, 
 where the relationship between flood peak and its return period is estimated independently of other 
-hydrological variables (@khajehali2025 et al., 2025). 
+hydrological variables (@khajehali2025). 
 While such analyses are suitable for preliminary risk assessments, 
 they have limited capability to represent the complexity of real-world flood events, 
 especially when applied to the design of hydraulic structures or the 
@@ -74,7 +74,7 @@ of the most severe flood event within a year.
 These variables are derivable from yearly hydrological discharge data.
 The discharge data we use during our analysis 
 is provided by the 
-Bavarian Environmental Agency's hydrological service (GKD) (@GKDwebsite) which 
+Bavarian Environmental Agency's hydrological service (GKD) (@gkd2025) which 
 is data from multiple measurement station along the Isar and the Danube. 
 Based on this, the following 
 gives a brief description of the data,
@@ -89,7 +89,7 @@ Of these stations, $12$ are along the Isar and $9$ along the Danube where every 
 As seen towards the end of this section, the alpine river Isar and the low-lying Danube have contrasting 
 hydrological characteristics, enabling a meaningful comparison of flood dynamics in Bavaria.
 The exact spatial distribution of the considered station displayed plot \@ref(fig:bavaria). 
-```{r bavaria, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+```{r bavaria, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The location of the selected measurement stations for the Isar and the Danube in Bavaria, Germany."}
 knitr::include_graphics("./work/04-floodfreq/figures/data_bavaria_plot.png")
 ```
 Given the annual discharge data for all these stations, we require to identify the 
@@ -106,21 +106,22 @@ This method relies on the baseflow index (BFI) which is the ratio of the baseflo
 <!-- Calculte BFI at each time step and extracts discrete flood events when the BFI falls below the specified threshold for a user-specified minimum duration. -->
 A default BFI threshold of 0.5 was used to distinguish events dominated by rapid runoff contributions typically associated with rainfall- or melt-induced flooding.
 Exemplary, figure \@ref(fig:hydro) shows the hydrograph for the station in Munich in 2024. 
-```{r hydro, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+```{r hydro, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="An exemplary hydrograph of the Munich station in 2024 (left) with the applied flood detection method result (right)."}
 knitr::include_graphics("./work/04-floodfreq/figures/data_hydrograph.png")
 ```
-
-TODO: Depending on plot, describe what the F is seen here
-
-Based on all identified flood events, the event with the largest peak discharge is selected and, finally, the 
+Both subplots in the figure display the same hydrograph, but the right describes the identification of the most
+severe flood. First, all flood events are selected. Then, the flood with the largest peak identified. The 
+flood duration is based on the previously described process.
+Finally, the 
 variables of interest are determined. That is, 
 flood peak is the maximum discharge value occurring within the event,
 flood duration is the time span measured in days between the start and end of the event, as determined by the BFI threshold crossings.
 Flood volume is the cumulative streamflow over the flood duration, representing total discharge volume in $m^3$.
+These are neatly displayed on the left subplot.
 
 Now, we come to the most crucial aspect in our data and show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
 of every possible combination between the $3$ variables separated by river.
-```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="Caption"}
+```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width = "100%", fig.cap="The Kendalls au Coefficients for the three dependency structures of volume, duration and peak for the Isar and the Danube. Black dots mark the respective results found in @grimaldi2006."}
 knitr::include_graphics("./work/04-floodfreq/figures/data_cor_plot.png")
 ```
 
@@ -153,8 +154,8 @@ To now characterize a conditional distribution using our data, we ordered all fl
 by their peak values and then selected the quantiles corresponding to the 
 return periods $2, 5, 10, 20$ and $50$ years.
 Thereby, we obtained $21$ average discharge values for each return period.
-Consider figure \@ref(condEmpBoxplots) for a visualization.
-```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="TODO"}
+Consider figure \@ref(fig:condEmpBoxplots) for a visualization.
+```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="The standardizes average discharge values by peak quantiles of the GKD data."}
 knitr::include_graphics("./work/04-floodfreq/figures/data_condBoxplots.png")
 ```
 First of all, note that the average discharge values are on the 
@@ -456,7 +457,7 @@ That is, PCC decomposes multivariate densities into products of (conditional) bi
 There exist multiple vine copula classes, depending on the structure the PCC implies, but as we are concerned with the trivariate case, 
 these constructions are equivalent. 
 
-We use @czado2019 (p. 78, 90) and devine the trivariate copula density as 
+We use @czado2019 (p. 78, 90) and define the trivariate copula density as 
 $$
 c_{123}(u_1, u_2, u_3|\theta) = c_{12}(u_1, u_2|\theta_{12}) \cdot  c_{23}(u_2, u_3|\theta_{23})  \cdot c_{13|2}(u_1|u_2, u_3|u_2\mid \theta_{13|2})
 (\#eq:simpvinecopdf)
@@ -623,8 +624,8 @@ and $4$ possible correlation structures. This leads to roughly $\frac{27000}{4\c
 It is not exactly $250$ because we used a uniform draw to select copula families and correlation 
 structure as it drastically simplified implementation. 
 
-The one result we want to focus on is described in figure \@ref(simresults).
-```{r simresults, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+The one result we want to focus on is described in figure \@ref(fig:simresults).
+```{r simresults, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The simulation results by sample size and correlation structure."}
 knitr::include_graphics("./work/04-floodfreq/figures/sim_NAC_if_Vine_DPG.png")
 ```
 This figure uses multiple subplots displaying trace plots of the $\tau$ values estimated by the FNAC model. 
@@ -665,7 +666,7 @@ effect of the bias in FNACs and its practical meaning.
 ### Goodness of Fit
 The following discusses the goodness of fit for the vine copula model 
 based on the Munich station using figure \@ref(fig:visualGoF).
-```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The contour lines and synthetic data plots for the Munich station."}
 knitr::include_graphics("./work/04-floodfreq/figures/app_visualGOF.png")
 ```
 This figure consists of $6$ subplots. 
@@ -680,7 +681,7 @@ of the pseudo observations.
 This seems to be the case for all variable pairs as not only the shape of the black points is nicely
 reflected in the synthetic data points, but also the strength of dependence matches.
 This is validated when comparing the empirical correlation values with the correlation implied 
-by the fitted models as seen in table \@ref(corrvalues).
+by the fitted models as seen in table \@ref(tab:corrvalues).
 The largest absolute difference between the correlation values is just $0.02$.
 
 | Pair                | Copula Family           | Empirical \( \tau \) | Fitted \( \tau \) | \( |\Delta \tau| \) |
@@ -692,7 +693,7 @@ The largest absolute difference between the correlation values is just $0.02$.
 Table: (\#tab:corrvalues) Describtives on the fitted copula model for Munich station.
 
 Now, consider the top row of figure \@ref(fig:visualGoF) in combination with the corresponding copula families
-mentioned in table \@ref(corrvalues). The Clayton and 180° rotated Gumbel-Hougaard copula imply 
+mentioned in table \@ref(tab:corrvalues). The Clayton and 180° rotated Gumbel-Hougaard copula imply 
 lower tail dependence for the relation between duration and peak as well as duration and volume, respectively. 
 Thereby, if the flood peak is small, the duration tends to be short, too. Also, the volume of a flood 
 is more likely to be small
@@ -710,11 +711,11 @@ Because tail dependence is an important concept from a hydrological point of vie
 we extend the tail dependence analysis from the previous section to all considered stations.
 
 Contemplate figure \@ref(fig:bavariaTaildep) for a visual assessment of the tail dependence structure.
-```{r bavariaTaildep, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+```{r bavariaTaildep, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The signed tail dependencies of the three variable combinations."}
 knitr::include_graphics("./work/04-floodfreq/figures/app_bavaria_taildep.png")
 ```
 This plot shows $3$ different subplots, one for each variable pair. 
-The subplots are based on figure \@ref(bavaria) and display all stations colored by their 
+The subplots are based on figure \@ref(fig:bavaria) and display all stations colored by their 
 tail dependence value. 
 Because we only allowed for copula families with either upper, lower or no tail dependence, 
 we visualize the signed tail dependence. 
@@ -739,8 +740,8 @@ To answer it, the
 following focuses on the flood event in Munich 2024 
 which had a peak of $462m^3/s$, took $20$ days and had a volume of $406m^3$. 
 
-Figure \@ref(probUni) displays the marginal fit of a GEV distribution to the peak data for the Munich station. 
-```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+Figure \@ref(fig:probUni) displays the marginal fit of a GEV distribution to the peak data for the Munich station. 
+```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The GEV fit for the Munich station. The red area delineates floods with a peak equal or higher to the flood event of 2024."}
 knitr::include_graphics("./work/04-floodfreq/figures/app_univariate_hq.png")
 ```
 The x-axis of this plot denotes the peak values, the y-axis the density of the fitted GEV model. 
@@ -754,10 +755,10 @@ Thus, Characterizing the whole flood event only by its peak,
 the return period of the whole flood in Munich of 2024 according to the univariate model is $5$ years.
 
 The trivariate copula model allows to also consider volume and duration values to characterize a flood event.
-Figure \@ref(fig:probMulti) is based on figure \@ref(visualGoF) and visualizes 
+Figure \@ref(fig:probMulti) is based on figure \@ref(fig:visualGoF) and visualizes 
 how the multivariate model determines the probability for a flood event to be at least as severe. 
 Also, this plot helps to understand the quite stark differences in the probabilities.
-```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The copula fit for the Munich station. The red area delineates floods with a peak, volume and duration equal or higher to the flood event of 2024."}
 knitr::include_graphics("./work/04-floodfreq/figures/app_multivariate_hq.png")
 ```
 Note that, as before, this figure displays the data in terms of their pseudo observations.
@@ -791,8 +792,8 @@ for the return periods of $2, 5, 10, 20$ and $50$ years.
 We choose the upper bound of $50$ years to validate the model predictions using the available data.
 Conditional on these peaks, the most likely combination of duration and volume are determined as well as 
 the average discharge values calculated and standardized.
-Figure  \@ref(fig:modelEval) is based on figure \@ref(fig:) and displays our results.
-```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
+Figure  \@ref(fig:modelEval) is based on figure \@ref(fig:condEmpBoxplots) and displays our results.
+```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The model comparison by river between FNACs and vines."}
 knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
 ```
 The rows of the figure refer to the model structure applied to predict the average discharges. 

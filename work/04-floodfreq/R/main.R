@@ -76,6 +76,9 @@ get_hydrograph(df |> dplyr::filter(unit == station, year == ref_year), save_plot
 get_cor_plot(cor_table, save_plot = save_plots, plotname = "data_cor_plot")
 cor_table |> dplyr::summarise(n = dplyr::n(), .by = c(river, tau_order))
 
+# Cond boxplots -----------------------------------------------------------
+get_cond_boxplots(save_plot = save_plots)
+
 ## Further Descriptives --------------------------------------------------
 # Further descriptives for each river
 # Number of observations
@@ -123,3 +126,7 @@ model_evaluation(
   save_plot = save_plots,
   plotname = "app_modeleval"
 )
+
+
+
+
