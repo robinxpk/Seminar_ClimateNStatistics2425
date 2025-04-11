@@ -5,7 +5,7 @@ source("config.R")
 # In case this code is run for the first time, the data files need to be created --> Set to TRUE
 create_datafiles = FALSE
 # Save the plots displayed during this session
-save_plots = FALSE
+save_plots = TRUE
 # Analysis focuses on some parts on one specific station. Define this station here:
 station = "München"
 # Reference year: The one year I consider in more detail
@@ -103,7 +103,6 @@ get_events(cop_df, summary_df, rivername = "Isar")
 cor_table |> dplyr::summarise(mean_vd = mean(tau_vd), mean_vp = mean(tau_vp), mean_dp = mean(tau_dp), .by = river) 
 get_nac_bias_in_vine_dgp(save_plot = save_plots, plotname = "sim_NAC_if_Vine_DPG")
 
-
 # Application Section -----------------------------------------------------
 # Visual GOF
 visualGOF(vine = vine, scop_df = scop_df, station = station, n_syn = n_syn, save_plot = save_plots, plotname = "app_visualGOF")
@@ -111,6 +110,7 @@ visualGOF(vine = vine, scop_df = scop_df, station = station, n_syn = n_syn, save
 if (create_bavaria_plot) plot_bavaria_taildep(taildep_df, bavaria_params, save_plot = save_plots, plotname = "app_bavaria_taildep")
 # Comparison univariate vs. copula approach
 get_univariate_HQ_plot(scop_df, ref_flood, gev_peak, save_plot = save_plots, plotname = "app_univariate_hq")
+cop_df |> dplyr::filter(unit == "München", year == 2024)
 get_trivariate_HQ_plot(scop_df, ref_flood, vine, n_syn = 1e6, save_plot = save_plots, plotname = "app_multivariate_hq") 
 # Most likely Volume - Duration pairs for HQ values 
 model_evaluation(

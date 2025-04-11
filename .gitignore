@@ -24,3 +24,4 @@ work/04-floodfreq/data/output/rdata/copula_dfs/*.Rdata
 work/04-floodfreq/data/output/rdata/extended_dfs/*.Rdata
 work/04-floodfreq/data/output/rdata/threshold_dfs/*.Rdata
 work/04-floodfreq/data/output/rdata/*.Rdata
+work/04-floodfreq/data/*.Rdata

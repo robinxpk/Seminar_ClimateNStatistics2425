@@ -378,7 +378,7 @@ get_nac_bias_in_vine_dgp = function(in_dir = "../data/simulation/", save_plot = 
     geom_line(aes(y = true_tau_13, x = x)) + 
     geom_line(aes(y = nac_tau_outer, x = x), color = "blue", alpha = 0.4) + 
     geom_line(aes(y = nac_tau_inner, x = x), color = "red", alpha = 0.4) + 
-    facet_grid(n ~ river, scale = "free_x")
+    facet_grid(river ~ n, scale = "free_x")
     )
   if (save_plot) savegg(plotname)
 }

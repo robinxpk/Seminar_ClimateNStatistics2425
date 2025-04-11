@@ -455,7 +455,21 @@ visualGOF = function(
   ){
   dens_df = get_density_values(vine, get_grid(), station)
   syn_df = get_synthetic_data(vine, n_syn, station)
+  fitted_tau = list("Duration - Peak" = vine$tau[3, 1], "Duration - Volume" = vine$tau[3, 2], "Peak - Volume" = vine$tau[2, 1])
+  emp_tau = list("Duration - Peak" = vine$emptau[3, 1], "Duration - Volume" = vine$emptau[3, 2], "Peak - Volume" = vine$emptau[2, 1])
+
+  # Print out the fitted copula families
+  message("Fitted copula details:")
+  for (var in dens_df$vars |> unique()){
+    fam = dens_df |> dplyr::summarise(.by = c(vars, fam)) |> dplyr::filter(vars == var) |> dplyr::select(fam)
+    fam_name = get_copname(fam$fam)
+    message(paste("-- ", var, ": ", fam_name, sep = ""))
+    message(paste("-- -- Empirical tau: ", emp_tau[[var]]))
+    message("-- -- Fitted tau: ", fitted_tau[[var]])
+    message("-- -- -- Abs tau diff: ", abs(fitted_tau[[var]] - emp_tau[[var]]))
+  } 
   
+  # Plot
   cont_dur_peak = get_contour(
     rel = "Duration - Peak", 
     splot_df = dens_df, 
@@ -1023,6 +1037,7 @@ get_contour = function(
 
 
 get_density_values = function(vine, dgrid, unit_name){
+
   plot_df = as.data.frame(dgrid) |>
     # 1: pobs_dur, 2: pobs_peak, 3: pobs_vol
     # 1-2: index [3, 1]

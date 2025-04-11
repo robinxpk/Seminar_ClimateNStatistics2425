@@ -51,13 +51,14 @@ taus = list(
   # How simulations use taus:
   # NACs: tau_outer = mean(tau1, tau2) and tau_inner = tau3
   # Vine: c("1-3", "2-3", "1-2") with: 1,3|2 - 2,3 - 1,2, i.e. 1 - 2 - 3
-  "Donau" = c(.144, .423, .615),
-  "Isar" = c(.147, .466, .568),
+  # "Donau" = c(.144, .423, .615),
+  # "Isar" = c(.147, .466, .568),
+  "Isar" = c(.147, .568, .466)
   # Extreme cases:
   # Two similar dependence structure, but both HIGH, so only one of them can be nested. 
   #   But outer cannot model two different degrees of dependence between the nested variables
-  "LowHighHigh" = c(0.1, 0.8, 0.8),
-  "LowMedHigh" = c(0.1, 0.5, 0.85)
+  # "LowHighHigh" = c(0.1, 0.8, 0.8),
+  # "LowMedHigh" = c(0.1, 0.5, 0.85)
 )
 
 # Cores used during parallelization

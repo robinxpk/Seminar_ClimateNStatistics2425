@@ -77,7 +77,7 @@ was found to be highly unreliable, but so  was a quantile-based straight-line me
 Both approaches exhibit significant uncertainties in identifying flood events, 
 particularly, they tend to overestimate flood duration.
 Instead, we applied
-the baseflow methods proposed and implemented by @wasko2021. 
+the baseflow methods proposed and implemented by @wasko2025. 
 This method relies on the baseflow index (BFI) which is the ratio of the baseflow volume to the volume of streamflow. 
 <!-- Calculte BFI at each time step and extracts discrete flood events when the BFI falls below the specified threshold for a user-specified minimum duration. -->
 
@@ -278,7 +278,7 @@ Thereby, this representation displays the aforementioned restriction of SACs bei
 
 Table: (\#tab:generators) Generator functions of selected Archimedean copulas according to @zhang2019 (p. 130) and tail dependencies according to @zhang2019 (p. 132).
 
-### Taildependence and Rotation
+### Taildependence and Rotation {#taildep}
 After explaining what it means for a copula to be of a certain family, 
 the following introduces the family specific concept of tail dependence. 
 Also, we briefly explain how copulas are manipulated to extend the dependence possible structure one family 
@@ -303,7 +303,7 @@ Thereby, tail dependence
 measures how likely it is for both random variables to jointly exhibit extreme behavior. 
 However, upper tail dependence refers to both variables attaining large values while lower tail dependence means 
 both variables are jointly small. 
-Note that both, upper and lower tail dependence, depend on the copula function $C$ and, thus, on the copula 
+Note that both, upper and lower tail dependence, depend on the copula function $C$ and parameter $\theta$ and, thus, on the copula 
 family. The tail dependencies implied by the copula families we consider are also listed in 
 table \@ref(tab:generators) as stated in @zhang2019 (p. 132).\
 Finally, tail dependence is a family specific property, however, a copula function may be rotated to 
@@ -440,7 +440,8 @@ $$
 (\#eq:pseudologlik)
 $$
 where $u_{ik}$ denotes the marginal empirical distribution function scaled by $\frac{n}{n+1}$.
-And depending on the copula model, the definition of the copula density follows either from 
+These transformed variables are refered to as pseudo-observations. 
+Depending on the copula model, the definition of the copula density follows either from 
 equation \@ref(eq:defFNAC) or \@ref(eq:simpvinecopdf).
 Thus, the exact estimation process slightly differs between copula models. \
 The AIC is given by @fahrmeir2013 (p. 164) as 
@@ -508,7 +509,7 @@ $$
 (\#eq:cKendall)
 $$ 
 where $\phi'(t|\theta)$ denotes the derivative of the generator function. Note that this relation is positive
-which is seen in @zhand2019 (p. 134). That is, if the parameter of copula increases, the strength of dependence
+which is seen in @zhang2019 (p. 134). That is, if the parameter of copula increases, the strength of dependence
 increases. Vice versa, if correlation increases, $\theta$ increases, too. Also, note that this implies that 
 estimating a $\theta$ implicitly estimates a $\tau$ value.
 This is a relation we will use during our simulation.
@@ -551,78 +552,202 @@ Finally, GEV distribution were fitted using the function
 `extRemes` package by @gilleland2016 which uses MLE to determine the parameters mentioned in \@ref(gev).
 
 ## Simulation {#sim}
-To examine how the fact that FNACs are not able to capture $3$ distinct dependence structures in a trivariate
-setting affects the model results, we ran a simulation. 
-We limit this section to the most crucial finding 
+<!-- Bias well visible for low high high where the bottom line is not reach at all, -->
+<!-- howeer, this goes for all considered correlation structures.  -->
+<!-- That is, also for the river correlations suggesting that using  -->
+<!-- FNACs on our real world data leadst to the this observed bias  -->
+To examine the incapability of FNACs to capture $3$ distinct dependence structures in a trivariate
+setting, we ran a simulation. 
+The true underlying model builds a vine copula models.
+This section is limited to the most crucial finding 
 which is highly relevant for the interpretation of our results in the following section.
 
-We set up the simulation by drawing $27000$ times a random samples of size $15, 30, 50, 1000$. 
-The sample size of $50$ is closest to our actual setting while $1000$ observations aim to examine large sample behavior. The two smaller samples sizes are interesting because we decided to remove stations due to their small
-sample size.
-Additionally, for every drawn sample, 
-the underlying vine copula model had $2$ wheels to tweak:
+We set up the simulation by drawing $27000$ random samples of size $15, 30, 50, 1000$. 
+The sample size of $50$ represents our real world conditions while $1000$ observations aim to examine large sample behavior. The two smaller samples sizes are interesting because we earlier decided to remove stations due to their small
+sample size.\
+For each drawn sample, 
+the underlying vine copula model has $2$ wheels to tweak:
 First, each copula density 
-of the underlying vine copula density is allowed to be of one of the copula families 
+of the underlying vine copula model is allowed to be of one of the copula families 
 listed in table \@ref(tab:generators) leading to a possible total of $3^3 = 27$ copula family combinations. 
-And second, we allowed for $4$ different correlation values, $2$ of which correspond to the observed average 
-correlation values in the Isar and the Danube. The remaining $2$ aimed to examine general behavior of FNACs 
-if the true underlying model is a vine model with $3$ distinct strength of dependence. That is, 
-we added a Low-Medium-High correlation structure with correlation values of $0.1, 0.5, 0.85$ and a 
-Low-High-High correlation structure with values of $0.1, 0.8, 0.8$.\
-Thereby, we had $27000$ data points per sample size which were divided by all $27$ possible copula family combinations
-and $4$ possible correlation structures leading to roughly $\frac{27000}{4\cdot 27} = 250$ data points per setup.
-It is not exactly $250$ per setup because we used a uniform draw to select copula families and correlation 
-structure as simplified coding a lot. 
+Second, we allowed for $4$ different correlation values, $2$ of which correspond to the observed average 
+correlation values in the Isar and the Danube. The remaining $2$ aimed to examine general behavior of FNACs. That is, we added a Low-Medium-High correlation structure with correlation values of $0.1, 0.5, 0.85$ and a 
+Low-High-High structure using $0.1, 0.8, 0.8$.\
+Thereby, we had $27000$ data points per sample size which are split among all $27$ possible copula family combinations
+and $4$ possible correlation structures. This leads to roughly $\frac{27000}{4\cdot 27} = 250$ data points per setup.
+It is not exactly $250$ because we used a uniform draw to select copula families and correlation 
+structure as it drastically simplified implementation. 
 
-The result we want to highlight is displayed in figure \@ref(simresults).
+The one result we want to focus on is described in figure \@ref(simresults).
 ```{r simresults, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/sim_NAC_if_Vine_DPG.png")
 ```
-This figure uses multiple subplots to display the trace plots of the $\tau$ values implictly estimated by the FNAC model 
-as mentioned in section \@ref(kendallstau). That is, Kendall's $\tau$ is displayed on the y-axis while the index 
+This figure uses multiple subplots displaying trace plots of the $\tau$ values estimated by the FNAC model. 
+Kendall's $\tau$ estimates are displayed on the y-axis while the index 
 of the iteration in which this model was fitted is on x-axis. Note that this plot does not differ by 
 copula family combination leading to roughly $\frac{27000}{4} = 6750$ iterations each.
 The black lines in each subplot refers to the true underlying correlation values.
 The name of the corresponding 
 correlation structure is to the right hand side of the plot.
-Additionally, the figure is also divided by the sample size on which the estimated FNAC model is based. From a 
-sample size of $15$ on the left up to a size of $1000$ on the right. Color-wise, the red line refers to the $\tau$ of the inner copula and the blue line to the outer copula.
-Due to the mentioned sufficient nesting condition in section \@ref(nacs), the inner $\tau$ in each iteration  
-must always be larger than the outer.\
-The first observation is the decrease in noise as the sample size increases from left to right for 
-every possible correlation structure. For now, focus only on the column of sample size $1000$. In every subplot,
-the noise
-in the red line is drastically reduced and we see that it mainly moved around the most upper black line. 
-This is nicely seen in one of the river correlation structures. 
-Thereby, the inner $\tau$ of FNACs seems to correctly estimate the larges correlation value.
-However, when considering the blue line, it always moves around the second largest black line. 
-Thereby, FNACs smallest $\tau$ attains the second largest correlation value in the (simulated) data.
-This implies that due to the same copula margins mentioned in section \@ref(nacs) that FNACs systematically
-overestimate the weakest dependence strength.\
-This is an important result because it explains not only the compareably bad performance of FNACs during our 
+Additionally, the figure is divided by the sample size on which the estimated FNAC model is based. From a 
+sample size of $15$ on the left up to a size of $1000$ on the right. 
+Color-wise, the red line refers to the $\tau$ of the nested FNAC and the blue line to the outer estimate.
+Due to the sufficient nesting condition (see section \@ref(nacs)), the inner $\tau$ in each iteration  
+is always larger than the outer.\
+The first observation is the decrease in variance of the estimators as the sample size increases. This holds for 
+all possible correlation structures and was expected. 
+Now, focus only on the column of sample size $1000$. Especially in the Low-Medium-High subplot, 
+we observe that the inner $\tau$ estimate moves around the most upper black line. 
+Thereby, the nested copula in a FNAC correctly captures the largest correlation value.
+The blue line, however, moves around the second largest black line and its volatility remains comparably large.
+We conclude that, first, the $\tau$ estimate of the outer copula of a FNAC model varies within a set interval
+for large sample sizes. This is similar to what @grimaldi2006 found in their work when they examined 
+how SACs perform if the true underlying model is a FNAC.
+Second, and highly relevant for our analysis, 
+the $\tau$ based on the outer copula of a FNAC 
+tends towards the second largest correlation value in the (simulated) data.
+This implies that, due to the same copula margins mentioned in section \@ref(nacs), FNACs systematically
+overestimate the weakest dependence strength.
+This is an important result because it explains not only the comparably bad performance of FNACs during our 
 application, but also their bias in the results.
 
 
 ## Application {#app}
-<!-- > DETAILED description of the results, presented with help of TABLES and ILLUSTRATIONS -->
-Copy structure of presentation
-Mention that I only use empirical PIT for fitting and only for prediction use GEV
+Due to our finding during the simulation, we focus on presenting the fitted vine copulas models.
+Only for the predictive performance, we jointly consider FNACs and vines to discuss the 
+effect of the bias in FNACs and its practical meaning. 
 
+### Visual Goodness of Fit
+To each of the $21$ stations, we fitted every possible copula family combination also allowing for a
+copula function to be rotated. Then, the best fitting copula, according to the AIC, is selected. 
+Thereby, the following discusses the one best vine copula fit we found.
+Exemplary, we visually assess the goodness of fit  for the Munich station using figure \@ref(fig:visualGoF).
 ```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_visualGOF.png")
 ```
+This figure consists of $6$ subplots. 
+Each column of subplots refers to a pair of variables specified in the column header.
+The variable named first is displayed on the y-axis. 
+Note that all subplots are on copula level. Thus, all axes range from $0$ to $1$.
+The top row of subplots shows the contour lines for the fitted copula density and the bottom row a synthetic
+random sample from the copula model. 
+The black points in every subplot depict the pseudo observations of the corresponding variables.\
+Starting with bottom row, a good model fit implies that the light blue points capture the structure
+of the pseudo observations. 
+This seems to be the case for all variable pairs as not only the shape of the black points is nicely
+reflected in the synthetic data points, but also the strength of dependence matches.
+This is validated when comparing the empirical correlation values with the correlation implied 
+by the fitted models as seen in table \@ref(corrvalues).
+The largest absolute difference between the correlation values is just $0.02$.
 
+| Pair                | Copula Family           | Empirical \( \tau \) | Fitted \( \tau \) | \( |\Delta \tau| \) |
+|:--------------------|:------------------------|----------------------:|------------------:|--------------------:|
+| Duration – Peak     | Clayton                 | 0.15                  | 0.16              | 0.01                |
+| Peak – Volume       | Gumbel-Hougaard         | 0.49                  | 0.51              | 0.02                |
+| Duration – Volume   | 180° Rotated Gumbel-Hougaard     | 0.60                  | 0.59              | 0.01                |
+
+Table: (\#tab:corrvalues) Describtives on the fitted copula model for Munich station.
+
+Now, consider the top row of figure \@ref(fig:visualGoF) in combination with the corresponding copula families
+mentioned in table \@ref(corrvalues). The Clayton and 180° rotated Gumbel-Hougaard copula imply 
+lower tail dependence for the relation between duration and peak as well as duration and volume, respectively. 
+Thereby, if the flood peak is small, the duration tends to be short, too. Also, the volume of a flood 
+is more likely to be small
+given a short flood duration.
+However, due to its small strength of dependence, the tail dependence for duration and peak is rather small.
+This is not only suggested by the contour lines, 
+but follows from the low $\tau$ value which implies that paramter $\theta$ is small, too, as mentioned in 
+section \@ref(kendallstau).
+This in turn affects the tail dependence as it is a function in $\theta$, as discussed in section \@ref(taildep).
+Finally, a Gumbel copula is fitted to the peak and volume pair implying upper tail
+dependence. Thus, given a large peak, the flood volume tends to be large, too. 
+
+### Fitted Tail Dependencies
+Because tail dependence is an important concept from a hydrological point of view, 
+we extend the tail dependence analysis from the previous section to all considered stations.
+
+Contemplate figure \@ref(fig:bavariaTaildep) for a visual assessment of the tail dependence structure.
 ```{r bavariaTaildep, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_bavaria_taildep.png")
 ```
+This plot shows $3$ different subplots, one for each variable pair. 
+The subplots are based on figure \@ref(bavaria) and display all stations colored by their 
+tail dependence value. 
+Because we only allowed for copula families with either upper, lower or no tail dependence, 
+we visualize the signed tail dependence. 
+That is, upper tail dependence values remain unchanged, but lower tail dependencies are multiplies by 
+$-1$. Thereby, the blacker a station is colored in, the stronger the lower tail dependence and the more 
+purple the stronger the upper tail dependence. A totally white point on the map refers to no tail dependence.
+In these cases, a Frank copula has been fitted to the variable pair.\
+In general, we observe lighter colors for the duration and peak pairs which is due to the rather 
+small correlation values. This follows from the reasoning in the previous section.
+Duration and volume exhibit the darkest colors suggesting that if the flood duration is short, the 
+flood volume tends to be small, too, for the majority of the considered stations. 
 
+Especially towards the alpine regions, the plot suggests a spatial trend.
+
+TODO: Any hydrologically intersting reasoning for this? Slope? Mention that our slope data was shit or smth? 
+
+
+Finally, especially for the Isar, peak and volume seem to exhibit upper tail dependence. Thereby, 
+a high peak is more likely to appear with a high flood volume for the stations along the Isar.
+
+TODO: Any hydrological reason here?
+
+
+### Event Probability
+
+Mention flood detection?
+Mention that the probabiliy of course depends on the exact variable values and 
+that probability can be low due to one variable being extreme oder so
+Thus, the next section uses HQs to check most probable stuff 
+
+After mainly describing our fitted models, we now 
+examine how flood event probabilities differ between a univariate and multivariate approache. 
+It is common in hydrology to fit a GEV distribution to flood peak values and 
+then determine the probability of a certain peak to occure. 
+Using copulas, a flood is characterized more wholistically, potentially leading to quite different results.
+The following focuses on the flood in Munich 2024 to showcase these differences.
+
+Figure \@ref(probUni) displays the marginal fit of a GEV distribution to peak data of the Munich station. 
 ```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_univariate_hq.png")
 ```
+The x-axis of this plot denotes peak values, the y-axis the density of the fitted GEV model. 
+The histogram displays the original data to which the GEV distribution is fit. The resulting smooth distribution 
+is marked by the blue line. The red vertical line and the shaded area are the visual display of the probability
+for the flood event in Munich 2024.
+During this flood, the discharge reached a peak of $462$$[m^3/s]$ which corresponds to a probability of 
+$19\%$ according to the fitted GEV distribution. Thereby, this approach assigns the a 
+return period of such a peak to be $\frac{1}{0.19} \approx5$ years.
 
+Additional to the flood peak, we also feed volume and duration values into our trivariate copula model.
+The following figure \@ref(fig:probMulti) is based on figure \@ref(visualGoF) and visualizes these observed values 
+in pseudo-observation scale.
 ```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_multivariate_hq.png")
 ```
+The red lines in the figure mark the observed pseudo observations for the referenced flood event.
+
+
+Thereby, this results shows that characterizing a flood event by only its peak may be misleading. Because
+a merely univariate approach neglects additional features that are of importance.
+
+Univariate only considers peak, but this does not sufficiently characterizes a flood
+While the marginal probability of sucha peak is pretty large, the more complex condieration 
+of the flood shows that it was one of the more seldome floods 
+ODER SO
+
+
+
+
+
+
+Discuss low probability and implies flood with this combination of variables only appears 
+every 100years according to our vine model
+Based on figure \@ref(fig:probMulti), the especially the observed volume value is small. 
+
+
 
 ```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="70%", fig.align='center', dpi = 52, fig.cap="Caption"}
 knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
