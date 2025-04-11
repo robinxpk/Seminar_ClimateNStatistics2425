@@ -460,7 +460,7 @@ Key CT Differences:
 The differences in projected frequency changes between our results and the original study primarily stem from:
 
 1. Time period difference (2031-2060 vs. 2071-2100).
-2. Scenario differences: CanESM2 model (historical) in our study vs. original SMHI-LENS (SSP3-7.0).
+2. Scenario differences: CanESM2 model (historical) in our study vs. original SMHI-LENS (SSP3-RCP7.0).
 3. Model and methodological distinctions: Implementation differences (e.g., transitional smoothing, dataset variations, and resolution).
 4. Ensemble size effects: Our smaller ensemble size (12 vs. original 50) could amplify internal variability signals.
 
@@ -468,23 +468,23 @@ These differences underline the sensitivity of CT analysis to methodological cho
 
 ## Conclusion and Outlook
 
-In this study, we successfully implemented a CNN-based deep learning approach for classifying large-scale atmospheric CTs over Europe, building upon the established HB framework. 
-Using high-resolution ERA5 data for model training, our method achieved an overall accuracy of 53.17% and a macro F1 score of 55.14%, clearly outperforming traditional classification approaches.
-
-Our analysis of future projections based on the CanESM2 model (historical) highlights significant shifts in HB CT frequencies, particularly an increased frequency of certain CTs such as Icelandic High Cyclonic (HNZ) during both summer and winter half-years. Notably, our results differ from previous studies, primarily due to distinct methodological choices such as dataset selection, scenario assumptions, and smoothing techniques. These variations underline the sensitivity of HB CT projections and stress the importance of transparent methodological reporting.
-
-The CNN model effectively learned dominant circulation patterns, yet faced challenges classifying rare or inherently complex CTs. These limitations indicate potential issues of class imbalance and inherent labeling uncertainties associated with manual classifications.
+In this study, we successfully implemented a CNN-based deep learning approach for classifying large-scale atmospheric CTs over Europe, building upon the established HB framework. Using high-resolution ERA5 data for model training, our method achieved an overall accuracy of 53.17% and a macro F1-score of 55.14%, clearly outperforming traditional classification approaches. The CNN model effectively learned dominant circulation patterns, yet faced challenges classifying rare or inherently complex CTs. These limitations indicate potential issues of class imbalance and inherent labeling uncertainties associated with manual classifications.
 
 Besides the primary training session and results shown in this report, 
 we conducted another model training experiment using a narrower range of hyperparameters. 
-The results, are illustrated in the presentation, demonstrated noticeably different classification performance compared to the original setup.
-
-Although the model shows good performance on the current dataset, it is important to note that this does not necessarily guarantee the absence of overfitting. 
-In particular, I suspect that the size of the fully connected linear layers may have a stronger influence on performance than initially assumed. 
-In earlier experiments, we tuned the fully connected layer size to around 50 dimensions, 
-however, in the latest optimization round, where ensemble methods and more extensive hyperparameter tuning were applied, the model consistently favored a dimension size of 128.
+The results, are illustrated in the presentation, demonstrated noticeably different classification performance compared to the setup here. However, it's relatively closer to the findings of the paper. In particular, I suspect that the size of the fully connected linear layers leads to this difference. Since in earlier experiments with narrower range of hyperparameters, we tuned the fully connected layer size to fixed 50 dimensions, however, in the latest optimization round, where more extensive hyperparameter tuning were applied, the model consistently favored a dimension size of 128, which leads to high accuracy for each HB CTs. Therefore, the model shows good performance on the current dataset, it is important to note that this does not necessarily guarantee the absence of overfitting. 
 
 Due to limited computational resources, we were unable to perform a more thorough investigation to validate these observations or further optimize the model architecture. Future work should focus on systematically assessing the impact of fully connected layer sizes and further regularization strategies to ensure model robustness and generalization.
+
+The analysis of frequency changes in both our implementation and original paper reveals that for most HB CTs, the changes fall within a range of ±5 days (relatively ±50%) (Appendix Figure \@ref(fig:boxabs); Figure \@ref(fig:box); Appendix Figure \@ref(fig:boxpaperabs); Appendix Figure \@ref(fig:boxpaper)). In the original study, the most significant changes in frequency were observed in the WA circulation type (Appendix Figure \@ref(fig:boxpaper)) [@Mittermeier2022], while in the own-built model, the HM and HNZ circulation types experienced the largest shifts in frequency. Notably, our results differ from previous studies, primarily due to distinct methodological choices such as dataset selection, scenario assumptions, and smoothing techniques. These variations underline the sensitivity of HB CTs analysis and stress the importance of transparent methodological reporting.
+
+When focusing only on the frequency of HB CTs, without considering their duration, it is important to highlight that the duration of a HB CT significantly influences the amplitude of weather extremes. This underscores the need to integrate both frequency and duration for a more comprehensive understanding of weather patterns. Duration of a HB CT impacts the amplitude of a weather extreme.
+
+To further evaluate the uncertainties in frequency changes, it would be beneficial to combine multi-model and single-model ensembles under different forcing scenarios. This approach could help assess the uncertainties arising from various climate models and the assumptions in different forcing scenarios.
+
+The classification used in this study is based on a subjective approach, and it is crucial to quantify the potential human-level errors in labeling. This could provide valuable insight into the accuracy and reliability of the classification system used.
+
+One potential improvement to the statistical analysis would be to reduce the number of subdivisions of circulation types. For example, subdividing the Großwetterlagen according to the wind direction of the jet stream could increase the robustness of the results. Additionally, the study found that the most frequent misclassifications occurred between pairs of anticyclonic and cyclonic circulation types, which could be addressed through refined classification methods.
 
 For future studies, we recommend quantifying human-level errors in labeling to understand better the impacts of manual classification biases. 
 Additionally, models that explicitly capture temporal continuity, such as Deep Hidden Markov Models [@Yu2015] or temporal-aware CNN architectures (e.g., ConvLSTM [@Moishin2021]), 
@@ -522,11 +522,24 @@ Frequency distribution of paper (Figure \@ref(fig:countpaper))
 knitr::include_graphics('work/01-weatherpattern/figures/paper/daycount.png')
 ```
 
+Boxplot of absolute future change and  F1 score of our implementation (Figure \@ref(fig:boxabs))
+
+```{r boxabs,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the absolute frequency of occurrence (days) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/boxplot_freq_change_abs.png')
+```
+
 Boxplot of future change and  F1 score of paper (Figure \@ref(fig:boxpaper))
 
 ```{r boxpaper,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot.png')
 ```
+
+Boxplot of absolute future change and  F1 score of paper (Figure \@ref(fig:boxpaperabs))
+
+```{r boxpaperabs,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the absolute relative frequency of occurrence (days) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot_abs.png')
+```
+
 
 RMSE table of our implementation - SLP (Figure \@ref(fig:rmse))
 
@@ -541,6 +554,7 @@ knitr::include_graphics('work/01-weatherpattern/figures/paper/rmse.png')
 ```
 
 Confusion matrix of our implementation (Figure \@ref(fig:conf))
+
 ```{r conf,fig.cap = 'Confusion matrix', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/confusion.png')
 ```
