@@ -498,9 +498,9 @@ The implementation was carried out using Python version 3.9.18.
 
 ### Figures
 
-Synoptic patterns of the 29 HB CTs using ERA20C (Figure \@ref(fig:ERA20C))
+Synoptic patterns of the 29 HB CTs using ERA20C (Figure \@ref(fig:ERA20C)) [@Mittermeier2022]
 
-```{r ERA20C,fig.cap = 'Synoptic patterns of the 29 HB CTs created using ERA-20C data averaged over the period 1900 -1980, showing SLP on the left and z500 on the right side [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r ERA20C,fig.cap = 'Synoptic patterns of the 29 HB CTs created using ERA-20C data averaged over the period 1900 -1980, showing SLP on the left and z500 on the right side.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/circulation_types.png')
 ```
 
@@ -516,15 +516,15 @@ F1 score comparison table (Figure \@ref(fig:f1score))
 knitr::include_graphics('work/01-weatherpattern/figures/f1.png')
 ```
 
-Signature plots of paper - SLP (Figure \@ref(fig:sigpaper))
+Signature plots of paper - SLP (Figure \@ref(fig:sigpaper)) [@Mittermeier2022]
 
-```{r sigpaper,fig.cap = "Signature plots of four selected circulation patterns at slp. Column 1: labels showing the indicated HB CT, Column 2: deep ensemble predictions showing the indicated HB CT, Column 3: signature pattern, when the deep ensemble predicts the indicated HB CT while labels state differently, Column 4: labels stating the indicated HB CT while deep ensemble predicts differently. The RMSE values are calculated by comparing the respective signature plot to the signature plot of the labels (column 1). The four HB CTs are chosen as positive (green) and negative (red) examples [@Mittermeier2022].", cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r sigpaper,fig.cap = "Signature plots of four selected circulation patterns at slp. Column 1: labels showing the indicated HB CT, Column 2: deep ensemble predictions showing the indicated HB CT, Column 3: signature pattern, when the deep ensemble predicts the indicated HB CT while labels state differently, Column 4: labels stating the indicated HB CT while deep ensemble predicts differently. The RMSE values are calculated by comparing the respective signature plot to the signature plot of the labels (column 1). The four HB CTs are chosen as positive (green) and negative (red) examples.", cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/slp_signature_plots.png')
 ```
 
-Frequency distribution of paper (Figure \@ref(fig:countpaper))
+Frequency distribution of paper (Figure \@ref(fig:countpaper)) [@Mittermeier2022]
 
-```{r countpaper,fig.cap = 'Frequency distribution of the 29 HB CTs in number of days per year for the training period 1900–1980 (blue) and for predictions of the CNN (yellow) [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r countpaper,fig.cap = 'Frequency distribution of the 29 HB CTs in number of days per year for the training period 1900–1980 (blue) and for predictions of the CNN (yellow).', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/daycount.png')
 ```
 
@@ -534,15 +534,15 @@ Boxplot of absolute future change and  F1 score of our implementation (Figure \@
 knitr::include_graphics('work/01-weatherpattern/figures/boxplot_freq_change_abs.png')
 ```
 
-Boxplot of future change and  F1 score of paper (Figure \@ref(fig:boxpaper))
+Boxplot of future change and  F1 score of paper (Figure \@ref(fig:boxpaper)) [@Mittermeier2022]
 
-```{r boxpaper,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r boxpaper,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the relative frequency of occurrence (%) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot.png')
 ```
 
-Boxplot of absolute future change and  F1 score of paper (Figure \@ref(fig:boxpaperabs))
+Boxplot of absolute future change and  F1 score of paper (Figure \@ref(fig:boxpaperabs)) [@Mittermeier2022]
 
-```{r boxpaperabs,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the absolute relative frequency of occurrence (days) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores [@Mittermeier2022].', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
+```{r boxpaperabs,fig.cap = 'Boxplots of frequency change and f1 score. Upper plots show the change in the absolute relative frequency of occurrence (days) of the HB CTs between the future 2031–2060 and the reference period 1971–2000 for the entire year, the winter half-year (ONDJFM) and the summer half-year (AMJJAS).  Lower plots illustrate the spread of F1-scores.', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/boxplot_abs.png')
 ```
 
@@ -565,7 +565,7 @@ Confusion matrix of our implementation (Figure \@ref(fig:conf))
 knitr::include_graphics('work/01-weatherpattern/figures/confusion.png')
 ```
 
-Confusion matrix of paper (Figure \@ref(fig:confpaper))
+Confusion matrix of paper (Figure \@ref(fig:confpaper)) [@Mittermeier2022]
 
 ```{r confpaper,fig.cap = 'Confusion matrix', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/confusion.png')
@@ -577,7 +577,7 @@ Full signature plot of our implementation - SLP (Figure \@ref(fig:sigfull))
 knitr::include_graphics('work/01-weatherpattern/figures/slp_signature_plots_all.png')
 ```
 
-Full signature plot of paper - SLP (Figure \@ref(fig:sigfullpaper))
+Full signature plot of paper - SLP (Figure \@ref(fig:sigfullpaper)) [@Mittermeier2022]
 
 ```{r sigfullpaper,fig.cap = 'Signature plot', cache=FALSE, out.width="70%", fig.align="center", echo=FALSE, eval = TRUE}
 knitr::include_graphics('work/01-weatherpattern/figures/paper/slp_signature_plots_all.png')
