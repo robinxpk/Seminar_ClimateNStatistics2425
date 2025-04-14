@@ -20,7 +20,7 @@ Although temporal dependence plays a role in the persistence of climate extremes
 One striking example of spatial dependence in climate extremes is the 2010 Eastern Russian heatwave, which was not confined to Eastern Russia alone but also influenced temperatures across Eastern Europe and Central Asia. The event was driven by a persistent atmospheric blocking pattern, which sustained extreme temperatures over an extensive spatial scale.
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://earthobservatory.nasa.gov/images/45069/heatwave-in-russia]. Heat waves in Eastern Russia, Eastern Europe and Central Asia in 2010.", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://earthobservatory.nasa.gov/images/45069/heatwave-in-russia]. Heat waves in Eastern Russia, Eastern Europe and Central Asia in 2010."}
 knitr::include_graphics("work/06-anthropo/figures/russialsta_heatwave_2010208.jpg")
 ```
 \vspace{1em}
@@ -28,7 +28,7 @@ knitr::include_graphics("work/06-anthropo/figures/russialsta_heatwave_2010208.jp
 Another example is tropical cyclones in the Atlantic, where clusters of hurricanes can develop due to favorable oceanic and atmospheric conditions, causing sequential or simultaneous destruction across multiple coastal regions. Similarly, compound flooding events, where storm surges coincide with extreme rainfall across interconnected watersheds, demonstrate the importance of spatially correlated extremes in shaping disaster impacts.
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', out.height='200px', fig.align='center', fig.cap="Source: [https://phys.org/news/2019-03-big-storm-clusters-hurricane-hotspots.html]. Hurricanes occur simultaneous in the Atlantic in 2019.", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://phys.org/news/2019-03-big-storm-clusters-hurricane-hotspots.html]. Hurricanes occur simultaneous in the Atlantic in 2019."}
 knitr::include_graphics("work/06-anthropo/figures/atlantic.jpg")
 ```
 \vspace{1em}
@@ -45,7 +45,7 @@ Tail dependence refers to the relationship between the extreme values of two or 
 Statistically, tail dependence is a measure used to quantify the likelihood of simultaneous extreme values in the tails of distributions. There are various methods to measure tail dependence, with the most commonly used being the upper and lower tail dependence coefficients. These coefficients describe the probability of one variable exceeding a threshold given that the other variable has already exceeded a similar threshold, capturing the essence of tail events and their joint occurrences. Tail dependence is crucial in risk management, particularly in fields such as finance and climate science, where extreme events (e.g., market crashes or heatwaves) can have substantial consequences.
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://freakonometrics.hypotheses.org/2435]. Tail dependence of 2 variables.", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://freakonometrics.hypotheses.org/2435]. Tail dependence of 2 variables."}
 knitr::include_graphics("work/06-anthropo/figures/tail.jpg")
 ```
 \vspace{1em}
@@ -159,7 +159,7 @@ The negative concurrence strength of temperature extremes (Figure 4. C) is also 
 
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The distribution of PMF values across different grid cell pairs at varying distances. Each scatter point on the plot represents the PMF of a grid cell pair, while the color indicates the density of point distribution. Blue signifies the highest density, indicating more concentrated pairs, whereas red represents the lowest density, corresponding to more dispersed pairs. The data used is observed data.", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The distribution of PMF values across different grid cell pairs at varying distances. Each scatter point on the plot represents the PMF of a grid cell pair, while the color indicates the density of point distribution. Blue signifies the highest density, indicating more concentrated pairs, whereas red represents the lowest density, corresponding to more dispersed pairs. The data used is observed data."}
 knitr::include_graphics("work/06-anthropo/figures/distance.jpg")
 ```
 \vspace{1em}
@@ -173,7 +173,7 @@ The impact of long-term warming trends can be evaluated by comparing the red and
 For precipitation extremes (Figure 5.F), the spatial pattern of dependence is similar to that of temperature extremes. However, in this case, long-term warming trends have only a minor effect on PMF, suggesting that other factors play a more significant role in shaping the spatial dependence of precipitation extremes. Another key difference from temperature extremes is that the results from historical simulations and historical natural (hist nat) simulations are nearly identical. This suggests that the warming trend does not substantially alter the spatial dependence of precipitation extremes, unlike its effect on temperature extremes.
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The distribution of PMF values across different grid cell pairs at varying latitudes. Solid lines represent the PMF of positively concurrent regions, dashed lines indicate negatively concurrent regions. Four scenarios: observation with/without trend, historical simulated data and hist-nat simulated data (natural forcing only).", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The distribution of PMF values across different grid cell pairs at varying latitudes. Solid lines represent the PMF of positively concurrent regions, dashed lines indicate negatively concurrent regions. Four scenarios: observation with/without trend, historical simulated data and hist-nat simulated data (natural forcing only)."}
 knitr::include_graphics("work/06-anthropo/figures/latitude.jpg")
 ```
 \vspace{1em}
@@ -182,7 +182,7 @@ knitr::include_graphics("work/06-anthropo/figures/latitude.jpg")
 This study also investigated how spatial dependence responds to different thresholds used to define extreme events. The hypothesis test was conducted with a threshold of 0.05/0.95, while the sensitivity analysis explored a range from 0.01/0.99 to 0.1/0.9. The 0.01/0.99 threshold represents the strictest criterion, meaning only the most extreme events are considered, while the 0.1/0.9 threshold is the least strict, allowing more events to be included. The findings suggest that as the threshold becomes stricter, fewer grid cell pairs exhibit extreme concurrence, leading to a smaller number of identified regions. At the same time, the mean probability mass function (PMF) increases, indicating that spatial dependence is stronger under stricter threshold conditions.
 
 \vspace{1em}
-```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The proportion of land grid cell pairs where climate extremes exhibit significant positive (solid lines) or negative (dashed lines) dependence, assessed using probability thresholds ranging from 0.9/0.1 to 0.99/0.01, based on observational data from 1901 to 2020. (C,D) Corresponding results for (A,B), but depicting the mean probability multiplication factor (PMF) for positively (solid lines) and negatively (dashed lines) dependent climate extremes.", fig.pos='H'}
+```{r, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Source: [https://www.science.org/doi/10.1126/sciadv.abo1638]. The proportion of land grid cell pairs where climate extremes exhibit significant positive (solid lines) or negative (dashed lines) dependence, assessed using probability thresholds ranging from 0.9/0.1 to 0.99/0.01, based on observational data from 1901 to 2020. (C,D) Corresponding results for (A,B), but depicting the mean probability multiplication factor (PMF) for positively (solid lines) and negatively (dashed lines) dependent climate extremes."}
 knitr::include_graphics("work/06-anthropo/figures/sensitivity.png")
 ```
 \vspace{1em}
