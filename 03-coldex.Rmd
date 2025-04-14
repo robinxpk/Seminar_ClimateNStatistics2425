@@ -92,6 +92,7 @@ In the study of (@sippel2024), the CESM2-ETH large ensemble, spanning 900 winter
 knitr::include_graphics("work/03-coldex/figures/boosting original.png")
 
 ```
+
 The perturbation methodology maintained physical consistency by applying small modifications to the specific humidity field (q) at each grid point, with a magnitude of $10^{-13}$. These perturbations ensured mass, energy, and momentum conservation up to the precision of a round-off error. The coupled model was then run for 60 days, with ensemble spread remaining small for the first 4-5 days before diverging significantly.
 
 Instead of replicating the exact methods used by (@sippel2024), this study focuses on leveraging the provided supplementary boosted data by (@sippel2024) to examine the most extreme cold storylines. Specifically, the study analyzed: 
