@@ -18,6 +18,7 @@ packages.bib
 .DS_Store
 work/.DS_Store
 work/04-floodfreq/R/rosm.cache/
+work/04-floodfreq/data/0 input data/*.csv
 work/04-floodfreq/data/output/hydrographs/*.png
 work/04-floodfreq/data/simulation/*.Rdata
 work/04-floodfreq/data/output/rdata/copula_dfs/*.Rdata
