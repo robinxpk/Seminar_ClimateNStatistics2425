@@ -1,5 +1,15 @@
-## Intro About the Seminar Topic
-=======
+---
+output: 
+  pdf_document: default
+  word_document: default
+  html_document: default
+---
+# Cold Extremes {#ce}
+
+*Author: Zhuoyang Li and Katrin Strößner*
+
+*Supervisor: Henri Funk *
+
 ```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE,}
 library(bookdown)
 library(svglite)
@@ -128,5 +138,7 @@ For ensemble member 48, the coldest recorded temperatures in the second-order bo
 The ensemble boosting results demonstrate that extremely cold temperatures, such as in the winter of 1962/1963 or colder, can still be reached today under an SSP3-7.0 scenario. This contrasts with the findings by (@quesada2023), who observed a general decline in the frequency and severity of cold events across Europe. However, the presented results align with other studies suggesting that under certain conditions—such as a weakening Atlantic Meridional Overturning Circulation (AMOC)—cold extreme intensities may increase in the future (@meccia2023). This apparent contradiction illustrates the complex and multifaceted nature of cold event dynamics. It also reflects the low seasonal predictability identified in recent research, which attributes this uncertainty to chaotic atmospheric forcings, such as variability in westerly winds (@kautz2021). The finding that extreme cold events remain possible is further supported by (@brunner2018), who showed that approximately 70% of central European cold extremes coincide with atmospheric blocking between 60°W and 30°E—highlighting the continued relevance of large-scale weather patterns as a dominant driver.
 
 Last, there are important limitations to consider. The distribution and frequency of “boosted” cold events are sensitive to the specific events selected for enhancement, which may influence the representativeness of the results. Additionally, re-initializing the model with different atmospheric conditions could potentially generate even colder outcomes, indicating that the full range of extreme winter possibilities might not be fully captured.
+
+
 
 
