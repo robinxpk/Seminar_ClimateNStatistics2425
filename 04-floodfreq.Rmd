@@ -4,6 +4,8 @@ output:
   html_document: default
 ---
 
+(ref:captionScatterText) The Kendall's tau coefficients for the three dependency structures of volume, duration and peak for the Isar and the Danube. Black dots mark the respective results found in Grimaldi (2006).
+
 
 # Flood Frequency Analysis
 
@@ -90,7 +92,7 @@ As seen towards the end of this section, the alpine river Isar and the low-lying
 hydrological characteristics, enabling a meaningful comparison of flood dynamics in Bavaria.
 The exact spatial distribution of the considered station displayed plot \@ref(fig:bavaria). 
 ```{r bavaria, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The location of the selected measurement stations for the Isar and the Danube in Bavaria, Germany."}
-knitr::include_graphics("./work/04-floodfreq/figures/data_bavaria_plot.png")
+knitr::include_graphics("work/04-floodfreq/figures/data_bavaria_plot.png")
 ```
 Given the annual discharge data for all these stations, we require to identify the 
 most severe flood event within each year which defined as the event with the largest discharge peak. 
@@ -107,7 +109,7 @@ This method relies on the baseflow index (BFI) which is the ratio of the baseflo
 A default BFI threshold of 0.5 was used to distinguish events dominated by rapid runoff contributions typically associated with rainfall- or melt-induced flooding.
 Exemplary, figure \@ref(fig:hydro) shows the hydrograph for the station in Munich in 2024. 
 ```{r hydro, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="An exemplary hydrograph of the Munich station in 2024 (left) with the applied flood detection method result (right)."}
-knitr::include_graphics("./work/04-floodfreq/figures/data_hydrograph.png")
+knitr::include_graphics("work/04-floodfreq/figures/data_hydrograph.png")
 ```
 Both subplots in the figure display the same hydrograph, but the right describes the identification of the most
 severe flood. First, all flood events are selected. Then, the flood with the largest peak identified. The 
@@ -121,8 +123,9 @@ These are neatly displayed on the left subplot.
 
 Now, we come to the most crucial aspect in our data and show that this structure is also found in @grimaldi2006. That is, fig \@ref(fig:corplot) displays the rank correlation coefficient Kendall's $\tau$ 
 of every possible combination between the $3$ variables separated by river.
-```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width = "100%", fig.cap="The Kendalls au Coefficients for the three dependency structures of volume, duration and peak for the Isar and the Danube. Black dots mark the respective results found in @grimaldi2006."}
-knitr::include_graphics("./work/04-floodfreq/figures/data_cor_plot.png")
+
+```{r corplot, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', out.width = "100%", fig.cap="(ref:captionScatterText)"}
+knitr::include_graphics("work/04-floodfreq/figures/data_cor_plot.png")
 ```
 
 The boxplots in figure \@ref(fig:corplot) 
@@ -156,7 +159,7 @@ return periods $2, 5, 10, 20$ and $50$ years.
 Thereby, we obtained $21$ average discharge values for each return period.
 Consider figure \@ref(fig:condEmpBoxplots) for a visualization.
 ```{r condEmpBoxplots, echo=FALSE, message=FALSE, warning=FALSE, fig.align='center', dpi = 300, fig.cap="The standardizes average discharge values by peak quantiles of the GKD data."}
-knitr::include_graphics("./work/04-floodfreq/figures/data_condBoxplots.png")
+knitr::include_graphics("work/04-floodfreq/figures/data_condBoxplots.png")
 ```
 First of all, note that the average discharge values are on the 
 y-axis ranging from $-1$ to $5$. This is due to the 
@@ -221,7 +224,8 @@ $u_1 \leq u_2$ and $v_1 \leq v_2$:
 $$
 C(u_2, v_2) - C(u_2, v_1) - C(u_1, v_2) + C(u_1, v_1) \geq 0
 (\#eq:twoincreasing)
-$$ Simply put, 2-increasing means that the volume under the copula density
+$$ 
+Simply put, 2-increasing means that the volume under the copula density
 function over the rectangle $[u_1, u_2] \times [v_1, v_2]$ is
 non-negative. This interpretation follows from the fact that copula functions are defined as CDF and holds for higher dimensions, too.\
 <!-- Based on condition i. and iii., @nelsen2006 (p. 9) also concludes that to  -->
@@ -237,10 +241,12 @@ to separate the representation of the dependence structure and marginal
 distribution functions. The theorem is given by @nelsen2006 (p. 18):\
 Let $F_{1,..,d}$ be a $d$-dimensional joint distribution function with
 univariate margins $F_1, ..., F_d$. Then, there exists a $d$-dimensional
-copula $C$ such that $$
+copula $C$ such that 
+$$
 F_{1, ..., d}(x_1, ..., x_d)  = C(F_1(x_1), ..., F_d(x_d)) = C(u_1, ..., u_d)
 (\#eq:sklar)
-$$ where $u_i = F_i(x_i)$. Also, $C$ is unique if $F_1, ..., F_d$ are continuous. 
+$$ 
+where $u_i = F_i(x_i)$. Also, $C$ is unique if $F_1, ..., F_d$ are continuous. 
 Equation \@ref(eq:sklar) allows $2$ important conclusion: One,
 any multivariate CDF may be expressed as a composition of a copula
 function $C$ and the univariate margins $F_1, ..., F_d$. Thereby,
@@ -252,10 +258,12 @@ marginal distributions do not need to be of the same family because
 Sklar's theorem holds regardless.
 
 The aforementioned copula density function is given by (see
-@zhang2019, p. 66): $$
+@zhang2019, p. 66): 
+$$
 c(u_1, ..., u_d) = \frac{\partial C(u_1, ..., u_d)}{\partial u_1 ... \partial u_d} = \frac{f(x_1, ..., x_d)}{\Pi_{i = 1}^df_i(x_i)}
 (\#eq:copulapdf)
-$$ where $f(x_1, ..., x_d)$ denotes the joint density of $X_1, ..., X_d$
+$$ 
+where $f(x_1, ..., x_d)$ denotes the joint density of $X_1, ..., X_d$
 and $f_i(x_i)$ the marginal density of $X_i$ for 
 $i = 1, ..., d$. Based on this equation, the joint density in terms of the copula density is given by 
 $$
@@ -285,14 +293,16 @@ We only apply strict generators as seen towards the end of this section.\
 For a generator to yield a valid $d$-dimensional copula,
 @grimaldi2006 and @zhang2019 (p. 124) mention that the inverse
 requires to be completely monotone which is given if it has
-derivatives of all orders with alternating sign $$
+derivatives of all orders with alternating sign 
+$$
 (-1)^k \frac{d^k \phi^{-1}(t|\theta)}{dt^k} \geq 0.
 (\#eq:changingsign)
 $$
 Now, we are in the position to formulate the general representation of a
 $d$-dimensional SAC in terms of its generator. 
 The relation is given by
-@zhang2019 (p. 123) as$$
+@zhang2019 (p. 123) as
+$$
 C(u_1, u_2, u_3 \mid \theta) = \phi^{-1} \left( \phi(u_1 \mid \theta) + \phi(u_2 \mid \theta) + \phi(u_3 \mid \theta) \,\middle|\, \theta \right).
 (\#eq:generatorSAC)
 $$  
@@ -626,7 +636,7 @@ structure as it drastically simplified implementation.
 
 The one result we want to focus on is described in figure \@ref(fig:simresults).
 ```{r simresults, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The simulation results by sample size and correlation structure."}
-knitr::include_graphics("./work/04-floodfreq/figures/sim_NAC_if_Vine_DPG.png")
+knitr::include_graphics("work/04-floodfreq/figures/sim_NAC_if_Vine_DPG.png")
 ```
 This figure uses multiple subplots displaying trace plots of the $\tau$ values estimated by the FNAC model. 
 Kendall's $\tau$ estimates are displayed on the y-axis while the index 
@@ -667,7 +677,7 @@ effect of the bias in FNACs and its practical meaning.
 The following discusses the goodness of fit for the vine copula model 
 based on the Munich station using figure \@ref(fig:visualGoF).
 ```{r visualGoF, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The contour lines and synthetic data plots for the Munich station."}
-knitr::include_graphics("./work/04-floodfreq/figures/app_visualGOF.png")
+knitr::include_graphics("work/04-floodfreq/figures/app_visualGOF.png")
 ```
 This figure consists of $6$ subplots. 
 Each column of subplots refers to a pair of variables specified in the column header.
@@ -712,7 +722,7 @@ we extend the tail dependence analysis from the previous section to all consider
 
 Contemplate figure \@ref(fig:bavariaTaildep) for a visual assessment of the tail dependence structure.
 ```{r bavariaTaildep, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The signed tail dependencies of the three variable combinations."}
-knitr::include_graphics("./work/04-floodfreq/figures/app_bavaria_taildep.png")
+knitr::include_graphics("work/04-floodfreq/figures/app_bavaria_taildep.png")
 ```
 This plot shows $3$ different subplots, one for each variable pair. 
 The subplots are based on figure \@ref(fig:bavaria) and display all stations colored by their 
@@ -742,7 +752,7 @@ which had a peak of $462m^3/s$, took $20$ days and had a volume of $406m^3$.
 
 Figure \@ref(fig:probUni) displays the marginal fit of a GEV distribution to the peak data for the Munich station. 
 ```{r probUni, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The GEV fit for the Munich station. The red area delineates floods with a peak equal or higher to the flood event of 2024."}
-knitr::include_graphics("./work/04-floodfreq/figures/app_univariate_hq.png")
+knitr::include_graphics("work/04-floodfreq/figures/app_univariate_hq.png")
 ```
 The x-axis of this plot denotes the peak values, the y-axis the density of the fitted GEV model. 
 The histogram displays the original data to which the GEV distribution was fitted. The resulting smooth distribution 
@@ -759,7 +769,7 @@ Figure \@ref(fig:probMulti) is based on figure \@ref(fig:visualGoF) and visualiz
 how the multivariate model determines the probability for a flood event to be at least as severe. 
 Also, this plot helps to understand the quite stark differences in the probabilities.
 ```{r probMulti, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The copula fit for the Munich station. The red area delineates floods with a peak, volume and duration equal or higher to the flood event of 2024."}
-knitr::include_graphics("./work/04-floodfreq/figures/app_multivariate_hq.png")
+knitr::include_graphics("work/04-floodfreq/figures/app_multivariate_hq.png")
 ```
 Note that, as before, this figure displays the data in terms of their pseudo observations.
 The red dot in each subplot marks the event in 2024 and the red lines correspond to the univariate 
@@ -794,7 +804,7 @@ Conditional on these peaks, the most likely combination of duration and volume a
 the average discharge values calculated and standardized.
 Figure  \@ref(fig:modelEval) is based on figure \@ref(fig:condEmpBoxplots) and displays our results.
 ```{r modelEval, echo=FALSE, message=FALSE, warning=FALSE, out.width="100%", fig.align='center', dpi = 52, fig.cap="The model comparison by river between FNACs and vines."}
-knitr::include_graphics("./work/04-floodfreq/figures/app_modeleval.png")
+knitr::include_graphics("work/04-floodfreq/figures/app_modeleval.png")
 ```
 The rows of the figure refer to the model structure applied to predict the average discharges. 
 Additionally, we colored each model prediction by which variable pair had the highest correlation.
