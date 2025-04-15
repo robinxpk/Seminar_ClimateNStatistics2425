@@ -10,7 +10,7 @@ output:
 
 *Supervisor: Henri Funk *
 
-```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE,}
+```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE}
 library(bookdown)
 library(svglite)
 
@@ -104,7 +104,7 @@ These datasets consist of (i) first-order boosting simulations originating from 
 ## Results and Discussion
 Here, the key findings derived from the applied methods are presented, followed by a reflection on their scientific implications and a discussion of the methodological limitations and uncertainties involved in the analysis.
 
-### Dynamical Adjustment
+### Results from Dynamical Adjustment
 
 The circulation-induced component of temperature variability is clearly separated from the residual component, which is not explained by circulation and likely reflects thermodynamical effects (Fig.\@ref(fig:dynamical-trend)).  The residual time series shows a consistent upward trend (Fig.\@ref(fig:dynamical-trend) bottom), indicating that thermodynamical warming plays a significant role in addition to circulation changes. Besides, the circulation-induced variability shows a strong Pearson correlation of R = 0.8 with the observed, detrended DJF temperature anomalies over Bavaria (Fig.\@ref(fig:dynamical-trend) top), thus supporting the conclusion that circulation is the main driver of inter-annual winter temperature variability as suggested by the reference study. (@sippel2024) 
 
@@ -119,7 +119,7 @@ The dark blue line (adjusted using ERA5) shows a clear upward trend, suggesting 
 
 This raises a critical uncertainty, as discussed in (@sippel2024): whether the circulation trend observed in recent decades represents an externally forced signal or just natural variability. If the trend is indeed forced but not captured by the models, extreme cold winters like 1963 may become less likely in the future. Conversely, if the observed trend is primarily due to natural variability, it could reverse, and similar cold extremes may occur again. This uncertainty remains a key challenge in climate modeling, and understanding it better is crucial for improving future predictions.
 
-### Ensemble Boosting
+### Results from Ensemble Boosting
 The three coldest storylines, in terms of both minimum temperature and average temperature, were analyzed for ensemble members 23 and 48 from the first-order boosted simulations.
 ```{r boosting-result23, echo=FALSE, out.width='90%', fig.align='center', fig.cap='The three coldest storylines (based on minimum and average temperature) are derived from ensemble member 23. The data are extracted from the file BSSP370cmip6.0230013.zip, provided by (@sippel2024)'}
 knitr::include_graphics("work/03-coldex/figures/boosting results23.png")
