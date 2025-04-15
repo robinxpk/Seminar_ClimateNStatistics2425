@@ -342,15 +342,18 @@ captures.
 
 Tail dependence is differentiated into upper and lower tail dependence. 
 Their formulas are given by @czado2019 (p. 34 - 35) as 
+
+
+
 $$
 \lambda^{\text{upper}} = \lim_{t \to 1^{-}} \mathbb{P}\left( X_2 > F_2^{-1}(t) \,\middle|\, X_1 > F_1^{-1}(t) \right) = \lim_{t \to 1^{-}} \frac{1 - 2t + C(t, t|\theta)}{1 - t}
-\(#eq:uppertaildep)
+(\#eq:uppertaildep)
 $$
 and 
 $$
 \lambda^{\text{lower}} = \lim_{t \to 0^{+}} \mathbb{P}\left( X_2 \leq F_2^{-1}(t) \,\middle|\, X_1 \leq F_1^{-1}(t) \right) 
 = \lim_{t \to 0^{+}} \frac{C(t, t|\theta)}{t}.
-\(#eq:lowertaildep)
+(\#eq:lowertaildep)
 $$
 As seen from both equations, tail dependence is defined as conditional probability that both variables are above 
 or below a threshold quantile.
