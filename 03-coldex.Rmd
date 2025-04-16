@@ -10,7 +10,7 @@ output:
 
 *Supervisor: Henri Funk *
 
-```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE,}
+```{r setup_coldx, include=FALSE,message=FALSE, warning=FALSE}
 library(bookdown)
 library(svglite)
 library(kableExtra)
@@ -89,11 +89,8 @@ In the study of (@sippel2024), the CESM2-ETH large ensemble, spanning 900 winter
 -	**First-order boosting**: The coldest December during the 2020s in the CESM2-ETH ensemble was identified. This simulation was then perturbed and re-initialized for each day from December 1-15, generating 50 ensemble members per day. This resulted in a total of 750 simulations, capturing a well-constrained representation of early winter cold conditions.
 -	**Second-order boosting**: To further explore extreme cold persistence into January, the two coldest simulations from the first-order boosted set were selected. These were subsequently re-initialized daily from January 1-15, with 50 ensemble members per day, leading to 1500 additional simulations.
 
-(ref:captionSip)  @sippel2024
-
-```{r boosting-example, echo=FALSE, out.width='70%',fig.align='center', fig.cap= 'This figure (a) provides an illustrative example of model boosting, adapted from (ref:captionSip)' }
-knitr::include_graphics("work/03-coldex/figures/boosting original.png")
-
+```{r boosting-example, echo=FALSE, out.width='70%',fig.align='center', fig.cap= 'This figure (a) provides an illustrative example of model boosting, adapted from (@sippel2024)' }
+knitr::include_graphics("work/03-coldex/figures/boosting_original.png")
 ```
 
 The perturbation methodology maintained physical consistency by applying small modifications to the specific humidity field (q) at each grid point, with a magnitude of $10^{-13}$. These perturbations ensured mass, energy, and momentum conservation up to the precision of a round-off error. The coupled model was then run for 60 days, with ensemble spread remaining small for the first 4-5 days before diverging significantly.
@@ -107,12 +104,12 @@ These datasets consist of (i) first-order boosting simulations originating from 
 ## Results and Discussion
 Here, the key findings derived from the applied methods are presented, followed by a reflection on their scientific implications and a discussion of the methodological limitations and uncertainties involved in the analysis.
 
-### Dynamical Adjustment
+### Results from Dynamical Adjustment
 
 The circulation-induced component of temperature variability is clearly separated from the residual component, which is not explained by circulation and likely reflects thermodynamical effects (Fig.\@ref(fig:dynamical-trend)).  The residual time series shows a consistent upward trend (Fig.\@ref(fig:dynamical-trend) bottom), indicating that thermodynamical warming plays a significant role in addition to circulation changes. Besides, the circulation-induced variability shows a strong Pearson correlation of R = 0.8 with the observed, detrended DJF temperature anomalies over Bavaria (Fig.\@ref(fig:dynamical-trend) top), thus supporting the conclusion that circulation is the main driver of inter-annual winter temperature variability as suggested by the reference study. (@sippel2024) 
 
 ```{r dynamical-trend, echo=FALSE, out.width='90%', fig.align='center', fig.cap='Winter temperature anomaly time series over Bavaria and long-term trends, dashed lines show linear trends in the original time series (black) and the circulation-induced and residual component (blue).'}
-knitr::include_graphics("work/03-coldex/figures//dynamical adjustment.png")
+knitr::include_graphics("work/03-coldex/figures//dynamical_adjustment.png")
 ```
 
  - **Top:** 1951–2024 winter (DJF) temperature anomalies and the contribution of atmospheric circulation (blue line)
@@ -122,16 +119,16 @@ The dark blue line (adjusted using ERA5) shows a clear upward trend, suggesting 
 
 This raises a critical uncertainty, as discussed in (@sippel2024): whether the circulation trend observed in recent decades represents an externally forced signal or just natural variability. If the trend is indeed forced but not captured by the models, extreme cold winters like 1963 may become less likely in the future. Conversely, if the observed trend is primarily due to natural variability, it could reverse, and similar cold extremes may occur again. This uncertainty remains a key challenge in climate modeling, and understanding it better is crucial for improving future predictions.
 
-### Ensemble Boosting
+### Results from Ensemble Boosting
 The three coldest storylines, in terms of both minimum temperature and average temperature, were analyzed for ensemble members 23 and 48 from the first-order boosted simulations.
-```{r boosting-result23, echo=FALSE, out.width='90%', fig.align='center', fig.cap='The three coldest storylines (based on minimum and average temperature) are derived from ensemble member 23. The data are extracted from the file BSSP370cmip6.0230013.zip, provided by (ref:captionSip)'}
-knitr::include_graphics("work/03-coldex/figures/boosting results23.png")
+
+```{r boosting-result23, echo=FALSE, out.width='90%', fig.align='center', fig.cap='The three coldest storylines (based on minimum and average temperature) are derived from ensemble member 23. The data are extracted from the file BSSP370cmip6.0230013.zip, provided by (@sippel2024)'}
+knitr::include_graphics("work/03-coldex/figures/boosting_results23.png")
 ```
 For ensemble member 23, the lowest recorded temperatures in the second-order boosted simulations reached a minimum temperature of -26.3°C, while the average temperature over the winter period from January to March was -12.1°C. Figure \@ref(fig:boosting-result23) illustrates the three coldest minimum temperature storylines in the left panel and the three coldest average temperature storylines in the right panel. The ensemble members associated with these extreme conditions-ens010, ens040, and ens042 for minimum temperature, and ens037, ens039, and ens047 for average temperature—exhibit pronounced cold events, highlighting the capacity of the boosting technique to explore the statistical tail of extreme winter conditions.
 
-```{r boosting-result48, echo=FALSE, out.width='90%', fig.align='center', fig.cap='The three coldest storylines (based on minimum and average temperature) are derived from ensemble member 48. The data are extracted from the file BSSP370cmip6.0480013.zip, provided by (ref:captionSip)' }
-knitr::include_graphics("work/03-coldex/figures/boosting results48.png")
-
+```{r boosting-result48, echo=FALSE, out.width='90%', fig.align='center', fig.cap='The three coldest storylines (based on minimum and average temperature) are derived from ensemble member 48. The data are extracted from the file BSSP370cmip6.0480013.zip, provided by (@sippel2024)' }
+knitr::include_graphics("work/03-coldex/figures/boosting_results48.png")
 ```
 For ensemble member 48, the coldest recorded temperatures in the second-order boosted simulations included a minimum temperature of -25.9°C, which consistently occurred at the start of the initialization, and an average temperature of -10.2°C over the winter period from January to March (Fig.\@ref(fig:boosting-result48)). The fact that the lowest minimum temperatures always appeared at the beginning of the initialization phase suggests potential influences of edge conditions, temporal dependencies, or initialization bias. To address these factors, early January was excluded from the analysis. When focusing on mid-to-late winter, the lowest minimum temperature was observed in simulation ens037, reaching -23.1°C.
 
