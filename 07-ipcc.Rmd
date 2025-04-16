@@ -1,11 +1,11 @@
 ---
 output:
-  pdf_document:
-    toc: true
-  word_document: 
-    toc: true
   html_document:
     df_print: paged
+  word_document: 
+    toc: true
+  pdf_document:
+    toc: true
 ---
 <div style="page-break-before: always;"></div>
 
@@ -13,7 +13,7 @@ output:
 
 *Author: Yijie Chen*
 
-*Supervisor:Helmut Küchenhoff, Henri Funk, Ralf Ludwig*
+*Supervisor:Helmut Küchenhoff*
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 library(bookdown)
@@ -35,23 +35,14 @@ Through these case studies, we hope to throw light on the strengths and weakness
 # 2 Background  
 ## 2.1 Climate and Public Health
 
-Climate change is increasingly recognized as a major global driver of public health risks. Among climate-sensitive outcomes, two of the most pressing are heat-related mortality and the transmission of vector-borne diseases, such as West Nile Virus (WNV).
-
-Rising temperatures and more frequent heatwaves have been linked to excess mortality, particularly among vulnerable populations such as the elderly and individuals with pre-existing health conditions. At the same time, changes in temperature and precipitation patterns have affected the habitat and seasonality of disease-carrying vectors like mosquitoes, contributing to the spread of WNV in Europe.
-
-These public health threats have become a central focus in environmental epidemiology and climate-health research. For example, the 2024 Lancet Countdown report highlights the growing health burden of both heat exposure and infectious disease risk in the context of climate change (van Daalen et al., 2024).
+Climate change is increasingly recognized as a major global driver of public health risks. Among climate-sensitive outcomes, two of the most pressing are heat-related mortality and the transmission of vector-borne diseases, such as West Nile Virus (WNV). Rising temperatures and more frequent heatwaves have been linked to excess mortality, particularly among vulnerable populations such as the elderly and individuals with pre-existing health conditions. At the same time, changes in temperature and precipitation patterns have affected the habitat and seasonality of disease-carrying vectors like mosquitoes, contributing to the spread of WNV in Europe. These public health threats have become a central focus in environmental epidemiology and climate-health research. For example, the 2024 Lancet Countdown report highlights the growing health burden of both heat exposure and infectious disease risk in the context of climate change [@vandaalen2024].
 
 ## 2.2 Related Literature
-Several important studies have examined the relationship between temperature and health outcomes using statistical and machine learning techniques.
+In addition to model flexibility and performance, interpretability plays a vital role in selecting suitable methods for public health applications. While traditional linear models often fall short in capturing the complex temporal dynamics of environmental exposure, the use of splines provides an elegant solution. Hansen et al. (2006) systematically outlined the theoretical foundation for spline-based modeling, emphasizing their ability to flexibly represent smooth functions while controlling for overfitting. This makes splines particularly suitable for applications where relationships between variables change gradually over time or vary across geographic regions.[@hansen2006]
 
-In a multicountry observational study, Gasparrini et al. (2015) demonstrated that the relationship between temperature and mortality is nonlinear and involves lagged effects, meaning that the impact of heat exposure can last for several days or even weeks. This work laid the foundation for later modeling approaches.
+Building on these developments, distributed lag non-linear models (DLNM) have emerged as a powerful approach for simultaneously modeling exposure–response and lag–response functions, especially in the context of climate-related health outcomes such as heat-related mortality. These models enable researchers to estimate both immediate and delayed effects of temperature, as demonstrated by Gasparrini et al. (2015) in a large-scale, multi-country analysis [@gasparrini2015].
 
-To better capture such nonlinearities, Hastie and Tibshirani (1986) introduced the Generalized Additive Model (GAM), which allows for flexible modeling of smooth, nonlinear associations between predictors (e.g., temperature) and outcomes (e.g., mortality).
-
-More recently, machine learning methods have been adopted to analyze complex climate-health datasets. In particular, XGBoost developed by Chen & Guestrin (2016) has proven effective for high-dimensional data, especially in predicting rare outcomes like WNV outbreaks. Its strength lies in its ability to handle nonlinearity, interaction effects, and class imbalance—key challenges in public health modeling.
-
-These previous studies and methods form the foundation for the two empirical case studies analyzed in this report: one on heat-related mortality and the other on WNV transmission.
-
+Altogether, these methodological advancements—GAMs for flexible modeling, splines for smooth function estimation, DLNMs for time-varying effects, and XGBoost for classification in high-dimensional, imbalanced data—form a comprehensive analytical toolkit. They allow for a nuanced understanding of how climate variability translates into health risks, providing the basis for the two empirical applications explored in this report.
 # 3 Theoretical framework
 
 This section outlines the theoretical foundation of the statistical and machine learning methods used in this study. The aim is to model complex relationships and non-linear dependencies among health outcomes, climate indicators, as well as socio-economic variables.
@@ -60,11 +51,14 @@ This section outlines the theoretical foundation of the statistical and machine 
 
 ## 3.1 Splines
 
-Splines are flexible mathematical tools that model smooth nonlinear relationships across defined intervals. They are especially useful in health-related data modeling, such as temperature effects, due to their ability to control smoothness and avoid overfitting (Hansen et al., 2006).
+Splines are flexible mathematical tools that model smooth nonlinear relationships across defined intervals. They are especially useful in health-related data modeling, such as temperature effects, due to their ability to control smoothness and avoid overfitting.[@hansen2006]
 
 ## 3.2 Generalized Additive Models (GAM)
 
-Generalized Additive Models (GAM) extend Generalized Linear Models by incorporating smooth functions of predictor variables, allowing for flexible nonlinear modeling. They were first introduced by Hastie and Tibshirani (1986), and are particularly useful when relationships vary over time or across levels (Hastie & Tibshirani, 1986).
+Generalized Additive Models (GAMs) extend the classical Generalized Linear Models (GLMs) by incorporating smooth, non-parametric functions of predictor variables. This flexibility allows GAMs to capture complex, nonlinear relationships between predictors and the response variable, without requiring a strict parametric form. They are particularly valuable in environmental and public health contexts, where such relationships often evolve over time or vary across spatial or demographic dimensions.
+
+The concept of GAMs was first formally introduced by Hastie and Tibshirani [@hastie1986], who proposed a statistical framework that combines the interpretability of linear models with the adaptability of smoothing splines and other basis functions. In their foundational work, they demonstrated how GAMs could be used to model structured nonlinearity while maintaining additive interpretability. Since then, GAMs have become a widely used tool in epidemiology, climate-health modeling, and beyond, especially when the assumption of linearity is inappropriate.
+
 
 ## 3.3 Gradient Boosting
 
@@ -72,7 +66,7 @@ Gradient Boosting sequentially adds weak learners to build predictive models. Wi
 
 ## 3.4 XGBoost
 
-XGBoost (Extreme Gradient Boosting) is a scalable and efficient tree boosting algorithm that performs second-order Taylor approximation and incorporates regularization to prevent overfitting. It is particularly effective for high-dimensional, structured data in health research (Chen & Guestrin, 2016).
+XGBoost (Extreme Gradient Boosting) is a scalable and efficient tree boosting algorithm that performs second-order Taylor approximation and incorporates regularization to prevent overfitting. It is particularly effective for high-dimensional, structured data in health research.[@chen2016xgboost]
 
 ### 3.4.1 Modeling High-Dimensional Climate-Health Data
 
@@ -105,7 +99,7 @@ This cross-basis setup enhances the flexibility of the model in capturing the no
 Based on data from 1 January 2015 to 30 November 2022, this chapter is a systematic investigation into fatal ailments due to high temperature that took in 823 localities across 35 European countries. There were more than 45 million ciphered deaths in the study, among which over 22 million were female deaths and more than 21 million were of men. To capture the temperature–mortality relation, this study melds climate data, mortality data and demographic material into a coherent whole within the setting of statistics. Counted mortality data on a daily basis were taken from national sources, with population figures from Euro-stat. The temperature figures were derived from the ERA5-Land reanalysis data set which provided high temporal and spatial resolution suitable for impact studies in health. Merging those three data sets produced a pan-European mortality record that is standardized to population. To model temperature effects on mortality, a quasi-Poisson regression model was used. This approach can accommodate over-dispersion in count data and is therefore well suited to modelling mortality. In order to control for seasonality and long-term trends, a natural cubic spline of time with eight degrees of freedom per year was included. This adjustment ensures that the estimated temperature effects are not confounded by broader temporal fluctuations which are not climate related. Furthermore, as heat exposure may not have immediate mortality effects the model takes lag structures into account. Lag effects were estimated using a cross-basis function from a Distributed Lag Non-Linear Model (DLNM), which offers a joint modeling of exposure–response and lag–response relationship. A natural cubic spline is used to model the temperature effect, with internal knots placed at the 10th, 50th and 90th percentiles of the local weekly temperature distribution. The lag dimension was integrated to integer lags of 0, 2 and 3 weeks, allowing both immediate and later physiological effects of heat exposure to be captured. This provides a means for looking at the cumulative effects of heat across various time horizons. To quantify the burden of heat-attributable mortality, heat weeks were defined as those weeks in which the average daily temperature surpassed a region’s minimum mortality temperature. Then the heat-linked deaths were calculated as extra deaths per 100 thousand residents. These estimates were made separately for two reference periods: 2003-2012 and 2013 to 2022. Where data gaps are possible, imputation methods were used to ensure continuity of trends. In order to estimate the uncertainty around empirical mortality risk, Monte Carlo simulations were employed. This technique yields multiple draws from the distribution of model parameters, producing probabilistic confidence intervals for the estimated rates of heat-attributable mortality.
 
 
-```{r radar_plot, echo=FALSE, out.width="100%", fig.cap="**Abbildung 1:** Radar plots illustrating the 24-hour distribution of heat stress risk across Southern, Western, Eastern, and Northern Europe during three decades: 1990–2000, 2001–2011, and 2012–2022."}
+```{r radar_plot, echo=FALSE, out.width="100%", fig.cap="**Abbildung 1:** Radar plots illustrating the 24-hour distribution of heat stress risk across Southern, Western, Eastern, and Northern Europe during three decades: 1990–2000, 2001–2011, and 2012–2022 [@vandaalen2024]."}
 knitr::include_graphics("0.png")
 ```
 
@@ -117,7 +111,7 @@ To capture the temperature–mortality relation, this study melds climate data, 
 
 To model temperature effects on mortality, a quasi-Poisson regression model was used. This approach can accommodate over-dispersion in count data and is therefore well suited to modelling mortality. In order to control for seasonality and long-term trends, a natural cubic spline of time with eight degrees of freedom per year was included. This adjustment ensures that the estimated temperature effects are not confounded by broader temporal fluctuations which are not climate-related. Furthermore, as heat exposure may not have immediate mortality effects the model takes lag structures into account. Lag effects were estimated using a cross-basis function from a Distributed Lag Non-Linear Model (DLNM), which offers a joint modeling of exposure–response and lag–response relationship. A natural cubic spline is used to model the temperature effect, with internal knots placed at the 10th, 50th and 90th percentiles of the local weekly temperature distribution. The lag dimension was integrated to integer lags of 0, 2 and 3 weeks, allowing both immediate and later physiological effects of heat exposure to be captured. This provides a means for looking at the cumulative effects of heat across various time horizons. 
 
-```{r heat_map, echo=FALSE, out.width="100%", fig.cap="**Abbildung 2:** Heat-attributable mortality rates per 100,000 population across Europe, comparing two periods: 2003–2012 and 2013–2022."}
+```{r heat_map, echo=FALSE, out.width="100%", fig.cap="**Abbildung 2:** Heat-attributable mortality rates per 100,000 population across Europe, comparing two periods: 2003–2012 and 2013–2022 [@vandaalen2024] ."}
 knitr::include_graphics("1.png")
 knitr::include_graphics("2.png")
 ```
@@ -136,7 +130,7 @@ Thus, it was used training data for 2010 to 2019 in order to allow the model to 
 
 For one, it uses custom loss functions and class weighting to ensure that the minority class – regions with WNV infections – does not get swamped by the majority class. Hyperparameter tuning is performed to optimize the way decision trees are structured, enhancing the model’s ability to find rare events. Furthermore, the scale position weight parameter in XGBoost is adjusted to enhance sensitivity to WNV-positive cases. Together, all these strategies help the model to better differentiate high-risk regions – even in cases where positive cases are rare.
 
-```{r wnv_risk_trend, echo=FALSE, out.width="100%", fig.cap="**Abbildung 3:** Predicted West Nile Virus (WNV) outbreak risk from 1950 to 2022 across urban, intermediate, and rural areas."}
+```{r wnv_risk_trend, echo=FALSE, out.width="100%", fig.cap="**Abbildung 3:** Predicted West Nile Virus (WNV) outbreak risk from 1950 to 2022 across urban, intermediate, and rural areas [@vandaalen2024] ."}
 knitr::include_graphics("3.png")
 ```
 
@@ -161,15 +155,3 @@ In the second part of the study, we assessed the spatial risk of WNV transmissio
 Together, these two case studies illustrate the value of combining traditional epidemiological approaches with modern machine learning tools to study climate-sensitive health outcomes. They also underscore the growing urgency of public health adaptation in response to climate variability. As global temperatures continue to rise, the capacity to detect, predict, and respond to climate-related health threats will become increasingly vital.
 
 Future research should build upon this work by incorporating additional climate-sensitive diseases, refining spatial and temporal resolutions, and extending the analysis to non-European contexts. Moreover, the integration of early warning systems with public health infrastructure will be essential for mitigating the adverse effects of climate change on human health. By advancing our understanding of climate-health interactions, this study contributes to the broader goal of building more resilient and adaptive public health systems in the face of global environmental change.
-
-# 6.Reference 
-
-van Daalen, K. R., Tonne, C., Semenza, J. C., et al. (2024). The 2024 Europe report of the Lancet Countdown on health and climate change: Unprecedented warming demands unprecedented action. The Lancet Public Health. https://doi.org/10.1016/S2468-2667(24)00055-0
-
-Hansen, M. H., Huang, J. Z., Kooperberg, C., Stone, C. J., & Truong, Y. K. (2006). Statistical modeling with spline functions: Methodology and theory (Chapter 3). Fred Hutchinson Cancer Research Center. https://research.fredhutch.org/content/dam/stripe/kooperberg/ch03.pdf
-
-Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 785–794. https://doi.org/10.1145/2939672.2939785
-
-Gasparrini, A., Guo, Y., Hashizume, M., Lavigne, E., Zanobetti, A., Schwartz, J., ... & Armstrong, B. G. (2015). Mortality risk attributable to high and low ambient temperature: A multicountry observational study. The Lancet ,386(9991), 369–375. https://doi.org/10.1016/S0140-6736(14)62114-0
-
-Hastie, T., & Tibshirani, R. (1986). Generalized additive models. Statistical Science, 1(3), 297–318. https://doi.org/10.1214/ss/1177013604 
