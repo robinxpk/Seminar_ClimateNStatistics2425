@@ -1,11 +1,12 @@
 ---
 output:
-  html_document:
-    df_print: paged
-  word_document: 
-    toc: true
   pdf_document:
     toc: true
+    bibliography: book.bib
+  word_document: 
+    toc: true
+  html_document:
+    df_print: paged
 ---
 <div style="page-break-before: always;"></div>
 
@@ -26,11 +27,7 @@ Public health is at increasing danger from the effects of climate change-particu
 
 This study examines the applications of a variety of methods to examine risks for climate-sensitive diseases that are influenced by temperature fluctuations. We apply some statistical methods, including splines and Generalized Additive Models (GAMs), as well as machine learning algorithms such as Gradient Boosting and XGBoost. These approaches enable us to model the nonlinear and intricately entwined relationships between different climate indicators, health outcomes, and socio-economic factors.
 
-To illustrate the practical use of these methods, we present two case studies based on the 2024 Europe report of the Lancet Countdown on health and climate change (van Daalen et al., 2024) focusing on Europe.
-The first study investigates heat-related mortality (Gasparrini et al., 2015), analyzing how temperature impacts deaths among humans.
-The second study looks at West Nile virus transmission, using risk models based on a linked dataset of climate and socio-economic variables (Chen & Guestrin, 2016).
-
-Through these case studies, we hope to throw light on the strengths and weaknesses of various modeling methods in capturing health effects of climate change as well as offer thoughts about how information-driven methods may be of use to ad decision-making public health management in a changing.
+To illustrate the practical use of these methods, we present two case studies based on the 2024 Europe Report of the Lancet Countdown on Health and Climate Change [@vandaalen2024], with a regional focus on Europe. The first study investigates heat-related mortality, analyzing how temperature impacts human deaths, as previously demonstrated in a large-scale observational study [@gasparrini2015]. The second study examines the transmission risk of West Nile Virus (WNV), using predictive models informed by a combined dataset of climatic and socio-economic variables, with the modeling approach based on the XGBoost framework [@chen2016xgboost].
 
 # 2 Background  
 ## 2.1 Climate and Public Health
@@ -38,9 +35,9 @@ Through these case studies, we hope to throw light on the strengths and weakness
 Climate change is increasingly recognized as a major global driver of public health risks. Among climate-sensitive outcomes, two of the most pressing are heat-related mortality and the transmission of vector-borne diseases, such as West Nile Virus (WNV). Rising temperatures and more frequent heatwaves have been linked to excess mortality, particularly among vulnerable populations such as the elderly and individuals with pre-existing health conditions. At the same time, changes in temperature and precipitation patterns have affected the habitat and seasonality of disease-carrying vectors like mosquitoes, contributing to the spread of WNV in Europe. These public health threats have become a central focus in environmental epidemiology and climate-health research. For example, the 2024 Lancet Countdown report highlights the growing health burden of both heat exposure and infectious disease risk in the context of climate change [@vandaalen2024].
 
 ## 2.2 Related Literature
-In addition to model flexibility and performance, interpretability plays a vital role in selecting suitable methods for public health applications. While traditional linear models often fall short in capturing the complex temporal dynamics of environmental exposure, the use of splines provides an elegant solution. Hansen et al. (2006) systematically outlined the theoretical foundation for spline-based modeling, emphasizing their ability to flexibly represent smooth functions while controlling for overfitting. This makes splines particularly suitable for applications where relationships between variables change gradually over time or vary across geographic regions.[@hansen2006]
+In addition to model flexibility and performance, interpretability plays a vital role in selecting suitable methods for public health applications. While traditional linear models often fall short in capturing the complex temporal dynamics of environmental exposure, the use of splines provides an elegant solution. Hansen et al. systematically outlined the theoretical foundation for spline-based modeling, emphasizing their ability to flexibly represent smooth functions while controlling for overfitting. This makes splines particularly suitable for applications where relationships between variables change gradually over time or vary across geographic regions.[@hansen2006]
 
-Building on these developments, distributed lag non-linear models (DLNM) have emerged as a powerful approach for simultaneously modeling exposure–response and lag–response functions, especially in the context of climate-related health outcomes such as heat-related mortality. These models enable researchers to estimate both immediate and delayed effects of temperature, as demonstrated by Gasparrini et al. (2015) in a large-scale, multi-country analysis [@gasparrini2015].
+Building on these developments, distributed lag non-linear models (DLNM) have emerged as a powerful approach for simultaneously modeling exposure–response and lag–response functions, especially in the context of climate-related health outcomes such as heat-related mortality. These models enable researchers to estimate both immediate and delayed effects of temperature, as demonstrated by Gasparrini et al. in a large-scale, multi-country analysis [@gasparrini2015].
 
 Altogether, these methodological advancements—GAMs for flexible modeling, splines for smooth function estimation, DLNMs for time-varying effects, and XGBoost for classification in high-dimensional, imbalanced data—form a comprehensive analytical toolkit. They allow for a nuanced understanding of how climate variability translates into health risks, providing the basis for the two empirical applications explored in this report.
 # 3 Theoretical framework
@@ -99,9 +96,10 @@ This cross-basis setup enhances the flexibility of the model in capturing the no
 Based on data from 1 January 2015 to 30 November 2022, this chapter is a systematic investigation into fatal ailments due to high temperature that took in 823 localities across 35 European countries. There were more than 45 million ciphered deaths in the study, among which over 22 million were female deaths and more than 21 million were of men. To capture the temperature–mortality relation, this study melds climate data, mortality data and demographic material into a coherent whole within the setting of statistics. Counted mortality data on a daily basis were taken from national sources, with population figures from Euro-stat. The temperature figures were derived from the ERA5-Land reanalysis data set which provided high temporal and spatial resolution suitable for impact studies in health. Merging those three data sets produced a pan-European mortality record that is standardized to population. To model temperature effects on mortality, a quasi-Poisson regression model was used. This approach can accommodate over-dispersion in count data and is therefore well suited to modelling mortality. In order to control for seasonality and long-term trends, a natural cubic spline of time with eight degrees of freedom per year was included. This adjustment ensures that the estimated temperature effects are not confounded by broader temporal fluctuations which are not climate related. Furthermore, as heat exposure may not have immediate mortality effects the model takes lag structures into account. Lag effects were estimated using a cross-basis function from a Distributed Lag Non-Linear Model (DLNM), which offers a joint modeling of exposure–response and lag–response relationship. A natural cubic spline is used to model the temperature effect, with internal knots placed at the 10th, 50th and 90th percentiles of the local weekly temperature distribution. The lag dimension was integrated to integer lags of 0, 2 and 3 weeks, allowing both immediate and later physiological effects of heat exposure to be captured. This provides a means for looking at the cumulative effects of heat across various time horizons. To quantify the burden of heat-attributable mortality, heat weeks were defined as those weeks in which the average daily temperature surpassed a region’s minimum mortality temperature. Then the heat-linked deaths were calculated as extra deaths per 100 thousand residents. These estimates were made separately for two reference periods: 2003-2012 and 2013 to 2022. Where data gaps are possible, imputation methods were used to ensure continuity of trends. In order to estimate the uncertainty around empirical mortality risk, Monte Carlo simulations were employed. This technique yields multiple draws from the distribution of model parameters, producing probabilistic confidence intervals for the estimated rates of heat-attributable mortality.
 
 
-```{r radar_plot, echo=FALSE, out.width="100%", fig.cap="**Abbildung 1:** Radar plots illustrating the 24-hour distribution of heat stress risk across Southern, Western, Eastern, and Northern Europe during three decades: 1990–2000, 2001–2011, and 2012–2022 [@vandaalen2024]."}
+``````{r radar_plot, echo=FALSE, out.width="100%", fig.cap="(**Abbildung 1**) Radar plots illustrating the 24-hour distribution of heat stress risk across Southern, Western, Eastern, and Northern Europe during three decades: 1990–2000, 2001–2011, and 2012–2022. (ref:figRadar)"}
 knitr::include_graphics("0.png")
 ```
+(ref:figRadar) Adapted from @vandaalen2024.
 
 ### 4.1.2 result
 
@@ -115,6 +113,7 @@ To model temperature effects on mortality, a quasi-Poisson regression model was 
 knitr::include_graphics("1.png")
 knitr::include_graphics("2.png")
 ```
+(ref:figHeatMap) Adapted from @vandaalen2024.
 
 To quantify the burden of heat-attributable mortality, heat weeks were defined as those weeks in which the average daily temperature surpassed a region’s minimum mortality temperature. Then the heat-linked deaths were calculated as extra deaths per 100 thousand residents. These estimates were made separately for two reference periods: 2003-2012 and 2013 to 2022. Where data gaps are possible, imputation methods were used to ensure continuity of trends. In order to estimate the uncertainty around empirical mortality risk, Monte Carlo simulations were employed. This technique yields multiple draws from the distribution of model parameters, producing probabilistic confidence intervals for the estimated rates of heat-attributable mortality.
 
@@ -130,9 +129,10 @@ Thus, it was used training data for 2010 to 2019 in order to allow the model to 
 
 For one, it uses custom loss functions and class weighting to ensure that the minority class – regions with WNV infections – does not get swamped by the majority class. Hyperparameter tuning is performed to optimize the way decision trees are structured, enhancing the model’s ability to find rare events. Furthermore, the scale position weight parameter in XGBoost is adjusted to enhance sensitivity to WNV-positive cases. Together, all these strategies help the model to better differentiate high-risk regions – even in cases where positive cases are rare.
 
-```{r wnv_risk_trend, echo=FALSE, out.width="100%", fig.cap="**Abbildung 3:** Predicted West Nile Virus (WNV) outbreak risk from 1950 to 2022 across urban, intermediate, and rural areas [@vandaalen2024] ."}
+```{r wnv_risk_trend, echo=FALSE, out.width="100%", fig.cap="(**Abbildung 3**) Predicted West Nile Virus (WNV) outbreak risk from 1950 to 2022 across urban, intermediate, and rural areas. (ref:figWNVRiskTrend)"}
 knitr::include_graphics("3.png")
 ```
+(ref:figHeatMap) Adapted from @vandaalen2024.
 
 ### 4.2.2 Results
 
@@ -148,7 +148,7 @@ Beyond modeling accuracy, the findings have important implications for public he
 
 This study has explored the intersection of climate change and public health by examining two critical dimensions of climate-related health risks in Europe: heat-related mortality and the spread of West Nile Virus (WNV). Drawing on a combination of statistical modeling and machine learning techniques, the analysis aimed to capture the nonlinear, delayed, and regionally varying nature of these impacts.
 
-In the first part of the study, we discussed heat-related mortality, drawing on findings from previous literature that analyzed temperature–mortality relationships using quasi-Poisson regression combined with distributed lag non-linear modeling (DLNM). This approach, as shown in the work of Gasparrini et al. (2015), allows for the estimation of both immediate and delayed mortality effects of high temperatures. These findings highlight the increased health burden associated with heat, particularly in Southern and Western Europe, and among vulnerable subgroups such as the elderly and women. The analysis illustrates how mortality patterns can evolve over the course of a heatwave, underscoring the need for timely public health interventions.
+In the first part of the study, we discussed heat-related mortality, drawing on findings from previous literature that analyzed temperature–mortality relationships using quasi-Poisson regression combined with distributed lag non-linear modeling (DLNM). This approach, as shown in the work of Gasparrini et al. [@gasparrini2015], allows for the estimation of both immediate and delayed mortality effects of high temperatures. These findings highlight the increased health burden associated with heat, particularly in Southern and Western Europe, and among vulnerable subgroups such as the elderly and women. The analysis illustrates how mortality patterns can evolve over the course of a heatwave, underscoring the need for timely public health interventions.
 
 In the second part of the study, we assessed the spatial risk of WNV transmission using XGBoost, a tree-based gradient boosting algorithm well-suited for high-dimensional and imbalanced data. By incorporating climate, bioclimatic, and socioeconomic variables, the model effectively identified regions at elevated risk and aligned well with historical outbreak trends. The results show a rising trend in WNV risk, especially after 2000, with rural and semi-urban areas emerging as key hotspots. These findings reinforce the importance of integrating climate data into infectious disease monitoring and forecasting systems.
 
